@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
     "paths": {
       "@shared/*": [
@@ -12,12 +13,28 @@
       "@ui/*": [
         "../../packages/ui-tokens/src/*"
       ]
-    }
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "incremental": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "noEmit": true
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

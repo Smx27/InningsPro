@@ -15,7 +15,7 @@ export const dbService = {
     return db.select().from(matches).orderBy(desc(matches.id));
   },
 
-  async updateMatchStatus(id: number, status: string) {
+  async updateMatchStatus(id: string, status: string) {
     const db = getDatabase();
     const [updated] = await db
       .update(matches)

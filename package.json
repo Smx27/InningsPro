@@ -1,0 +1,20 @@
+{
+  "name": "inningspro",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tooling/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "turbo format"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  }
+}

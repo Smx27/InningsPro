@@ -1,0 +1,11 @@
+{
+  "name": "@inningspro/export-schema",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'export-schema build placeholder'",
+    "lint": "echo 'export-schema lint placeholder'",
+    "typecheck": "echo 'export-schema typecheck placeholder'",
+    "format": "echo 'export-schema format placeholder'"
+  }
+}

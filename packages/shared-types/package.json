@@ -1,0 +1,11 @@
+{
+  "name": "@inningspro/shared-types",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'shared-types build placeholder'",
+    "lint": "echo 'shared-types lint placeholder'",
+    "typecheck": "echo 'shared-types typecheck placeholder'",
+    "format": "echo 'shared-types format placeholder'"
+  }
+}

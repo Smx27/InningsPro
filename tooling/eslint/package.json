@@ -2,9 +2,22 @@
   "name": "@inningspro/eslint-config",
   "private": true,
   "version": "0.0.0",
+  "main": "./base.cjs",
+  "exports": {
+    ".": "./base.cjs",
+    "./base": "./base.cjs",
+    "./react": "./react.cjs",
+    "./expo": "./expo.cjs",
+    "./next": "./next.cjs"
+  },
+  "peerDependencies": {
+    "eslint": "^8.57.1",
+    "typescript": "^5.7.3"
+  },
   "scripts": {
     "build": "echo 'eslint-config build placeholder'",
     "lint": "echo 'eslint-config lint placeholder'",
+    "lint:fix": "echo 'eslint-config lint:fix placeholder'",
     "typecheck": "echo 'eslint-config typecheck placeholder'",
     "format": "echo 'eslint-config format placeholder'"
   }

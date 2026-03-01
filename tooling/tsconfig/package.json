@@ -6,6 +6,8 @@
     "build": "echo 'tsconfig build placeholder'",
     "lint": "echo 'tsconfig lint placeholder'",
     "typecheck": "echo 'tsconfig typecheck placeholder'",
-    "format": "echo 'tsconfig format placeholder'"
+    "format": "echo 'tsconfig format placeholder'",
+    "lint:fix": "echo 'tsconfig lint:fix placeholder'",
+    "format:check": "echo 'tsconfig format:check placeholder'"
   }
 }

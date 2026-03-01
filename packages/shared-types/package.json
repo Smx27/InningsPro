@@ -15,8 +15,13 @@
   ],
   "scripts": {
     "build": "echo 'shared-types build placeholder'",
-    "lint": "echo 'shared-types lint placeholder'",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "format": "echo 'shared-types format placeholder'"
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@inningspro/eslint-config": "workspace:*"
   }
 }

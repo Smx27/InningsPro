@@ -23,8 +23,13 @@
   },
   "scripts": {
     "build": "echo 'export-schema build placeholder'",
-    "lint": "echo 'export-schema lint placeholder'",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "format": "echo 'export-schema format placeholder'"
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@inningspro/eslint-config": "workspace:*"
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "build": "echo 'export-schema build placeholder'",
     "lint": "echo 'export-schema lint placeholder'",
-    "typecheck": "echo 'export-schema typecheck placeholder'",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "format": "echo 'export-schema format placeholder'"
   }
 }

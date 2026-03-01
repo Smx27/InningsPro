@@ -5,7 +5,7 @@
   "scripts": {
     "build": "echo 'shared-types build placeholder'",
     "lint": "echo 'shared-types lint placeholder'",
-    "typecheck": "echo 'shared-types typecheck placeholder'",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "format": "echo 'shared-types format placeholder'"
   }
 }

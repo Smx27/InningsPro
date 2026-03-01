@@ -21,6 +21,12 @@
       ],
       "outputs": []
     },
+    "lint:fix": {
+      "dependsOn": [
+        "^lint:fix"
+      ],
+      "outputs": []
+    },
     "typecheck": {
       "dependsOn": [
         "^typecheck"

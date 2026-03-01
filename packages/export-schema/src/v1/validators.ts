@@ -1,11 +1,12 @@
-import type { SafeParseReturnType, ZodType } from 'zod';
-
 import {
   matchExportSchemaV1,
   tournamentExportSchemaV1,
   type MatchExportSchemaV1,
   type TournamentExportSchemaV1
 } from './schemas';
+
+import type { SafeParseReturnType, ZodType } from 'zod';
+
 
 export const parseWithSchema = <Output>(schema: ZodType<Output>, payload: unknown): Output => {
   return schema.parse(payload);

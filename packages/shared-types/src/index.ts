@@ -1,4 +1,8 @@
 export type Id = string;
+export type ISODateTime = string;
+
+export type TournamentFormat = 'T20' | 'ODI' | 'TEST' | 'CUSTOM';
+export type MatchStatus = 'scheduled' | 'live' | 'completed' | 'abandoned';
 
 export interface MatchRules {
   maxOversPerInnings: number;
@@ -43,26 +47,19 @@ export interface Tournament {
   id: Id;
   name: string;
   season: string;
-  format: 'T20' | 'ODI' | 'TEST' | 'CUSTOM';
+  format: TournamentFormat;
   rules: MatchRules;
   teamIds: Id[];
-  startsAt: string;
-  endsAt?: string;
+  startsAt: ISODateTime;
+  endsAt?: ISODateTime;
 }
-
-export type BallEvent =
-  | DeliveryBallEvent
-  | WicketBallEvent
-  | ExtraBallEvent
-  | PenaltyBallEvent
-  | ReviewBallEvent;
 
 export interface BallEventBase {
   id: Id;
   inningsId: Id;
   overNumber: number;
   ballInOver: number;
-  timestamp: string;
+  timestamp: ISODateTime;
   batterId: Id;
   bowlerId: Id;
   nonStrikerId: Id;
@@ -120,14 +117,27 @@ export interface ReviewBallEvent extends BallEventBase {
   finalDecision?: 'out' | 'not-out' | 'wide' | 'no-ball';
 }
 
+export type BallEvent =
+  | DeliveryBallEvent
+  | WicketBallEvent
+  | ExtraBallEvent
+  | PenaltyBallEvent
+  | ReviewBallEvent;
+
+export type BallEventKind = BallEvent['kind'];
+
+export type BallEventByKind = {
+  [Event in BallEvent as Event['kind']]: Event;
+};
+
 export interface Innings {
   id: Id;
   matchId: Id;
   battingTeamId: Id;
   bowlingTeamId: Id;
   sequence: 1 | 2 | 3 | 4;
-  startsAt: string;
-  endsAt?: string;
+  startsAt: ISODateTime;
+  endsAt?: ISODateTime;
   declared: boolean;
   targetRuns?: number;
   events: BallEvent[];
@@ -139,18 +149,18 @@ export interface Match {
   homeTeamId: Id;
   awayTeamId: Id;
   venue?: string;
-  startsAt: string;
+  startsAt: ISODateTime;
   tossWinnerTeamId?: Id;
   tossDecision?: 'bat' | 'bowl';
   rules: MatchRules;
   innings: Innings[];
-  status: 'scheduled' | 'live' | 'completed' | 'abandoned';
+  status: MatchStatus;
   winnerTeamId?: Id;
 }
 
 export interface ExportSchemaV1 {
   schemaVersion: '1.0.0';
-  exportedAt: string;
+  exportedAt: ISODateTime;
   tournament: Tournament;
   teams: Team[];
   matches: Match[];

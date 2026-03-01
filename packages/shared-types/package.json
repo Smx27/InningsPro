@@ -2,6 +2,7 @@
   "name": "@inningspro/shared-types",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "types": "./src/index.ts",
   "exports": {
     ".": {
@@ -9,6 +10,9 @@
       "default": "./src/index.ts"
     }
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "build": "echo 'shared-types build placeholder'",
     "lint": "echo 'shared-types lint placeholder'",

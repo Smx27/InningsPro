@@ -6,7 +6,7 @@
     "dev": "echo 'report-web dev placeholder'",
     "build": "echo 'report-web build placeholder'",
     "lint": "echo 'report-web lint placeholder'",
-    "typecheck": "echo 'report-web typecheck placeholder'",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "format": "echo 'report-web format placeholder'"
   }
 }

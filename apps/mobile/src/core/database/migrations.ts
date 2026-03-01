@@ -1,17 +1,50 @@
-import { sql } from 'drizzle-orm';
+import { migrate, useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
 import { getDatabase } from './drizzle';
+import bundledMigrations from './drizzle/migrations';
 
-export const runMigrations = async () => {
+export type DatabaseMigrationState = ReturnType<typeof useMigrations>;
+
+export class DatabaseMigrationError extends Error {
+  public override readonly cause: unknown;
+
+  public constructor(message: string, cause: unknown) {
+    super(message);
+    this.name = 'DatabaseMigrationError';
+    this.cause = cause;
+  }
+}
+
+let migrationPromise: Promise<void> | null = null;
+let migrationsApplied = false;
+
+export const useDatabaseMigrations = (): DatabaseMigrationState => {
   const db = getDatabase();
 
-  await db.run(
-    sql`CREATE TABLE IF NOT EXISTS matches (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      team_a TEXT NOT NULL,
-      team_b TEXT NOT NULL,
-      overs INTEGER NOT NULL,
-      status TEXT NOT NULL DEFAULT 'scheduled'
-    );`
-  );
+  return useMigrations(db, bundledMigrations);
+};
+
+export const initializeDatabaseMigrations = async (): Promise<void> => {
+  if (migrationsApplied) {
+    return;
+  }
+
+  if (!migrationPromise) {
+    const db = getDatabase();
+
+    migrationPromise = migrate(db, bundledMigrations)
+      .then(() => {
+        migrationsApplied = true;
+      })
+      .catch((error: unknown) => {
+        throw new DatabaseMigrationError('Failed to apply database migrations', error);
+      })
+      .finally(() => {
+        if (!migrationsApplied) {
+          migrationPromise = null;
+        }
+      });
+  }
+
+  return migrationPromise;
 };

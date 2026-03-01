@@ -1,13 +1,15 @@
 import { PropsWithChildren, useEffect } from 'react';
 
-import { runMigrations } from '@core/database/migrations';
+import { useDatabaseMigrations } from '@core/database/migrations';
 
 export const AppProviders = ({ children }: PropsWithChildren) => {
+  const { error } = useDatabaseMigrations();
+
   useEffect(() => {
-    runMigrations().catch((error) => {
+    if (error) {
       console.error('Failed running migrations', error);
-    });
-  }, []);
+    }
+  }, [error]);
 
   return children;
 };

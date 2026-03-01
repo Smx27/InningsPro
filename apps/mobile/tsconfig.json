@@ -1,27 +1,46 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "strict": true,
     "baseUrl": ".",
+    "types": [
+      "nativewind/types"
+    ],
     "paths": {
       "@/*": [
         "src/*"
       ],
-      "@shared/*": [
-        "../../packages/shared-types/src/*"
+      "@core/*": [
+        "src/core/*"
       ],
-      "@schema/*": [
-        "../../packages/export-schema/src/*"
+      "@features/*": [
+        "src/features/*"
       ],
-      "@ui/*": [
-        "../../packages/ui-tokens/src/*"
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@store/*": [
+        "src/store/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@hooks/*": [
+        "src/hooks/*"
+      ],
+      "@models/*": [
+        "src/models/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
       ]
     }
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ]
 }

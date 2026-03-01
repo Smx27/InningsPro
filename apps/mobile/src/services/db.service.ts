@@ -23,6 +23,16 @@ import {
 } from '@core/database/schema';
 
 export class DatabaseService {
+  private matchCache = new Map<string, Match>();
+
+  private inningsCache = new Map<string, Innings[]>();
+
+  private ballEventsCache = new Map<string, BallEvent[]>();
+
+  private getBallEventsCacheKey(matchId: string, inningsNumber: number): string {
+    return `${matchId}:${inningsNumber}`;
+  }
+
   async createTournament(payload: NewTournament): Promise<Tournament | undefined> {
     const db = getDatabase();
     const [created] = await db.insert(tournaments).values(payload).returning();
@@ -77,12 +87,25 @@ export class DatabaseService {
     const db = getDatabase();
     const [created] = await db.insert(matches).values(payload).returning();
 
+    if (created) {
+      this.matchCache.set(created.id, created);
+    }
+
     return created;
   }
 
   async getMatchById(id: string): Promise<Match | undefined> {
+    const cached = this.matchCache.get(id);
+    if (cached) {
+      return cached;
+    }
+
     const db = getDatabase();
     const [record] = await db.select().from(matches).where(eq(matches.id, id)).limit(1);
+
+    if (record) {
+      this.matchCache.set(id, record);
+    }
 
     return record;
   }
@@ -95,6 +118,10 @@ export class DatabaseService {
       .where(eq(matches.id, id))
       .returning();
 
+    if (updated) {
+      this.matchCache.set(id, updated);
+    }
+
     return updated;
   }
 
@@ -102,34 +129,109 @@ export class DatabaseService {
     const db = getDatabase();
     const [created] = await db.insert(innings).values(payload).returning();
 
+    if (created) {
+      const cachedInnings = this.inningsCache.get(created.matchId);
+      if (cachedInnings) {
+        this.inningsCache.set(
+          created.matchId,
+          [...cachedInnings, created].sort((a, b) => b.inningsNumber - a.inningsNumber)
+        );
+      }
+    }
+
     return created;
   }
 
   async getInningsByMatch(matchId: string): Promise<Innings[]> {
-    const db = getDatabase();
+    const cached = this.inningsCache.get(matchId);
+    if (cached) {
+      return cached;
+    }
 
-    return db
+    const db = getDatabase();
+    const records = await db
       .select()
       .from(innings)
       .where(eq(innings.matchId, matchId))
       .orderBy(desc(innings.inningsNumber));
+
+    this.inningsCache.set(matchId, records);
+
+    return records;
   }
 
   async addBallEvent(payload: NewBallEvent): Promise<BallEvent | undefined> {
     const db = getDatabase();
     const [created] = await db.insert(ballEvents).values(payload).returning();
 
+    if (created) {
+      const cacheKey = this.getBallEventsCacheKey(created.matchId, created.inningsNumber);
+      const cachedEvents = this.ballEventsCache.get(cacheKey);
+      if (cachedEvents) {
+        this.ballEventsCache.set(
+          cacheKey,
+          [...cachedEvents, created].sort((a, b) => {
+            if (b.overNumber !== a.overNumber) {
+              return b.overNumber - a.overNumber;
+            }
+
+            if (b.ballNumber !== a.ballNumber) {
+              return b.ballNumber - a.ballNumber;
+            }
+
+            return b.createdAt.getTime() - a.createdAt.getTime();
+          })
+        );
+      }
+    }
+
     return created;
   }
 
   async getBallEventsByMatch(matchId: string): Promise<BallEvent[]> {
     const db = getDatabase();
+    const inningsRecords = await this.getInningsByMatch(matchId);
 
-    return db
+    if (inningsRecords.length > 0) {
+      const missingInningsNumbers = inningsRecords
+        .map(({ inningsNumber }) => inningsNumber)
+        .filter((inningsNumber) => !this.ballEventsCache.has(this.getBallEventsCacheKey(matchId, inningsNumber)));
+
+      if (missingInningsNumbers.length > 0) {
+        for (const inningsNumber of missingInningsNumbers) {
+          const records = await db
+            .select()
+            .from(ballEvents)
+            .where(and(eq(ballEvents.matchId, matchId), eq(ballEvents.inningsNumber, inningsNumber)))
+            .orderBy(desc(ballEvents.overNumber), desc(ballEvents.ballNumber), desc(ballEvents.createdAt));
+
+          this.ballEventsCache.set(this.getBallEventsCacheKey(matchId, inningsNumber), records);
+        }
+      }
+
+      return inningsRecords.flatMap(
+        ({ inningsNumber }) => this.ballEventsCache.get(this.getBallEventsCacheKey(matchId, inningsNumber)) ?? []
+      );
+    }
+
+    const records = await db
       .select()
       .from(ballEvents)
       .where(eq(ballEvents.matchId, matchId))
       .orderBy(desc(ballEvents.inningsNumber), desc(ballEvents.overNumber), desc(ballEvents.ballNumber));
+
+    const groupedByInnings = new Map<number, BallEvent[]>();
+    for (const event of records) {
+      const existing = groupedByInnings.get(event.inningsNumber) ?? [];
+      existing.push(event);
+      groupedByInnings.set(event.inningsNumber, existing);
+    }
+
+    for (const [inningsNumber, events] of groupedByInnings) {
+      this.ballEventsCache.set(this.getBallEventsCacheKey(matchId, inningsNumber), events);
+    }
+
+    return records;
   }
 
   async undoLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | undefined> {
@@ -146,6 +248,17 @@ export class DatabaseService {
     }
 
     const [deleted] = await db.delete(ballEvents).where(eq(ballEvents.id, lastBall.id)).returning();
+
+    if (deleted) {
+      const cacheKey = this.getBallEventsCacheKey(matchId, inningsNumber);
+      const cachedEvents = this.ballEventsCache.get(cacheKey);
+      if (cachedEvents) {
+        this.ballEventsCache.set(
+          cacheKey,
+          cachedEvents.filter((event) => event.id !== deleted.id)
+        );
+      }
+    }
 
     return deleted;
   }

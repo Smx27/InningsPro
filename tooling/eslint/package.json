@@ -1,0 +1,11 @@
+{
+  "name": "@inningspro/eslint-config",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'eslint-config build placeholder'",
+    "lint": "echo 'eslint-config lint placeholder'",
+    "typecheck": "echo 'eslint-config typecheck placeholder'",
+    "format": "echo 'eslint-config format placeholder'"
+  }
+}

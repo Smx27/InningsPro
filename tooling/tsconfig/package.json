@@ -1,0 +1,11 @@
+{
+  "name": "@inningspro/tsconfig",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'tsconfig build placeholder'",
+    "lint": "echo 'tsconfig lint placeholder'",
+    "typecheck": "echo 'tsconfig typecheck placeholder'",
+    "format": "echo 'tsconfig format placeholder'"
+  }
+}

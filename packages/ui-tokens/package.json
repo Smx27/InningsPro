@@ -1,0 +1,11 @@
+{
+  "name": "@inningspro/ui-tokens",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "echo 'ui-tokens build placeholder'",
+    "lint": "echo 'ui-tokens lint placeholder'",
+    "typecheck": "echo 'ui-tokens typecheck placeholder'",
+    "format": "echo 'ui-tokens format placeholder'"
+  }
+}

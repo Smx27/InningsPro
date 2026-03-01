@@ -38,4 +38,16 @@ export const ballEventsRelations = relations(ballEvents, ({ one }) => ({
     fields: [ballEvents.matchId],
     references: [matches.id],
   }),
+  striker: one(players, {
+    fields: [ballEvents.strikerId],
+    references: [players.id],
+  }),
+  nonStriker: one(players, {
+    fields: [ballEvents.nonStrikerId],
+    references: [players.id],
+  }),
+  bowler: one(players, {
+    fields: [ballEvents.bowlerId],
+    references: [players.id],
+  }),
 }));

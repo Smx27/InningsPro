@@ -1,21 +1,22 @@
 import { desc, eq } from 'drizzle-orm';
 
-import { getDatabase } from '@core/database/drizzle';
-import { NewMatch, matches } from '@core/database/schema';
+import { getDatabase, matches, Match, NewMatch } from '@core/database';
 
-export const dbService = {
-  async createMatch(payload: NewMatch) {
+export class DatabaseService {
+  async createMatch(payload: NewMatch): Promise<Match | undefined> {
     const db = getDatabase();
     const [created] = await db.insert(matches).values(payload).returning();
+
     return created;
-  },
+  }
 
-  async listMatches() {
+  async listMatches(): Promise<Match[]> {
     const db = getDatabase();
-    return db.select().from(matches).orderBy(desc(matches.id));
-  },
 
-  async updateMatchStatus(id: string, status: string) {
+    return db.select().from(matches).orderBy(desc(matches.id));
+  }
+
+  async updateMatchStatus(id: string, status: Match['status']): Promise<Match | undefined> {
     const db = getDatabase();
     const [updated] = await db
       .update(matches)
@@ -25,4 +26,6 @@ export const dbService = {
 
     return updated;
   }
-};
+}
+
+export const databaseService = new DatabaseService();

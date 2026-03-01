@@ -2,6 +2,25 @@
   "name": "@inningspro/export-schema",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./v1": {
+      "types": "./src/v1/index.ts",
+      "default": "./src/v1/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@inningspro/shared-types": "workspace:*",
+    "zod": "^3.24.2"
+  },
   "scripts": {
     "build": "echo 'export-schema build placeholder'",
     "lint": "echo 'export-schema lint placeholder'",

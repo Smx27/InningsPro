@@ -22,6 +22,16 @@ import {
   Tournament
 } from '@core/database/schema';
 
+export class DatabaseServiceError extends Error {
+  readonly cause: unknown;
+
+  constructor(message: string, cause: unknown) {
+    super(message);
+    this.name = 'DatabaseServiceError';
+    this.cause = cause;
+  }
+}
+
 export class DatabaseService {
   private matchCache = new Map<string, Match>();
 
@@ -234,33 +244,42 @@ export class DatabaseService {
     return records;
   }
 
-  async undoLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | undefined> {
+  async undoLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | null> {
     const db = getDatabase();
-    const [lastBall] = await db
-      .select({ id: ballEvents.id })
-      .from(ballEvents)
-      .where(and(eq(ballEvents.matchId, matchId), eq(ballEvents.inningsNumber, inningsNumber)))
-      .orderBy(desc(ballEvents.overNumber), desc(ballEvents.ballNumber), desc(ballEvents.createdAt))
-      .limit(1);
 
-    if (!lastBall) {
-      return undefined;
-    }
+    try {
+      const deletedEvent = await db.transaction(async (tx) => {
+        const [lastBall] = await tx
+          .select({ id: ballEvents.id })
+          .from(ballEvents)
+          .where(and(eq(ballEvents.matchId, matchId), eq(ballEvents.inningsNumber, inningsNumber)))
+          .orderBy(desc(ballEvents.createdAt), desc(ballEvents.id))
+          .limit(1);
 
-    const [deleted] = await db.delete(ballEvents).where(eq(ballEvents.id, lastBall.id)).returning();
+        if (!lastBall) {
+          return null;
+        }
 
-    if (deleted) {
-      const cacheKey = this.getBallEventsCacheKey(matchId, inningsNumber);
-      const cachedEvents = this.ballEventsCache.get(cacheKey);
-      if (cachedEvents) {
-        this.ballEventsCache.set(
-          cacheKey,
-          cachedEvents.filter((event) => event.id !== deleted.id)
-        );
+        const [deleted] = await tx.delete(ballEvents).where(eq(ballEvents.id, lastBall.id)).returning();
+
+        return deleted ?? null;
+      });
+
+      if (deletedEvent) {
+        const cacheKey = this.getBallEventsCacheKey(matchId, inningsNumber);
+        const cachedEvents = this.ballEventsCache.get(cacheKey);
+        if (cachedEvents) {
+          this.ballEventsCache.set(
+            cacheKey,
+            cachedEvents.filter((event) => event.id !== deletedEvent.id)
+          );
+        }
       }
-    }
 
-    return deleted;
+      return deletedEvent;
+    } catch (error) {
+      throw new DatabaseServiceError('Failed to undo last ball event', error);
+    }
   }
 
   async getLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | undefined> {

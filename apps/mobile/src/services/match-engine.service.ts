@@ -1,6 +1,6 @@
-import type { BallEvent, Innings, Match } from '@core/database/schema';
-
 import { databaseService } from './db.service';
+
+import type { BallEvent, Innings, Match } from '@core/database/schema';
 
 type ExtrasType = 'wide' | 'noball' | 'bye' | 'legbye';
 type WicketType = 'bowled' | 'caught' | 'lbw' | 'runout' | 'stumped';
@@ -114,18 +114,18 @@ export class MatchEngineService {
       throw new Error('Extras are disabled for this match');
     }
 
-    const allEvents = await databaseService.getBallEventsByMatch(params.matchId);
-    const inningsEvents = allEvents.filter((event) => event.inningsNumber === innings.inningsNumber);
+    const inningsEvents = await databaseService.getBallEventsByMatch(params.matchId, innings.inningsNumber);
 
     const isLegalBall = this.isLegalBall(params.extrasType);
+    const normalizedRuns = this.normalizeRuns(params.runs, params.extrasType);
     const legalBallCount = inningsEvents.reduce((count, event) => count + (event.isLegalBall ? 1 : 0), 0);
     const nextLegalBallCount = legalBallCount + (isLegalBall ? 1 : 0);
 
     const overNumber = Math.floor(legalBallCount / rules.ballsPerOver);
-    const ballNumber = isLegalBall ? (legalBallCount % rules.ballsPerOver) + 1 : legalBallCount % rules.ballsPerOver;
+    const ballNumber = inningsEvents.filter((event) => event.overNumber === overNumber).length + 1;
 
     const [nextStriker, nextNonStriker] = this.computeNextBatters(
-      params,
+      { ...params, runs: normalizedRuns },
       rules,
       isLegalBall,
       this.isOverEnded(nextLegalBallCount, rules.ballsPerOver),
@@ -137,7 +137,7 @@ export class MatchEngineService {
       inningsNumber: innings.inningsNumber,
       overNumber,
       ballNumber,
-      runs: Math.max(0, Math.trunc(params.runs)),
+      runs: normalizedRuns,
       isLegalBall,
       extrasType: params.extrasType,
       wicketType: params.wicketType,
@@ -173,9 +173,8 @@ export class MatchEngineService {
     const totalRuns = await databaseService.getTotalRuns(matchId, innings.inningsNumber);
     const totalWickets = await databaseService.getTotalWickets(matchId, innings.inningsNumber);
     const legalBalls = await databaseService.getLegalBallCount(matchId, innings.inningsNumber);
-    const allEvents = await databaseService.getBallEventsByMatch(matchId);
-    const inningsEvents = allEvents.filter((event) => event.inningsNumber === innings.inningsNumber);
-    const lastBall = inningsEvents.at(-1);
+    const inningsEvents = await databaseService.getBallEventsByMatch(matchId, innings.inningsNumber);
+    const lastBall = inningsEvents.length > 0 ? inningsEvents[inningsEvents.length - 1] : undefined;
 
     return {
       matchId,
@@ -228,7 +227,13 @@ export class MatchEngineService {
   }
 
   private parseRules(rulesJson: string): MatchRules {
-    const parsed = JSON.parse(rulesJson) as Partial<MatchRules>;
+    let parsed: Partial<MatchRules> = DEFAULT_RULES;
+
+    try {
+      parsed = JSON.parse(rulesJson) as Partial<MatchRules>;
+    } catch {
+      parsed = DEFAULT_RULES;
+    }
 
     return {
       oversPerInnings: parsed.oversPerInnings ?? DEFAULT_RULES.oversPerInnings,
@@ -238,6 +243,17 @@ export class MatchEngineService {
       allowExtras: parsed.allowExtras ?? DEFAULT_RULES.allowExtras,
       wicketStrikeMode: parsed.wicketStrikeMode ?? DEFAULT_RULES.wicketStrikeMode,
     };
+  }
+
+
+  private normalizeRuns(runs: number, extrasType?: ExtrasType): number {
+    const normalizedRuns = Math.max(0, Math.trunc(runs));
+
+    if (extrasType === 'wide' || extrasType === 'noball') {
+      return Math.max(1, normalizedRuns);
+    }
+
+    return normalizedRuns;
   }
 
   private isLegalBall(extrasType?: ExtrasType): boolean {

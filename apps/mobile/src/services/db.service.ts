@@ -454,19 +454,32 @@ export class DatabaseService {
   }
 
   /**
-   * Retrieves all ball events for a match.
+   * Retrieves ball events for a match, optionally scoped to a single innings.
    *
    * @param matchId - Match id.
+   * @param inningsNumber - Optional innings number for scoped retrieval.
    * @returns Ball events ordered chronologically for scoring replay.
    * @throws {DatabaseError} When the query fails.
    */
-  async getBallEventsByMatch(matchId: string): Promise<BallEvent[]> {
+  async getBallEventsByMatch(matchId: string, inningsNumber?: number): Promise<BallEvent[]> {
     try {
+      if (inningsNumber !== undefined) {
+        const cacheKey = this.getBallEventsCacheKey(matchId, inningsNumber);
+        const cached = this.ballEventsCache.get(cacheKey);
+        if (cached) {
+          return cached;
+        }
+      }
+
       const db = getDatabase();
       const records = await db
         .select()
         .from(ballEvents)
-        .where(eq(ballEvents.matchId, matchId))
+        .where(
+          inningsNumber === undefined
+            ? eq(ballEvents.matchId, matchId)
+            : and(eq(ballEvents.matchId, matchId), eq(ballEvents.inningsNumber, inningsNumber)),
+        )
         .orderBy(
           ballEvents.inningsNumber,
           ballEvents.overNumber,
@@ -484,10 +497,13 @@ export class DatabaseService {
       for (const [inningsNumber, events] of groupedByInnings) {
         this.ballEventsCache.set(this.getBallEventsCacheKey(matchId, inningsNumber), events);
       }
-
       return records;
     } catch (error) {
-      throw this.toDatabaseError('getBallEventsByMatch', { matchId }, error);
+      throw this.toDatabaseError(
+        'getBallEventsByMatch',
+        inningsNumber === undefined ? { matchId } : { matchId, inningsNumber },
+        error,
+      );
     }
   }
 

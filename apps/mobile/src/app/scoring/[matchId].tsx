@@ -36,35 +36,35 @@ export default function LiveScoringScreen() {
     void loadMatch(matchId);
   }, [loadMatch, matchId]);
 
-  const triggerHaptic = useCallback(async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const triggerHaptic = useCallback(() => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, []);
 
   const handleRunPress = useCallback(
     async (runs: number) => {
-      await triggerHaptic();
+      triggerHaptic();
       await recordRun(runs);
     },
     [recordRun, triggerHaptic],
   );
 
   const handleWide = useCallback(async () => {
-    await triggerHaptic();
+    triggerHaptic();
     await recordExtra('wide');
   }, [recordExtra, triggerHaptic]);
 
   const handleNoBall = useCallback(async () => {
-    await triggerHaptic();
+    triggerHaptic();
     await recordExtra('noball');
   }, [recordExtra, triggerHaptic]);
 
   const handleWicket = useCallback(async () => {
-    await triggerHaptic();
+    triggerHaptic();
     await recordWicket('bowled');
   }, [recordWicket, triggerHaptic]);
 
   const handleUndo = useCallback(async () => {
-    await triggerHaptic();
+    triggerHaptic();
     await undoLastBall();
   }, [triggerHaptic, undoLastBall]);
 

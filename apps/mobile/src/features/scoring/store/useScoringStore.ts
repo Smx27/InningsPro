@@ -15,15 +15,17 @@ type ScoringStore = {
   undoLastBall: () => Promise<void>;
 };
 
-const FALLBACK_STRIKER = 'player-striker';
-const FALLBACK_NON_STRIKER = 'player-nonstriker';
-const FALLBACK_BOWLER = 'player-bowler';
+const getActorIds = (state: MatchState) => {
+  if (!state.currentStriker || !state.currentNonStriker) {
+    throw new Error('Missing striker/non-striker in match state');
+  }
 
-const getActorIds = (state: MatchState) => ({
-  strikerId: state.currentStriker ?? FALLBACK_STRIKER,
-  nonStrikerId: state.currentNonStriker ?? FALLBACK_NON_STRIKER,
-  bowlerId: FALLBACK_BOWLER,
-});
+  return {
+    strikerId: state.currentStriker,
+    nonStrikerId: state.currentNonStriker,
+    bowlerId: state.currentNonStriker,
+  };
+};
 
 export const useScoringStore = create<ScoringStore>((set, get) => ({
   matchState: matchEngineService.initialState(),
@@ -33,7 +35,7 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
     set({ isLoading: true });
     try {
       const state = await matchEngineService.startMatch(matchId);
-      set({ matchState: state });
+      set({ matchState: { ...state, matchId } });
     } finally {
       set({ isLoading: false });
     }
@@ -82,6 +84,10 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
 
   undoLastBall: async () => {
     const matchId = get().matchState.matchId;
+    if (!matchId) {
+      return;
+    }
+
     const nextState = await matchEngineService.undoLastBall(matchId);
     set({ matchState: nextState });
   },

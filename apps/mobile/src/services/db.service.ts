@@ -282,7 +282,7 @@ export class DatabaseService {
       const db = getDatabase();
       const [updated] = await db
         .update(matches)
-        .set({ status, updatedAt: new Date() })
+        .set({ status, updatedAt: sql`${Math.floor(Date.now() / 1000)}` })
         .where(eq(matches.id, id))
         .returning();
 
@@ -362,6 +362,44 @@ export class DatabaseService {
   }
 
   /**
+   * Retrieves the current innings for a match.
+   *
+   * @param matchId - Match id.
+   * @returns The latest innings row by innings number, or `undefined`.
+   * @throws {DatabaseError} When the lookup fails.
+   */
+  async getCurrentInnings(matchId: string): Promise<Innings | undefined> {
+    try {
+      const cached = this.inningsCache.get(matchId);
+      if (cached && cached.length > 0) {
+        return cached[0];
+      }
+
+      const db = getDatabase();
+      const [record] = await db
+        .select()
+        .from(innings)
+        .where(eq(innings.matchId, matchId))
+        .orderBy(desc(innings.inningsNumber))
+        .limit(1);
+
+      if (!record) {
+        return undefined;
+      }
+
+      const cachedInnings = this.inningsCache.get(matchId) ?? [];
+      this.inningsCache.set(
+        matchId,
+        [...cachedInnings, record].sort((a, b) => b.inningsNumber - a.inningsNumber),
+      );
+
+      return record;
+    } catch (error) {
+      throw this.toDatabaseError('getCurrentInnings', { matchId }, error);
+    }
+  }
+
+  /**
    * Creates a ball event and updates cached events for the innings when present.
    *
    * @param payload - Ball event values to persist.
@@ -383,15 +421,19 @@ export class DatabaseService {
         this.ballEventsCache.set(
           cacheKey,
           [...cachedEvents, created].sort((a, b) => {
-            if (b.overNumber !== a.overNumber) {
-              return b.overNumber - a.overNumber;
+            if (a.inningsNumber !== b.inningsNumber) {
+              return a.inningsNumber - b.inningsNumber;
             }
 
-            if (b.ballNumber !== a.ballNumber) {
-              return b.ballNumber - a.ballNumber;
+            if (a.overNumber !== b.overNumber) {
+              return a.overNumber - b.overNumber;
             }
 
-            return b.createdAt.getTime() - a.createdAt.getTime();
+            if (a.ballNumber !== b.ballNumber) {
+              return a.ballNumber - b.ballNumber;
+            }
+
+            return a.createdAt.getTime() - b.createdAt.getTime();
           }),
         );
       }
@@ -415,54 +457,21 @@ export class DatabaseService {
    * Retrieves all ball events for a match.
    *
    * @param matchId - Match id.
-   * @returns Ball events ordered by innings and delivery recency.
-   * @throws {DatabaseError} When any underlying query fails.
+   * @returns Ball events ordered chronologically for scoring replay.
+   * @throws {DatabaseError} When the query fails.
    */
   async getBallEventsByMatch(matchId: string): Promise<BallEvent[]> {
     try {
       const db = getDatabase();
-      const inningsRecords = await this.getInningsByMatch(matchId);
-
-      if (inningsRecords.length > 0) {
-        const missingInningsNumbers = inningsRecords
-          .map(({ inningsNumber }) => inningsNumber)
-          .filter(
-            (inningsNumber) =>
-              !this.ballEventsCache.has(this.getBallEventsCacheKey(matchId, inningsNumber)),
-          );
-
-        if (missingInningsNumbers.length > 0) {
-          for (const inningsNumber of missingInningsNumbers) {
-            const records = await db
-              .select()
-              .from(ballEvents)
-              .where(
-                and(eq(ballEvents.matchId, matchId), eq(ballEvents.inningsNumber, inningsNumber)),
-              )
-              .orderBy(
-                desc(ballEvents.overNumber),
-                desc(ballEvents.ballNumber),
-                desc(ballEvents.createdAt),
-              );
-
-            this.ballEventsCache.set(this.getBallEventsCacheKey(matchId, inningsNumber), records);
-          }
-        }
-
-        return inningsRecords.flatMap(
-          ({ inningsNumber }) =>
-            this.ballEventsCache.get(this.getBallEventsCacheKey(matchId, inningsNumber)) ?? [],
-        );
-      }
-
       const records = await db
         .select()
         .from(ballEvents)
         .where(eq(ballEvents.matchId, matchId))
         .orderBy(
-          desc(ballEvents.inningsNumber),
-          desc(ballEvents.overNumber),
-          desc(ballEvents.ballNumber),
+          ballEvents.inningsNumber,
+          ballEvents.overNumber,
+          ballEvents.ballNumber,
+          ballEvents.createdAt,
         );
 
       const groupedByInnings = new Map<number, BallEvent[]>();

@@ -59,7 +59,14 @@ export class DatabaseService {
     return new DatabaseError(method, context, error);
   }
 
-  async createTournament(payload: NewTournament): Promise<Tournament | undefined> {
+  /**
+   * Creates a tournament record.
+   *
+   * @param payload - Tournament values to persist.
+   * @returns The created tournament row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async createTournament(payload: NewTournament): Promise<Tournament> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(tournaments).values(payload).returning();
@@ -74,6 +81,12 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves all tournaments sorted by most recently created.
+   *
+   * @returns Tournament rows in descending creation order.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getTournaments(): Promise<Tournament[]> {
     try {
       const db = getDatabase();
@@ -84,6 +97,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Gets a tournament by id.
+   *
+   * @param id - Tournament id.
+   * @returns The tournament row when found, otherwise `undefined`.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getTournamentById(id: string): Promise<Tournament | undefined> {
     try {
       const db = getDatabase();
@@ -99,7 +119,14 @@ export class DatabaseService {
     }
   }
 
-  async createTeam(payload: NewTeam): Promise<Team | undefined> {
+  /**
+   * Creates a team record.
+   *
+   * @param payload - Team values to persist.
+   * @returns The created team row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async createTeam(payload: NewTeam): Promise<Team> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(teams).values(payload).returning();
@@ -118,6 +145,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves teams for a tournament sorted by most recently created.
+   *
+   * @param tournamentId - Parent tournament id.
+   * @returns Team rows for the tournament.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getTeamsByTournament(tournamentId: string): Promise<Team[]> {
     try {
       const db = getDatabase();
@@ -132,7 +166,14 @@ export class DatabaseService {
     }
   }
 
-  async createPlayer(payload: NewPlayer): Promise<Player | undefined> {
+  /**
+   * Creates a player record.
+   *
+   * @param payload - Player values to persist.
+   * @returns The created player row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async createPlayer(payload: NewPlayer): Promise<Player> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(players).values(payload).returning();
@@ -151,6 +192,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves players for a team sorted by most recently created.
+   *
+   * @param teamId - Parent team id.
+   * @returns Player rows for the team.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getPlayersByTeam(teamId: string): Promise<Player[]> {
     try {
       const db = getDatabase();
@@ -165,7 +213,14 @@ export class DatabaseService {
     }
   }
 
-  async createMatch(payload: NewMatch): Promise<Match | undefined> {
+  /**
+   * Creates a match record and updates the in-memory match cache.
+   *
+   * @param payload - Match values to persist.
+   * @returns The created match row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async createMatch(payload: NewMatch): Promise<Match> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(matches).values(payload).returning();
@@ -182,6 +237,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Gets a match by id using cache-first lookup.
+   *
+   * @param id - Match id.
+   * @returns The match row when found, otherwise `undefined`.
+   * @throws {DatabaseError} When the lookup fails.
+   */
   async getMatchById(id: string): Promise<Match | undefined> {
     try {
       const cached = this.matchCache.get(id);
@@ -204,7 +266,18 @@ export class DatabaseService {
     }
   }
 
-  async updateMatchStatus(id: string, status: Match['status']): Promise<Match | undefined> {
+  /**
+   * Updates a match status and refreshes the in-memory match cache.
+   *
+   * @param id - Match id.
+   * @param status - Allowed match status value.
+   * @returns The updated match row.
+   * @throws {DatabaseError} When the update fails or does not return a row.
+   */
+  async updateMatchStatus(
+    id: string,
+    status: 'upcoming' | 'live' | 'completed',
+  ): Promise<Match> {
     try {
       const db = getDatabase();
       const [updated] = await db
@@ -225,7 +298,14 @@ export class DatabaseService {
     }
   }
 
-  async createInnings(payload: NewInnings): Promise<Innings | undefined> {
+  /**
+   * Creates an innings record and updates cached innings for the match when present.
+   *
+   * @param payload - Innings values to persist.
+   * @returns The created innings row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async createInnings(payload: NewInnings): Promise<Innings> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(innings).values(payload).returning();
@@ -252,6 +332,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves innings for a match using cache-first lookup.
+   *
+   * @param matchId - Match id.
+   * @returns Innings rows in descending innings order.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getInningsByMatch(matchId: string): Promise<Innings[]> {
     try {
       const cached = this.inningsCache.get(matchId);
@@ -274,7 +361,14 @@ export class DatabaseService {
     }
   }
 
-  async addBallEvent(payload: NewBallEvent): Promise<BallEvent | undefined> {
+  /**
+   * Creates a ball event and updates cached events for the innings when present.
+   *
+   * @param payload - Ball event values to persist.
+   * @returns The created ball event row.
+   * @throws {DatabaseError} When the insert fails or does not return a row.
+   */
+  async addBallEvent(payload: NewBallEvent): Promise<BallEvent> {
     try {
       const db = getDatabase();
       const [created] = await db.insert(ballEvents).values(payload).returning();
@@ -317,6 +411,13 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves all ball events for a match.
+   *
+   * @param matchId - Match id.
+   * @returns Ball events ordered by innings and delivery recency.
+   * @throws {DatabaseError} When any underlying query fails.
+   */
   async getBallEventsByMatch(matchId: string): Promise<BallEvent[]> {
     try {
       const db = getDatabase();
@@ -381,6 +482,14 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Deletes the most recent ball event in an innings.
+   *
+   * @param matchId - Match id.
+   * @param inningsNumber - Innings number.
+   * @returns The deleted ball event, or `null` when no event exists.
+   * @throws {DatabaseError} When the transaction fails.
+   */
   async undoLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | null> {
     try {
       const db = getDatabase();
@@ -425,6 +534,14 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Retrieves the latest ball event for an innings.
+   *
+   * @param matchId - Match id.
+   * @param inningsNumber - Innings number.
+   * @returns The most recent ball event, or `undefined` when none exists.
+   * @throws {DatabaseError} When the query fails.
+   */
   async getLastBall(matchId: string, inningsNumber: number): Promise<BallEvent | undefined> {
     try {
       const db = getDatabase();
@@ -449,6 +566,14 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Calculates total runs for an innings.
+   *
+   * @param matchId - Match id.
+   * @param inningsNumber - Innings number.
+   * @returns Total runs as a number.
+   * @throws {DatabaseError} When the aggregation query fails.
+   */
   async getTotalRuns(matchId: string, inningsNumber: number): Promise<number> {
     try {
       const db = getDatabase();
@@ -463,6 +588,14 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Calculates total wickets for an innings.
+   *
+   * @param matchId - Match id.
+   * @param inningsNumber - Innings number.
+   * @returns Number of wicket events.
+   * @throws {DatabaseError} When the aggregation query fails.
+   */
   async getTotalWickets(matchId: string, inningsNumber: number): Promise<number> {
     try {
       const db = getDatabase();
@@ -485,6 +618,14 @@ export class DatabaseService {
     }
   }
 
+  /**
+   * Calculates the number of legal balls in an innings.
+   *
+   * @param matchId - Match id.
+   * @param inningsNumber - Innings number.
+   * @returns Number of legal deliveries.
+   * @throws {DatabaseError} When the aggregation query fails.
+   */
   async getLegalBallCount(matchId: string, inningsNumber: number): Promise<number> {
     try {
       const db = getDatabase();

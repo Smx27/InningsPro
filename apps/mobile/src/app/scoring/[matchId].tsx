@@ -6,24 +6,46 @@ import { useShallow } from 'zustand/react/shallow';
 
 import {
   LastBallsRow,
+  NewBatsmanModal,
   QuickActionsBar,
   RunGrid,
   ScoreHeader,
+  WicketTypeSheet,
 } from '@features/scoring/components';
-import { useScoringStore } from '@features/scoring/store/useScoringStore';
+import { useScoringStore, type WicketType } from '@features/scoring/store/useScoringStore';
 
 export default function LiveScoringScreen() {
   const params = useLocalSearchParams<{ matchId: string }>();
   const matchId = Array.isArray(params.matchId) ? params.matchId[0] : params.matchId;
 
-  const { matchState, isLoading, loadMatch, recordRun, recordExtra, recordWicket, undoLastBall } = useScoringStore(
+  const {
+    matchState,
+    isLoading,
+    isWicketSheetOpen,
+    isBatsmanModalOpen,
+    availableBatsmen,
+    loadMatch,
+    recordRun,
+    recordExtra,
+    openWicketFlow,
+    closeWicketFlow,
+    selectWicketType,
+    confirmNewBatsman,
+    undoLastBall,
+  } = useScoringStore(
     useShallow((state) => ({
       matchState: state.matchState,
       isLoading: state.isLoading,
+      isWicketSheetOpen: state.isWicketSheetOpen,
+      isBatsmanModalOpen: state.isBatsmanModalOpen,
+      availableBatsmen: state.availableBatsmen,
       loadMatch: state.loadMatch,
       recordRun: state.recordRun,
       recordExtra: state.recordExtra,
-      recordWicket: state.recordWicket,
+      openWicketFlow: state.openWicketFlow,
+      closeWicketFlow: state.closeWicketFlow,
+      selectWicketType: state.selectWicketType,
+      confirmNewBatsman: state.confirmNewBatsman,
       undoLastBall: state.undoLastBall,
     })),
   );
@@ -58,10 +80,26 @@ export default function LiveScoringScreen() {
     await recordExtra('noball');
   }, [recordExtra, triggerHaptic]);
 
-  const handleWicket = useCallback(async () => {
+  const handleOpenWicketFlow = useCallback(() => {
     triggerHaptic();
-    await recordWicket('bowled');
-  }, [recordWicket, triggerHaptic]);
+    openWicketFlow();
+  }, [openWicketFlow, triggerHaptic]);
+
+  const handleWicketTypeSelect = useCallback(
+    async (type: WicketType) => {
+      triggerHaptic();
+      await selectWicketType(type);
+    },
+    [selectWicketType, triggerHaptic],
+  );
+
+  const handleConfirmBatsman = useCallback(
+    async (playerId: string) => {
+      triggerHaptic();
+      await confirmNewBatsman(playerId);
+    },
+    [confirmNewBatsman, triggerHaptic],
+  );
 
   const handleUndo = useCallback(async () => {
     triggerHaptic();
@@ -95,7 +133,7 @@ export default function LiveScoringScreen() {
         <QuickActionsBar
           onWide={handleWide}
           onNoBall={handleNoBall}
-          onWicket={handleWicket}
+          onWicket={handleOpenWicketFlow}
           onUndo={handleUndo}
           disabled={isLoading}
         />
@@ -104,6 +142,19 @@ export default function LiveScoringScreen() {
           <LastBallsRow balls={matchState.last6Balls} />
         </View>
       </ScrollView>
+
+      <WicketTypeSheet
+        visible={isWicketSheetOpen}
+        onSelect={handleWicketTypeSelect}
+        onClose={closeWicketFlow}
+      />
+
+      <NewBatsmanModal
+        visible={isBatsmanModalOpen}
+        players={availableBatsmen}
+        onSelect={handleConfirmBatsman}
+        onClose={closeWicketFlow}
+      />
 
       {isLoading ? (
         <View className="absolute inset-0 items-center justify-center bg-black/20">

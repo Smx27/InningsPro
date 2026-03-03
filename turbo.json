@@ -12,7 +12,9 @@
       "outputs": [
         "dist/**",
         "build/**",
-        ".next/**"
+        ".next/**",
+        "android/**",
+        "ios/**"
       ]
     },
     "lint": {

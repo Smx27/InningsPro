@@ -118,11 +118,26 @@ export class MatchEngineService {
 
     const isLegalBall = this.isLegalBall(params.extrasType);
     const normalizedRuns = this.normalizeRuns(params.runs, params.extrasType);
-    const legalBallCount = inningsEvents.reduce((count, event) => count + (event.isLegalBall ? 1 : 0), 0);
-    const nextLegalBallCount = legalBallCount + (isLegalBall ? 1 : 0);
+
+    let legalBallCount = 0;
+    let lastOverNumber = -1;
+    let ballsInLastOver = 0;
+
+    for (const event of inningsEvents) {
+      if (event.isLegalBall) {
+        legalBallCount++;
+      }
+      if (event.overNumber !== lastOverNumber) {
+        lastOverNumber = event.overNumber;
+        ballsInLastOver = 1;
+      } else {
+        ballsInLastOver++;
+      }
+    }
 
     const overNumber = Math.floor(legalBallCount / rules.ballsPerOver);
-    const ballNumber = inningsEvents.filter((event) => event.overNumber === overNumber).length + 1;
+    const ballNumber = (overNumber === lastOverNumber ? ballsInLastOver : 0) + 1;
+    const nextLegalBallCount = legalBallCount + (isLegalBall ? 1 : 0);
 
     const [nextStriker, nextNonStriker] = this.computeNextBatters(
       { ...params, runs: normalizedRuns },

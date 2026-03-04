@@ -1,10 +1,12 @@
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useMatchContextStore } from '@features/match/context/useMatchContextStore';
 import {
+  BowlerSelectionModal,
   LastBallsRow,
   NewBatsmanModal,
   QuickActionsBar,
@@ -21,10 +23,14 @@ export default function LiveScoringScreen() {
   const {
     matchState,
     isLoading,
+    isBowlerModalOpen,
     isWicketSheetOpen,
     isBatsmanModalOpen,
-    availableBatsmen,
+    currentBowlerId,
     loadMatch,
+    openBowlerModal,
+    closeBowlerModal,
+    setBowler,
     recordRun,
     recordExtra,
     openWicketFlow,
@@ -36,10 +42,14 @@ export default function LiveScoringScreen() {
     useShallow((state) => ({
       matchState: state.matchState,
       isLoading: state.isLoading,
+      isBowlerModalOpen: state.isBowlerModalOpen,
       isWicketSheetOpen: state.isWicketSheetOpen,
       isBatsmanModalOpen: state.isBatsmanModalOpen,
-      availableBatsmen: state.availableBatsmen,
+      currentBowlerId: state.currentBowlerId,
       loadMatch: state.loadMatch,
+      openBowlerModal: state.openBowlerModal,
+      closeBowlerModal: state.closeBowlerModal,
+      setBowler: state.setBowler,
       recordRun: state.recordRun,
       recordExtra: state.recordExtra,
       openWicketFlow: state.openWicketFlow,
@@ -50,13 +60,44 @@ export default function LiveScoringScreen() {
     })),
   );
 
+  const { loadMatchContext, contextBowlingTeamId, contextBattingTeamId, contextTeamAId, contextTeamAPlayers, contextTeamBPlayers } = useMatchContextStore(
+    useShallow((state) => ({
+      loadMatchContext: state.loadMatchContext,
+      contextBowlingTeamId: state.bowlingTeamId,
+      contextBattingTeamId: state.battingTeamId,
+      contextTeamAId: state.teamAId,
+      contextTeamAPlayers: state.teamAPlayers,
+      contextTeamBPlayers: state.teamBPlayers,
+    })),
+  );
+
   useEffect(() => {
     if (!matchId) {
       return;
     }
 
-    void loadMatch(matchId);
-  }, [loadMatch, matchId]);
+    void Promise.all([loadMatch(matchId), loadMatchContext(matchId)]);
+  }, [loadMatch, loadMatchContext, matchId]);
+
+  const bowlingPlayers = useMemo(() => {
+    if (!contextBowlingTeamId) {
+      return [];
+    }
+
+    return contextBowlingTeamId === contextTeamAId ? contextTeamAPlayers : contextTeamBPlayers;
+  }, [contextBowlingTeamId, contextTeamAId, contextTeamAPlayers, contextTeamBPlayers]);
+
+  const availableBatsmen = useMemo(() => {
+    if (!contextBattingTeamId) {
+      return [];
+    }
+
+    const battingPlayers = contextBattingTeamId === contextTeamAId ? contextTeamAPlayers : contextTeamBPlayers;
+
+    return battingPlayers.filter(
+      (player) => player.id !== matchState.currentStriker && player.id !== matchState.currentNonStriker,
+    );
+  }, [contextBattingTeamId, contextTeamAId, contextTeamAPlayers, contextTeamBPlayers, matchState.currentNonStriker, matchState.currentStriker]);
 
   const triggerHaptic = useCallback(() => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -86,9 +127,9 @@ export default function LiveScoringScreen() {
   }, [openWicketFlow, triggerHaptic]);
 
   const handleWicketTypeSelect = useCallback(
-    async (type: WicketType) => {
+    (type: WicketType) => {
       triggerHaptic();
-      await selectWicketType(type);
+      selectWicketType(type);
     },
     [selectWicketType, triggerHaptic],
   );
@@ -99,6 +140,14 @@ export default function LiveScoringScreen() {
       await confirmNewBatsman(playerId);
     },
     [confirmNewBatsman, triggerHaptic],
+  );
+
+  const handleSelectBowler = useCallback(
+    (bowlerId: string) => {
+      triggerHaptic();
+      setBowler(bowlerId);
+    },
+    [setBowler, triggerHaptic],
   );
 
   const handleUndo = useCallback(async () => {
@@ -141,7 +190,29 @@ export default function LiveScoringScreen() {
         <View className="rounded-3xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
           <LastBallsRow balls={matchState.last6Balls} />
         </View>
+
+        <View className="rounded-3xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+          <Text className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            Current Bowler
+          </Text>
+          <Text className="mt-2 text-base font-bold text-zinc-900 dark:text-zinc-100">
+            {currentBowlerId ?? 'Not selected'}
+          </Text>
+          <Text
+            onPress={openBowlerModal}
+            className="mt-3 text-sm font-semibold text-emerald-600 dark:text-emerald-400"
+          >
+            Change bowler
+          </Text>
+        </View>
       </ScrollView>
+
+      <BowlerSelectionModal
+        visible={isBowlerModalOpen}
+        players={bowlingPlayers}
+        onSelect={handleSelectBowler}
+        onClose={closeBowlerModal}
+      />
 
       <WicketTypeSheet
         visible={isWicketSheetOpen}
@@ -153,7 +224,6 @@ export default function LiveScoringScreen() {
         visible={isBatsmanModalOpen}
         players={availableBatsmen}
         onSelect={handleConfirmBatsman}
-        onClose={closeWicketFlow}
       />
 
       {isLoading ? (

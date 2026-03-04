@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 
-import { databaseService } from '@services/db.service';
 import { MatchState, matchEngineService } from '@services/match-engine.service';
-import type { Player } from '@core/database/schema';
 
 type ExtraType = 'wide' | 'noball' | 'bye' | 'legbye';
 export type WicketType = 'bowled' | 'caught' | 'lbw' | 'runout' | 'stumped';
@@ -10,93 +8,144 @@ export type WicketType = 'bowled' | 'caught' | 'lbw' | 'runout' | 'stumped';
 type ScoringStore = {
   matchState: MatchState;
   isLoading: boolean;
+  currentBowlerId: string | null;
+  lastOverBowlerId: string | null;
+  isBowlerModalOpen: boolean;
   isWicketSheetOpen: boolean;
   isBatsmanModalOpen: boolean;
   pendingWicketType: WicketType | null;
-  availableBatsmen: Player[];
   loadMatch: (matchId: string) => Promise<void>;
   recordRun: (runs: number) => Promise<void>;
   recordExtra: (type: ExtraType) => Promise<void>;
-  recordWicket: (type: WicketType) => Promise<void>;
+  openBowlerModal: () => void;
+  closeBowlerModal: () => void;
+  setBowler: (bowlerId: string) => void;
   openWicketFlow: () => void;
   closeWicketFlow: () => void;
-  selectWicketType: (type: WicketType) => Promise<void>;
+  selectWicketType: (type: WicketType) => void;
   confirmNewBatsman: (playerId: string) => Promise<void>;
   undoLastBall: () => Promise<void>;
 };
 
-const getActorIds = (state: MatchState) => {
-  if (!state.currentStriker || !state.currentNonStriker) {
-    throw new Error('Missing striker/non-striker in match state');
-  }
-
-  return {
-    strikerId: state.currentStriker,
-    nonStrikerId: state.currentNonStriker,
-    bowlerId: state.currentNonStriker,
-  };
+const didOverEnd = (previousState: MatchState, nextState: MatchState): boolean => {
+  return nextState.legalBalls > previousState.legalBalls && Number.isInteger(nextState.overs);
 };
 
 export const useScoringStore = create<ScoringStore>((set, get) => ({
   matchState: matchEngineService.initialState(),
   isLoading: false,
+  currentBowlerId: null,
+  lastOverBowlerId: null,
+  isBowlerModalOpen: false,
   isWicketSheetOpen: false,
   isBatsmanModalOpen: false,
   pendingWicketType: null,
-  availableBatsmen: [],
 
   loadMatch: async (matchId) => {
     set({ isLoading: true });
+
     try {
       const state = await matchEngineService.startMatch(matchId);
-      set({ matchState: { ...state, matchId } });
+      set({
+        matchState: { ...state, matchId },
+        currentBowlerId: null,
+        lastOverBowlerId: null,
+        isBowlerModalOpen: true,
+        isWicketSheetOpen: false,
+        isBatsmanModalOpen: false,
+        pendingWicketType: null,
+      });
     } finally {
       set({ isLoading: false });
     }
   },
 
   recordRun: async (runs) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+    const { matchState, currentBowlerId } = get();
+
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
+    if (!matchState.currentStriker || !matchState.currentNonStriker) {
+      throw new Error('Missing striker/non-striker in match state');
+    }
 
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
       runs,
-      ...actorIds,
+      strikerId: matchState.currentStriker,
+      nonStrikerId: matchState.currentNonStriker,
+      bowlerId: currentBowlerId,
     });
+
+    if (didOverEnd(matchState, nextState)) {
+      set({
+        matchState: nextState,
+        lastOverBowlerId: currentBowlerId,
+        currentBowlerId: null,
+        isBowlerModalOpen: true,
+      });
+      return;
+    }
 
     set({ matchState: nextState });
   },
 
   recordExtra: async (type) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+    const { matchState, currentBowlerId } = get();
+
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
+    if (!matchState.currentStriker || !matchState.currentNonStriker) {
+      throw new Error('Missing striker/non-striker in match state');
+    }
 
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
       runs: 1,
       extrasType: type,
-      ...actorIds,
+      strikerId: matchState.currentStriker,
+      nonStrikerId: matchState.currentNonStriker,
+      bowlerId: currentBowlerId,
     });
+
+    if (didOverEnd(matchState, nextState)) {
+      set({
+        matchState: nextState,
+        lastOverBowlerId: currentBowlerId,
+        currentBowlerId: null,
+        isBowlerModalOpen: true,
+      });
+      return;
+    }
 
     set({ matchState: nextState });
   },
 
-  recordWicket: async (type) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+  openBowlerModal: () => {
+    set({ isBowlerModalOpen: true });
+  },
 
-    const nextState = await matchEngineService.recordBall({
-      matchId: matchState.matchId,
-      runs: 0,
-      wicketType: type,
-      ...actorIds,
-    });
+  closeBowlerModal: () => {
+    set({ isBowlerModalOpen: false });
+  },
 
-    set({ matchState: nextState });
+  setBowler: (bowlerId) => {
+    set({ currentBowlerId: bowlerId, isBowlerModalOpen: false });
   },
 
   openWicketFlow: () => {
+    const { currentBowlerId } = get();
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
     set({ isWicketSheetOpen: true, isBatsmanModalOpen: false, pendingWicketType: null });
   },
 
@@ -105,36 +154,24 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       isWicketSheetOpen: false,
       isBatsmanModalOpen: false,
       pendingWicketType: null,
-      availableBatsmen: [],
     });
   },
 
-  selectWicketType: async (type) => {
-    const { matchState } = get();
-    if (!matchState.matchId) {
-      return;
-    }
-
-    const currentInnings = await databaseService.getCurrentInnings(matchState.matchId);
-    if (!currentInnings) {
-      throw new Error('No active innings found for match');
-    }
-
-    const players = await databaseService.getPlayersByTeam(currentInnings.battingTeamId);
-    const availableBatsmen = players.filter(
-      (player) => player.id !== matchState.currentStriker && player.id !== matchState.currentNonStriker,
-    );
-
+  selectWicketType: (type) => {
     set({
       pendingWicketType: type,
       isWicketSheetOpen: false,
       isBatsmanModalOpen: true,
-      availableBatsmen,
     });
   },
 
   confirmNewBatsman: async (playerId) => {
-    const { matchState, pendingWicketType } = get();
+    const { matchState, pendingWicketType, currentBowlerId } = get();
+
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
 
     if (!pendingWicketType) {
       throw new Error('Wicket type must be selected before confirming new batsman');
@@ -150,15 +187,27 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       wicketType: pendingWicketType,
       strikerId: playerId,
       nonStrikerId: matchState.currentNonStriker,
-      bowlerId: matchState.currentNonStriker,
+      bowlerId: currentBowlerId,
     });
+
+    if (didOverEnd(matchState, nextState)) {
+      set({
+        matchState: nextState,
+        isBatsmanModalOpen: false,
+        isWicketSheetOpen: false,
+        pendingWicketType: null,
+        lastOverBowlerId: currentBowlerId,
+        currentBowlerId: null,
+        isBowlerModalOpen: true,
+      });
+      return;
+    }
 
     set({
       matchState: nextState,
       isBatsmanModalOpen: false,
       isWicketSheetOpen: false,
       pendingWicketType: null,
-      availableBatsmen: [],
     });
   },
 

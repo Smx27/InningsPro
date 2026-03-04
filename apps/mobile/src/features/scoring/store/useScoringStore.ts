@@ -2,12 +2,16 @@ import { create } from 'zustand';
 
 import { databaseService } from '@services/db.service';
 import { MatchState, matchEngineService } from '@services/match-engine.service';
+
 import type { Player } from '@core/database/schema';
 
 type ExtraType = 'wide' | 'noball' | 'bye' | 'legbye';
 export type WicketType = 'bowled' | 'caught' | 'lbw' | 'runout' | 'stumped';
 
 type ScoringStore = {
+  currentBowlerId: string | null;
+  lastOverBowlerId: string | null;
+  isBowlerModalOpen: boolean;
   matchState: MatchState;
   isLoading: boolean;
   isWicketSheetOpen: boolean;
@@ -19,27 +23,36 @@ type ScoringStore = {
   recordExtra: (type: ExtraType) => Promise<void>;
   recordWicket: (type: WicketType) => Promise<void>;
   openWicketFlow: () => void;
+  openBowlerModal: () => void;
+  closeBowlerModal: () => void;
+  setBowler: (bowlerId: string) => void;
   closeWicketFlow: () => void;
   selectWicketType: (type: WicketType) => Promise<void>;
   confirmNewBatsman: (playerId: string) => Promise<void>;
   undoLastBall: () => Promise<void>;
 };
 
-const getActorIds = (state: MatchState) => {
+const getActorIds = (state: MatchState, bowlerId: string | null) => {
   if (!state.currentStriker || !state.currentNonStriker) {
     throw new Error('Missing striker/non-striker in match state');
+  }
+  if (!bowlerId) {
+    throw new Error('Missing bowler in match state');
   }
 
   return {
     strikerId: state.currentStriker,
     nonStrikerId: state.currentNonStriker,
-    bowlerId: state.currentNonStriker,
+    bowlerId: bowlerId,
   };
 };
 
 export const useScoringStore = create<ScoringStore>((set, get) => ({
   matchState: matchEngineService.initialState(),
   isLoading: false,
+  currentBowlerId: null,
+  lastOverBowlerId: null,
+  isBowlerModalOpen: false,
   isWicketSheetOpen: false,
   isBatsmanModalOpen: false,
   pendingWicketType: null,
@@ -56,8 +69,13 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
   },
 
   recordRun: async (runs) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+    const { matchState, currentBowlerId } = get();
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
+    const actorIds = getActorIds(matchState, currentBowlerId);
 
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
@@ -65,12 +83,22 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       ...actorIds,
     });
 
-    set({ matchState: nextState });
+    const isOverEnded = nextState.legalBalls > 0 && nextState.legalBalls % 6 === 0;
+
+    set({
+      matchState: nextState,
+      ...(isOverEnded ? { lastOverBowlerId: currentBowlerId, currentBowlerId: null, isBowlerModalOpen: true } : {})
+    });
   },
 
   recordExtra: async (type) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+    const { matchState, currentBowlerId } = get();
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
+    const actorIds = getActorIds(matchState, currentBowlerId);
 
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
@@ -79,12 +107,22 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       ...actorIds,
     });
 
-    set({ matchState: nextState });
+    const isOverEnded = nextState.legalBalls > 0 && nextState.legalBalls % 6 === 0;
+
+    set({
+      matchState: nextState,
+      ...(isOverEnded ? { lastOverBowlerId: currentBowlerId, currentBowlerId: null, isBowlerModalOpen: true } : {})
+    });
   },
 
   recordWicket: async (type) => {
-    const { matchState } = get();
-    const actorIds = getActorIds(matchState);
+    const { matchState, currentBowlerId } = get();
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
+    const actorIds = getActorIds(matchState, currentBowlerId);
 
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
@@ -93,8 +131,17 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       ...actorIds,
     });
 
-    set({ matchState: nextState });
+    const isOverEnded = nextState.legalBalls > 0 && nextState.legalBalls % 6 === 0;
+
+    set({
+      matchState: nextState,
+      ...(isOverEnded ? { lastOverBowlerId: currentBowlerId, currentBowlerId: null, isBowlerModalOpen: true } : {})
+    });
   },
+
+  openBowlerModal: () => set({ isBowlerModalOpen: true }),
+  closeBowlerModal: () => set({ isBowlerModalOpen: false }),
+  setBowler: (bowlerId) => set({ currentBowlerId: bowlerId, isBowlerModalOpen: false }),
 
   openWicketFlow: () => {
     set({ isWicketSheetOpen: true, isBatsmanModalOpen: false, pendingWicketType: null });
@@ -134,7 +181,7 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
   },
 
   confirmNewBatsman: async (playerId) => {
-    const { matchState, pendingWicketType } = get();
+    const { matchState, pendingWicketType, currentBowlerId } = get();
 
     if (!pendingWicketType) {
       throw new Error('Wicket type must be selected before confirming new batsman');
@@ -144,14 +191,21 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       throw new Error('Missing non-striker in match state');
     }
 
+    if (!currentBowlerId) {
+      set({ isBowlerModalOpen: true });
+      return;
+    }
+
     const nextState = await matchEngineService.recordBall({
       matchId: matchState.matchId,
       runs: 0,
       wicketType: pendingWicketType,
       strikerId: playerId,
       nonStrikerId: matchState.currentNonStriker,
-      bowlerId: matchState.currentNonStriker,
+      bowlerId: currentBowlerId,
     });
+
+    const isOverEnded = nextState.legalBalls > 0 && nextState.legalBalls % 6 === 0;
 
     set({
       matchState: nextState,
@@ -159,6 +213,7 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       isWicketSheetOpen: false,
       pendingWicketType: null,
       availableBatsmen: [],
+      ...(isOverEnded ? { lastOverBowlerId: currentBowlerId, currentBowlerId: null, isBowlerModalOpen: true } : {})
     });
   },
 

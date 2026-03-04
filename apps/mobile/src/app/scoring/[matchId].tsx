@@ -4,7 +4,9 @@ import { useCallback, useEffect } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 
+import { useMatchContextStore } from '@features/match/context/useMatchContextStore';
 import {
+  BowlerSelectionModal,
   LastBallsRow,
   NewBatsmanModal,
   QuickActionsBar,
@@ -18,11 +20,24 @@ export default function LiveScoringScreen() {
   const params = useLocalSearchParams<{ matchId: string }>();
   const matchId = Array.isArray(params.matchId) ? params.matchId[0] : params.matchId;
 
+  const { loadMatchContext, teamAPlayers, teamBPlayers, bowlingTeamId, teamAId } = useMatchContextStore(
+    useShallow((state) => ({
+      loadMatchContext: state.loadMatchContext,
+      teamAPlayers: state.teamAPlayers,
+      teamBPlayers: state.teamBPlayers,
+      bowlingTeamId: state.bowlingTeamId,
+      teamAId: state.teamAId,
+    })),
+  );
+
   const {
     matchState,
     isLoading,
     isWicketSheetOpen,
     isBatsmanModalOpen,
+    isBowlerModalOpen,
+    closeBowlerModal,
+    setBowler,
     availableBatsmen,
     loadMatch,
     recordRun,
@@ -38,8 +53,11 @@ export default function LiveScoringScreen() {
       isLoading: state.isLoading,
       isWicketSheetOpen: state.isWicketSheetOpen,
       isBatsmanModalOpen: state.isBatsmanModalOpen,
-      availableBatsmen: state.availableBatsmen,
-      loadMatch: state.loadMatch,
+    isBowlerModalOpen: state.isBowlerModalOpen,
+    closeBowlerModal: state.closeBowlerModal,
+    setBowler: state.setBowler,
+    availableBatsmen: state.availableBatsmen,
+    loadMatch: state.loadMatch,
       recordRun: state.recordRun,
       recordExtra: state.recordExtra,
       openWicketFlow: state.openWicketFlow,
@@ -55,8 +73,9 @@ export default function LiveScoringScreen() {
       return;
     }
 
+    void loadMatchContext(matchId);
     void loadMatch(matchId);
-  }, [loadMatch, matchId]);
+  }, [loadMatch, loadMatchContext, matchId]);
 
   const triggerHaptic = useCallback(() => {
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -106,6 +125,16 @@ export default function LiveScoringScreen() {
     await undoLastBall();
   }, [triggerHaptic, undoLastBall]);
 
+  const bowlingPlayers = bowlingTeamId === teamAId ? teamAPlayers : teamBPlayers;
+
+  const handleSelectBowler = useCallback(
+    (bowlerId: string) => {
+      triggerHaptic();
+      setBowler(bowlerId);
+    },
+    [setBowler, triggerHaptic],
+  );
+
   if (!matchId) {
     return (
       <View className="flex-1 items-center justify-center bg-zinc-100 px-6 dark:bg-black">
@@ -142,6 +171,13 @@ export default function LiveScoringScreen() {
           <LastBallsRow balls={matchState.last6Balls} />
         </View>
       </ScrollView>
+
+      <BowlerSelectionModal
+        visible={isBowlerModalOpen}
+        players={bowlingPlayers}
+        onSelect={handleSelectBowler}
+        onClose={closeBowlerModal}
+      />
 
       <WicketTypeSheet
         visible={isWicketSheetOpen}

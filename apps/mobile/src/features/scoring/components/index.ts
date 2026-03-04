@@ -5,3 +5,4 @@ export * from './ScoreHeader';
 
 export * from './WicketTypeSheet';
 export * from './NewBatsmanModal';
+export * from './BowlerSelectionModal';

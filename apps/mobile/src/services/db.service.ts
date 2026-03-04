@@ -1,6 +1,7 @@
 import { and, desc, eq, isNotNull, sql, sum } from 'drizzle-orm';
 
 import { getDatabase } from '@core/database';
+import { logError } from '../utils';
 import {
   ballEvents,
   BallEvent,
@@ -56,6 +57,7 @@ export class DatabaseService {
     context: DatabaseErrorContext,
     error: unknown,
   ): DatabaseError {
+    logError(error, { method, ...context });
     return new DatabaseError(method, context, error);
   }
 

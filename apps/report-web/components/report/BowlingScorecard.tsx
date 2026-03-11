@@ -1,4 +1,6 @@
 import { BowlingScore, PlayerReport } from '../../types/report';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface Props {
   scorecard: BowlingScore[];
@@ -6,35 +8,39 @@ interface Props {
 }
 
 export function BowlingScorecard({ scorecard, players }: Props) {
-  const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
+  const getPlayerName = (id: string) => players.find((player) => player.id === id)?.name || id;
 
   return (
-    <div className="w-full overflow-x-auto rounded-xl border bg-card mb-8 shadow-sm">
-      <div className="p-4 border-b bg-muted/40 font-bold">Bowling</div>
-      <table className="w-full text-sm text-left">
-        <thead className="text-xs uppercase bg-muted/20 text-muted-foreground border-b">
-          <tr>
-            <th className="px-6 py-3 font-medium">Bowler</th>
-            <th className="px-6 py-3 font-medium text-right">O</th>
-            <th className="px-6 py-3 font-medium text-right">M</th>
-            <th className="px-6 py-3 font-medium text-right">R</th>
-            <th className="px-6 py-3 font-medium text-right">W</th>
-            <th className="px-6 py-3 font-medium text-right">Econ</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scorecard.map((score, i) => (
-            <tr key={score.playerId} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-              <td className="px-6 py-4 font-medium text-green-700 dark:text-green-500">{getPlayerName(score.playerId)}</td>
-              <td className="px-6 py-4 text-right">{score.overs}</td>
-              <td className="px-6 py-4 text-right">{score.maidens}</td>
-              <td className="px-6 py-4 text-right">{score.runs}</td>
-              <td className="px-6 py-4 text-right font-bold">{score.wickets}</td>
-              <td className="px-6 py-4 text-right">{score.economy.toFixed(1)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card className="mb-8">
+      <CardHeader className="border-b bg-muted/40 p-4">
+        <CardTitle className="text-base">Bowling</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="bg-muted/20 uppercase text-xs">
+            <TableRow>
+              <TableHead className="px-6 py-3">Bowler</TableHead>
+              <TableHead className="px-6 py-3 text-right">O</TableHead>
+              <TableHead className="px-6 py-3 text-right">M</TableHead>
+              <TableHead className="px-6 py-3 text-right">R</TableHead>
+              <TableHead className="px-6 py-3 text-right">W</TableHead>
+              <TableHead className="px-6 py-3 text-right">Econ</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {scorecard.map((score) => (
+              <TableRow key={score.playerId}>
+                <TableCell className="px-6 py-4 font-medium text-green-700 dark:text-green-500">{getPlayerName(score.playerId)}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.overs}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.maidens}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.runs}</TableCell>
+                <TableCell className="px-6 py-4 text-right font-bold">{score.wickets}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.economy.toFixed(1)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }

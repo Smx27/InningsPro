@@ -1,12 +1,15 @@
-"use client";
+'use client';
 
 import { UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { parseMatchReport } from '../../lib/parser/parseMatchReport';
 import { useReportStore } from '../../lib/store';
 import { cn } from '../../lib/utils';
+import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Input } from '../ui/input';
 
 export function UploadCard() {
   const [isDragging, setIsDragging] = useState(false);
@@ -26,70 +29,60 @@ export function UploadCard() {
       const report = parseMatchReport(text);
       setReport(report, text);
       router.push('/report');
-    } catch (err: any) {
-      setError(err.message || 'Invalid match report format.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Invalid match report format.';
+      setError(message);
     }
   };
 
-  const onDragOver = useCallback((e: React.DragEvent) => {
+  const onDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
-  }, [handleFile]);
+  };
 
-  const onDragLeave = useCallback((e: React.DragEvent) => {
+  const onDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-  }, [handleFile]);
+  };
 
-  const onDrop = useCallback((e: React.DragEvent) => {
+  const onDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    const [file] = Array.from(e.dataTransfer.files);
+    if (file) {
+      void handleFile(file);
     }
-  }, [handleFile]);
+  };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      if (e.target.files[0]) handleFile(e.target.files[0]);
+    const [file] = Array.from(e.target.files ?? []);
+    if (file) {
+      void handleFile(file);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-        className={cn(
-          "border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors duration-200",
-          isDragging ? "border-green-500 bg-green-50 dark:bg-green-950/20" : "border-gray-300 hover:border-green-400 dark:border-gray-700"
-        )}
-      >
-        <input
-          type="file"
-          accept=".json"
-          onChange={onChange}
-          className="hidden"
-          id="file-upload"
-        />
-        <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
-          <UploadCloud className={cn("h-12 w-12 mb-4", isDragging ? "text-green-500" : "text-gray-400")} />
-          <h3 className="text-lg font-semibold mb-2">Upload Match Report</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Drag and drop your Innings Pro JSON here, or click to browse
-          </p>
-          <span className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium transition-colors rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-            Select File
-          </span>
-        </label>
-      </div>
-      {error && (
-        <div className="mt-4 p-3 bg-red-50 text-red-600 border border-red-200 rounded-md text-sm text-center">
-          {error}
-        </div>
-      )}
+    <div className="mx-auto w-full max-w-md">
+      <Card>
+        <CardContent
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          className={cn(
+            'rounded-xl border-2 border-dashed p-10 text-center transition-colors duration-200',
+            isDragging ? 'border-green-500 bg-green-50 dark:bg-green-950/20' : 'border-gray-300 hover:border-green-400 dark:border-gray-700'
+          )}
+        >
+          <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" />
+          <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-2">
+            <UploadCloud className={cn('mb-2 h-12 w-12', isDragging ? 'text-green-500' : 'text-gray-400')} />
+            <h3 className="text-lg font-semibold">Upload Match Report</h3>
+            <p className="mb-4 text-sm text-gray-500">Drag and drop your Innings Pro JSON here, or click to browse</p>
+            <Button type="button">Select File</Button>
+          </label>
+        </CardContent>
+      </Card>
+      {error && <p className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-center text-sm text-red-600">{error}</p>}
     </div>
   );
 }

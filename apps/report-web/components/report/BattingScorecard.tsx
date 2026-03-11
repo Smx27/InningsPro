@@ -1,4 +1,6 @@
-import { BattingScore, PlayerReport } from '../../types/report';
+import { PlayerReport, BattingScore } from '../../types/report';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface Props {
   scorecard: BattingScore[];
@@ -6,39 +8,43 @@ interface Props {
 }
 
 export function BattingScorecard({ scorecard, players }: Props) {
-  const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || id;
+  const getPlayerName = (id: string) => players.find((player) => player.id === id)?.name || id;
 
   return (
-    <div className="w-full overflow-x-auto rounded-xl border bg-card mb-8 shadow-sm">
-      <div className="p-4 border-b bg-muted/40 font-bold">Batting</div>
-      <table className="w-full text-sm text-left">
-        <thead className="text-xs uppercase bg-muted/20 text-muted-foreground border-b">
-          <tr>
-            <th className="px-6 py-3 font-medium">Batter</th>
-            <th className="px-6 py-3 font-medium"></th>
-            <th className="px-6 py-3 font-medium text-right">R</th>
-            <th className="px-6 py-3 font-medium text-right">B</th>
-            <th className="px-6 py-3 font-medium text-right">4s</th>
-            <th className="px-6 py-3 font-medium text-right">6s</th>
-            <th className="px-6 py-3 font-medium text-right">SR</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scorecard.map((score, i) => (
-            <tr key={score.playerId} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
-              <td className="px-6 py-4 font-medium">{getPlayerName(score.playerId)}</td>
-              <td className="px-6 py-4 text-muted-foreground italic text-xs max-w-[150px] truncate">
-                {score.isOut ? (score.dismissal || 'Out') : 'Not out'}
-              </td>
-              <td className="px-6 py-4 text-right font-bold">{score.runs}</td>
-              <td className="px-6 py-4 text-right">{score.balls}</td>
-              <td className="px-6 py-4 text-right">{score.fours}</td>
-              <td className="px-6 py-4 text-right">{score.sixes}</td>
-              <td className="px-6 py-4 text-right">{score.strikeRate.toFixed(1)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Card className="mb-8">
+      <CardHeader className="border-b bg-muted/40 p-4">
+        <CardTitle className="text-base">Batting</CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="bg-muted/20 uppercase text-xs">
+            <TableRow>
+              <TableHead className="px-6 py-3">Batter</TableHead>
+              <TableHead className="px-6 py-3" />
+              <TableHead className="px-6 py-3 text-right">R</TableHead>
+              <TableHead className="px-6 py-3 text-right">B</TableHead>
+              <TableHead className="px-6 py-3 text-right">4s</TableHead>
+              <TableHead className="px-6 py-3 text-right">6s</TableHead>
+              <TableHead className="px-6 py-3 text-right">SR</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {scorecard.map((score) => (
+              <TableRow key={score.playerId}>
+                <TableCell className="px-6 py-4 font-medium">{getPlayerName(score.playerId)}</TableCell>
+                <TableCell className="max-w-[150px] truncate px-6 py-4 text-xs italic text-muted-foreground">
+                  {score.isOut ? score.dismissal || 'Out' : 'Not out'}
+                </TableCell>
+                <TableCell className="px-6 py-4 text-right font-bold">{score.runs}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.balls}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.fours}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.sixes}</TableCell>
+                <TableCell className="px-6 py-4 text-right">{score.strikeRate.toFixed(1)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }

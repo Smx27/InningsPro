@@ -4,12 +4,48 @@ import { UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { parseMatchReport } from '../../lib/parser/parseMatchReport';
+import { isMatchReportParseError, parseMatchReport } from '../../lib/parser/parseMatchReport';
 import { useReportStore } from '../../lib/store';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
 import { Card, CardContent } from '../ui/card';
 import { Input } from '../ui/input';
+
+const formatPath = (rawPath: string): string => {
+  if (!rawPath) return 'report';
+
+  return rawPath
+    .replace(/\.(\d+)(?=\.|$)/g, '[$1]')
+    .replace(/^teamA/, 'Team A')
+    .replace(/^teamB/, 'Team B')
+    .replace(/^innings/, 'Innings')
+    .replace(/\.(\w)/g, (_, char: string) => ` ${char.toUpperCase()}`)
+    .replace(/^(\w)/, (_, char: string) => char.toUpperCase());
+};
+
+const getReadableErrorMessage = (error: unknown): string => {
+  if (isMatchReportParseError(error)) {
+    if (error.issues.length === 0) {
+      return error.message;
+    }
+
+    const issueMessages = error.issues.slice(0, 5).map((issue) => {
+      const label = formatPath(issue.path);
+      return `• ${label}: ${issue.message}`;
+    });
+
+    const remainingIssueCount = error.issues.length - issueMessages.length;
+    const suffix = remainingIssueCount > 0 ? `\n• +${remainingIssueCount} more issue(s)` : '';
+
+    return `Please fix the following report fields:\n${issueMessages.join('\n')}${suffix}`;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return 'Invalid match report format.';
+};
 
 export function UploadCard() {
   const [isDragging, setIsDragging] = useState(false);
@@ -30,8 +66,7 @@ export function UploadCard() {
       setReport(report, text);
       router.push('/report');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Invalid match report format.';
-      setError(message);
+      setError(getReadableErrorMessage(err));
     }
   };
 
@@ -82,7 +117,9 @@ export function UploadCard() {
           </label>
         </CardContent>
       </Card>
-      {error && <p className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-center text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-4 whitespace-pre-line rounded-md border border-red-200 bg-red-50 p-3 text-center text-sm text-red-600">{error}</p>
+      )}
     </div>
   );
 }

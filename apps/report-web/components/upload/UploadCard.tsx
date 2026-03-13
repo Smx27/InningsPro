@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { isMatchReportParseError, parseMatchReport } from '../../lib/parser/parseMatchReport';
+import { isTournamentReportParseError, parseTournamentReport } from '../../lib/parser/parseTournamentReport';
 import { useReportStore } from '../../lib/store';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
@@ -24,7 +25,7 @@ const formatPath = (rawPath: string): string => {
 };
 
 const getReadableErrorMessage = (error: unknown): string => {
-  if (isMatchReportParseError(error)) {
+  if (isMatchReportParseError(error) || isTournamentReportParseError(error)) {
     if (error.issues.length === 0) {
       return error.message;
     }
@@ -52,6 +53,7 @@ export function UploadCard() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const setReport = useReportStore((state) => state.setReport);
+  const setTournamentReport = useReportStore((state) => state.setTournamentReport);
 
   const handleFile = async (file: File) => {
     setError(null);
@@ -62,6 +64,18 @@ export function UploadCard() {
 
     try {
       const text = await file.text();
+
+      try {
+        const tournamentReport = parseTournamentReport(text);
+        setTournamentReport(tournamentReport, text);
+        router.push('/tournament');
+        return;
+      } catch (tournamentError) {
+        if (!isTournamentReportParseError(tournamentError)) {
+          throw tournamentError;
+        }
+      }
+
       const report = parseMatchReport(text);
       setReport(report, text);
       router.push('/report');
@@ -111,7 +125,7 @@ export function UploadCard() {
           <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" />
           <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-2">
             <UploadCloud className={cn('mb-2 h-12 w-12', isDragging ? 'text-primary' : 'text-muted-foreground')} />
-            <h3 className="text-lg font-semibold">Upload Match Report</h3>
+            <h3 className="text-lg font-semibold">Upload Report</h3>
             <p className="mb-4 text-sm text-muted-foreground">Drag and drop your Innings Pro JSON here, or click to browse</p>
             <Button type="button">Select File</Button>
           </label>

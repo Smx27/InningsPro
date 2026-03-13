@@ -1,4 +1,4 @@
-import type { MatchReport } from '../../types/report.types';
+import type { BallEvent, MatchReport } from '../../types/report.types';
 
 export interface WinProbabilityPoint {
   over: number;
@@ -6,57 +6,78 @@ export interface WinProbabilityPoint {
   teamB: number;
 }
 
-function buildCumulativeRunsByOver(ballEvents: MatchReport['innings'][number]['ballEvents']) {
-  const runsByOver = new Map<number, number>();
+interface ChaseProgressState {
+  ballsPlayed: number;
+  currentRuns: number;
+  remainingRuns: number;
+  remainingBalls: number;
+}
 
-  ballEvents.forEach((ball) => {
-    const runs = (ball.runs || 0) + (ball.extras || 0);
-    runsByOver.set(ball.over, (runsByOver.get(ball.over) || 0) + runs);
-  });
+const MAX_REFERENCE_RUN_RATE = 12;
 
-  const sortedOvers = [...runsByOver.keys()].sort((a, b) => a - b);
-  let cumulativeRuns = 0;
-  const cumulativeByOver = new Map<number, number>();
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
 
-  sortedOvers.forEach((over) => {
-    cumulativeRuns += runsByOver.get(over) || 0;
-    cumulativeByOver.set(over + 1, cumulativeRuns);
-  });
+function toOverBallProgress(over: number, ball: number): number {
+  return Number(`${over + 1}.${ball}`);
+}
 
-  return cumulativeByOver;
+function sortBallsByProgression(ballEvents: BallEvent[]): BallEvent[] {
+  return [...ballEvents].sort((a, b) => a.over - b.over || a.ball - b.ball);
+}
+
+export function calculateChasingWinProbability(state: ChaseProgressState): number {
+  if (state.remainingRuns === 0) return 100;
+  if (state.remainingBalls === 0 && state.remainingRuns > 0) return 0;
+
+  const requiredRunRate = state.remainingRuns / (state.remainingBalls / 6);
+  const winProbability = 100 - (requiredRunRate / MAX_REFERENCE_RUN_RATE) * 100;
+
+  return clamp(winProbability, 0, 100);
 }
 
 export function buildWinProbabilityData(report: MatchReport): WinProbabilityPoint[] {
-  const [teamAInnings, teamBInnings] = report.innings;
-  if (!teamAInnings || !teamBInnings) return [];
+  const [firstInnings, secondInnings] = report.innings;
+  if (!firstInnings || !secondInnings) return [];
 
-  const teamAByOver = buildCumulativeRunsByOver(teamAInnings.ballEvents || []);
-  const teamBByOver = buildCumulativeRunsByOver(teamBInnings.ballEvents || []);
+  const battingSecondIsTeamA = secondInnings.teamId === report.teamA.id;
+  const target = firstInnings.totalRuns + 1;
+  const totalBalls = report.overs * 6;
 
-  const maxOver = Math.max(...teamAByOver.keys(), ...teamBByOver.keys(), 0);
-
-  let teamALastRuns = 0;
-  let teamBLastRuns = 0;
+  const orderedBalls = sortBallsByProgression(secondInnings.ballEvents || []);
   const data: WinProbabilityPoint[] = [];
 
-  for (let over = 1; over <= maxOver; over += 1) {
-    if (teamAByOver.has(over)) teamALastRuns = teamAByOver.get(over) || teamALastRuns;
-    if (teamBByOver.has(over)) teamBLastRuns = teamBByOver.get(over) || teamBLastRuns;
+  let currentRuns = 0;
+  let ballsPlayed = 0;
+  let chaseCompleted = false;
 
-    const teamATotal = Math.max(teamAInnings.totalRuns, 1);
-    const teamBTotal = Math.max(teamBInnings.totalRuns, 1);
-    const teamAProgress = teamALastRuns / teamATotal;
-    const teamBProgress = teamBLastRuns / teamBTotal;
+  orderedBalls.forEach((ballEvent) => {
+    currentRuns += (ballEvent.runs || 0) + (ballEvent.extras || 0);
+    ballsPlayed += 1;
 
-    const ratio = teamAProgress + teamBProgress === 0 ? 0.5 : teamAProgress / (teamAProgress + teamBProgress);
-    const teamAProbability = Number((ratio * 100).toFixed(1));
+    const remainingRuns = Math.max(target - currentRuns, 0);
+    const remainingBalls = Math.max(totalBalls - ballsPlayed, 0);
+
+    chaseCompleted = chaseCompleted || remainingRuns === 0;
+
+    const chasingWinProbability = chaseCompleted
+      ? 100
+      : calculateChasingWinProbability({
+          ballsPlayed,
+          currentRuns,
+          remainingRuns,
+          remainingBalls,
+        });
+
+    const teamAProbability = battingSecondIsTeamA ? chasingWinProbability : 100 - chasingWinProbability;
 
     data.push({
-      over,
-      teamA: teamAProbability,
+      over: toOverBallProgress(ballEvent.over, ballEvent.ball),
+      teamA: Number(teamAProbability.toFixed(1)),
       teamB: Number((100 - teamAProbability).toFixed(1)),
     });
-  }
+  });
 
   return data;
 }

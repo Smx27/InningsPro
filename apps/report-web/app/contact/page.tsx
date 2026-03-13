@@ -23,10 +23,10 @@ export default function ContactPage() {
       <p className="mb-8 text-center text-muted-foreground">Have questions about Innings Pro? We&apos;d love to hear from you.</p>
 
       {submitted ? (
-        <Card className="border-green-200 bg-green-50 text-center text-green-800 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400">
+        <Card className="border-primary/30 bg-primary/10 text-center text-primary">
           <CardHeader>
             <CardTitle className="text-xl">Message Sent!</CardTitle>
-            <CardDescription className="text-green-700 dark:text-green-300">Thank you for contacting us. We will get back to you shortly.</CardDescription>
+            <CardDescription className="text-primary/90">Thank you for contacting us. We will get back to you shortly.</CardDescription>
           </CardHeader>
         </Card>
       ) : (

@@ -16,10 +16,10 @@ export function BallTimeline({ balls }: { balls: BallEvent[] }) {
 
   const getBallColor = (ball: BallEvent) => {
     if (ball.isWicket) return 'bg-red-500 text-white border-red-600';
-    if (ball.isSix) return 'bg-green-700 text-white border-green-800';
-    if (ball.isFour) return 'bg-green-500 text-white border-green-600';
-    if (ball.runs === 0 && !ball.extras) return 'bg-gray-200 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700';
-    return 'bg-white text-gray-800 border-gray-300 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700';
+    if (ball.isSix) return 'bg-primary text-primary-foreground border-primary';
+    if (ball.isFour) return 'bg-primary/80 text-primary-foreground border-primary';
+    if (ball.runs === 0 && !ball.extras) return 'bg-muted text-muted-foreground border-border';
+    return 'bg-card text-card-foreground border-border';
   };
 
   if (recentBalls.length === 0) return null;

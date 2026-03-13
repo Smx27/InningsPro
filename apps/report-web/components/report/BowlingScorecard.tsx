@@ -30,7 +30,7 @@ export function BowlingScorecard({ scorecard, players }: Props) {
           <TableBody>
             {scorecard.map((score) => (
               <TableRow key={score.playerId}>
-                <TableCell className="px-6 py-4 font-medium text-green-700 dark:text-green-500">{getPlayerName(score.playerId)}</TableCell>
+                <TableCell className="px-6 py-4 font-medium text-primary">{getPlayerName(score.playerId)}</TableCell>
                 <TableCell className="px-6 py-4 text-right">{score.overs}</TableCell>
                 <TableCell className="px-6 py-4 text-right">{score.maidens}</TableCell>
                 <TableCell className="px-6 py-4 text-right">{score.runs}</TableCell>

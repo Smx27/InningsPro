@@ -1,10 +1,17 @@
 export interface MatchItem {
   id: string;
   date: string;
-  venue: string;
   teamA: string;
   teamB: string;
+  scoreSummary: string;
   result: string;
+  reportHref: string;
+}
+
+export interface LeaderboardRow {
+  name: string;
+  team?: string;
+  value: number;
 }
 
 export interface TeamStanding {
@@ -16,22 +23,32 @@ export interface TeamStanding {
   netRunRate: number;
 }
 
+export interface TournamentSummaryData {
+  title: string;
+  stage: string;
+  totalMatches: number;
+  teams: number;
+  totalRuns: number;
+  totalWickets: number;
+}
+
+export interface RunsDistributionPoint {
+  match: string;
+  runs: number;
+}
+
+export interface TeamPerformancePoint {
+  team: string;
+  runs: number;
+  wickets: number;
+}
+
 export interface PlayerStanding {
   player: string;
   team: string;
   runs: number;
   wickets: number;
   strikeRate: number;
-}
-
-export interface TournamentSummaryData {
-  title: string;
-  stage: string;
-  teams: number;
-  matchesCompleted: number;
-  totalMatches: number;
-  totalRuns: number;
-  totalWickets: number;
 }
 
 export interface PlayerStatsRow {

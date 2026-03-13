@@ -167,6 +167,10 @@ export function parseMatchReport(jsonString: string): MatchReport {
     throw new MatchReportParseError('We could not read that file as valid JSON.');
   }
 
+  return parseMatchReportData(parsedJson);
+}
+
+export function parseMatchReportData(parsedJson: unknown): MatchReport {
   const result = reportSchema.safeParse(parsedJson);
 
   if (!result.success) {

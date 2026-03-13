@@ -5,7 +5,7 @@ import { BowlingScorecard } from './BowlingScorecard';
 import { InningsCharts } from './InningsCharts';
 import { ScoreSummary } from './ScoreSummary';
 
-import type { InningsReport, MatchReport } from '../../types/report';
+import type { InningsReport, MatchReport } from '../../types/report.types';
 
 interface Props {
   inning: InningsReport;

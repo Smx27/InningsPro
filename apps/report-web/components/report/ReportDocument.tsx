@@ -2,7 +2,7 @@
 import { InningsSection } from './InningsSection';
 import { MatchHeader } from './MatchHeader';
 
-import type { MatchReport } from '../../types/report';
+import type { MatchReport } from '../../types/report.types';
 
 export function ReportDocument({ report }: { report: MatchReport }) {
   return (

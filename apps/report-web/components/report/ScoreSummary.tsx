@@ -1,4 +1,4 @@
-import { InningsReport } from '../../types/report';
+import { InningsReport } from '../../types/report.types';
 
 export function ScoreSummary({ innings, teamName }: { innings: InningsReport; teamName: string }) {
   const extras = innings.ballEvents.reduce((sum, ball) => sum + (ball.extras || 0), 0);

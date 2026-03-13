@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { MatchReport } from '../../types/report';
+import type { MatchReport } from '../../types/report.types';
 
 export type MatchReportParseIssue = {
   path: string;

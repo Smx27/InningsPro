@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { MatchReport } from '../types/report';
+import { MatchReport } from '../types/report.types';
 
 interface ReportStore {
   report: MatchReport | null;

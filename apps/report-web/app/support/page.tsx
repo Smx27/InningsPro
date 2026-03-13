@@ -25,10 +25,10 @@ export default function SupportPage() {
       <p className="mb-8 text-center text-muted-foreground">Need help with a match report? Please provide details below.</p>
 
       {submitted ? (
-        <Card className="border-green-200 bg-green-50 text-center text-green-800 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400">
+        <Card className="border-primary/30 bg-primary/10 text-center text-primary">
           <CardHeader>
             <CardTitle className="text-xl">Ticket Submitted!</CardTitle>
-            <CardDescription className="text-green-700 dark:text-green-300">Our support team will look into your issue and get back to you.</CardDescription>
+            <CardDescription className="text-primary/90">Our support team will look into your issue and get back to you.</CardDescription>
           </CardHeader>
         </Card>
       ) : (

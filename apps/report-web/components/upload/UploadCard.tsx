@@ -105,20 +105,20 @@ export function UploadCard() {
           onDrop={onDrop}
           className={cn(
             'rounded-xl border-2 border-dashed p-10 text-center transition-colors duration-200',
-            isDragging ? 'border-green-500 bg-green-50 dark:bg-green-950/20' : 'border-gray-300 hover:border-green-400 dark:border-gray-700'
+            isDragging ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/70'
           )}
         >
           <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" />
           <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-2">
-            <UploadCloud className={cn('mb-2 h-12 w-12', isDragging ? 'text-green-500' : 'text-gray-400')} />
+            <UploadCloud className={cn('mb-2 h-12 w-12', isDragging ? 'text-primary' : 'text-muted-foreground')} />
             <h3 className="text-lg font-semibold">Upload Match Report</h3>
-            <p className="mb-4 text-sm text-gray-500">Drag and drop your Innings Pro JSON here, or click to browse</p>
+            <p className="mb-4 text-sm text-muted-foreground">Drag and drop your Innings Pro JSON here, or click to browse</p>
             <Button type="button">Select File</Button>
           </label>
         </CardContent>
       </Card>
       {error && (
-        <p className="mt-4 whitespace-pre-line rounded-md border border-red-200 bg-red-50 p-3 text-center text-sm text-red-600">{error}</p>
+        <p className="mt-4 whitespace-pre-line rounded-md border border-red-500/40 bg-red-500/10 p-3 text-center text-sm text-red-700 dark:text-red-300">{error}</p>
       )}
     </div>
   );

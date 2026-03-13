@@ -23,11 +23,11 @@ export function MatchHeader({ report }: { report: MatchReport }) {
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-16 w-full justify-center">
         <div className="bg-card shadow rounded-xl p-6 flex-1 max-w-sm text-center border">
           <p className="text-sm font-semibold uppercase text-muted-foreground mb-1">Team 1</p>
-          <p className="text-2xl font-bold text-green-600">{getScoreStr(report.teamA.id, tA)}</p>
+          <p className="text-2xl font-bold text-primary">{getScoreStr(report.teamA.id, tA)}</p>
         </div>
         <div className="bg-card shadow rounded-xl p-6 flex-1 max-w-sm text-center border">
           <p className="text-sm font-semibold uppercase text-muted-foreground mb-1">Team 2</p>
-          <p className="text-2xl font-bold text-green-600">{getScoreStr(report.teamB.id, tB)}</p>
+          <p className="text-2xl font-bold text-primary">{getScoreStr(report.teamB.id, tB)}</p>
         </div>
       </div>
     </div>

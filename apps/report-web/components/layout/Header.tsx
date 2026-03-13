@@ -29,6 +29,9 @@ export function Header() {
             <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
               Home
             </Link>
+            <Link href="/tournament" className="text-sm font-medium transition-colors hover:text-primary">
+              Tournament
+            </Link>
             <Link href="/support" className="text-sm font-medium transition-colors hover:text-primary">
               Support
             </Link>

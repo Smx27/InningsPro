@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import { useMemo } from 'react';
 
 import { LeaderboardTables } from '../../components/tournament/LeaderboardTables';
 import { MatchList } from '../../components/tournament/MatchList';
@@ -45,14 +45,7 @@ function oversToBalls(overs: number): number {
 }
 
 export default function TournamentPage() {
-  const router = useRouter();
   const tournamentReport = useReportStore((state) => state.tournamentReport);
-
-  useEffect(() => {
-    if (!tournamentReport) {
-      router.push('/');
-    }
-  }, [router, tournamentReport]);
 
   const matches = useMemo(() => tournamentReport?.matches ?? [], [tournamentReport?.matches]);
 
@@ -256,7 +249,18 @@ export default function TournamentPage() {
   }, [matches, tournamentReport?.tournamentName]);
 
   if (!tournamentReport) {
-    return null;
+    return (
+      <main className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 p-4 text-center md:p-8">
+        <h1 className="text-2xl font-semibold">No tournament report loaded</h1>
+        <p className="max-w-2xl text-muted-foreground">
+          Upload your Innings Pro JSON on the home page to generate a tournament report with standings, leaderboards,
+          charts, and recent matches.
+        </p>
+        <Link href="/" className="text-sm font-medium text-primary transition-colors hover:text-primary/80">
+          Go to upload page
+        </Link>
+      </main>
+    );
   }
 
   return (

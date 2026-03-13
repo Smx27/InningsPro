@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { buildManhattanData } from '../../lib/charts/buildManhattanData';
 import { buildRunRateData } from '../../lib/charts/buildRunRateData';
 
-import type { InningsReport } from '../../types/report';
+import type { InningsReport } from '../../types/report.types';
 
 const chartLoadingFallback = (
   <div className="w-full h-[300px] mb-8 bg-card border rounded-xl p-4 shadow-sm animate-pulse" aria-hidden="true">

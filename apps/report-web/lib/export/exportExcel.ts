@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 
-import { MatchReport, InningsReport } from '../../types/report';
+import { MatchReport, InningsReport } from '../../types/report.types';
 
 export function exportExcel(report: MatchReport) {
   const wb = XLSX.utils.book_new();

@@ -1,4 +1,4 @@
-import { MatchReport } from '../../types/report';
+import { MatchReport } from '../../types/report.types';
 
 export function MatchHeader({ report }: { report: MatchReport }) {
   const tA = report.teamA.name;

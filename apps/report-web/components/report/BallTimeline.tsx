@@ -1,5 +1,5 @@
 import { cn } from '../../lib/utils';
-import { BallEvent } from '../../types/report';
+import { BallEvent } from '../../types/report.types';
 
 export function BallTimeline({ balls }: { balls: BallEvent[] }) {
   // Show up to the last 12 balls

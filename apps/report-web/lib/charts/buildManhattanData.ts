@@ -1,4 +1,4 @@
-import { InningsReport } from '../../types/report';
+import { InningsReport } from '../../types/report.types';
 
 export function buildManhattanData(innings: InningsReport) {
   if (!innings.ballEvents || innings.ballEvents.length === 0) return [];

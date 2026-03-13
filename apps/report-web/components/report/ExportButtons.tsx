@@ -3,7 +3,7 @@
 import { Download, FileDown, FileText } from 'lucide-react';
 
 import { exportExcel } from '../../lib/export/exportExcel';
-import { MatchReport } from '../../types/report';
+import { MatchReport } from '../../types/report.types';
 import { Button } from '../ui/button';
 
 interface Props {

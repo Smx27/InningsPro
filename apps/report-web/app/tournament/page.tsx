@@ -3,15 +3,46 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 
+import { LeaderboardTables } from '../../components/tournament/LeaderboardTables';
 import { MatchList } from '../../components/tournament/MatchList';
-import { PlayerLeaderboard } from '../../components/tournament/PlayerLeaderboard';
-import { PlayerStatsTable } from '../../components/tournament/PlayerStatsTable';
-import { TeamLeaderboard } from '../../components/tournament/TeamLeaderboard';
-import { TeamStatsTable } from '../../components/tournament/TeamStatsTable';
+import { TournamentCharts } from '../../components/tournament/TournamentCharts';
 import { TournamentSummary } from '../../components/tournament/TournamentSummary';
 import { useReportStore } from '../../lib/store';
 
-import type { MatchItem, PlayerStanding, PlayerStatsRow, TeamStanding, TeamStatsRow, TournamentSummaryData } from '../../components/tournament/types';
+import type {
+  LeaderboardRow,
+  MatchItem,
+  TeamPerformancePoint,
+  TeamStanding,
+  TournamentSummaryData,
+} from '../../components/tournament/types';
+
+type TeamAccumulator = {
+  team: string;
+  played: number;
+  won: number;
+  lost: number;
+  runsFor: number;
+  runsAgainst: number;
+  ballsFaced: number;
+  ballsBowled: number;
+};
+
+type PlayerAccumulator = {
+  name: string;
+  team: string;
+  runs: number;
+  wickets: number;
+  ballsFaced: number;
+  ballsBowled: number;
+  runsConceded: number;
+};
+
+function oversToBalls(overs: number): number {
+  const whole = Math.trunc(overs);
+  const balls = Math.round((overs - whole) * 10);
+  return whole * 6 + balls;
+}
 
 export default function TournamentPage() {
   const router = useRouter();
@@ -23,123 +54,206 @@ export default function TournamentPage() {
     }
   }, [router, tournamentReport]);
 
-  const summary = useMemo<TournamentSummaryData>(() => {
-    if (!tournamentReport) {
-      return {
-        title: '',
-        stage: 'Tournament',
-        teams: 0,
-        matchesCompleted: 0,
-        totalMatches: 0,
-        totalRuns: 0,
-        totalWickets: 0
-      };
-    }
+  const matches = useMemo(() => tournamentReport?.matches ?? [], [tournamentReport?.matches]);
 
-    return {
-      title: tournamentReport.tournamentName,
-      stage: 'Tournament',
-      teams: tournamentReport.teams.length,
-      matchesCompleted: tournamentReport.matches.length,
-      totalMatches: tournamentReport.totals.matches,
-      totalRuns: tournamentReport.totals.runs,
-      totalWickets: tournamentReport.totals.wickets
+  const computed = useMemo(() => {
+    const teamMap = new Map<string, TeamAccumulator>();
+    const playerMap = new Map<string, PlayerAccumulator>();
+    const runsDistribution: { match: string; runs: number }[] = [];
+    const recentMatches: MatchItem[] = [];
+
+    const ensureTeam = (teamId: string, teamName: string) => {
+      if (!teamMap.has(teamId)) {
+        teamMap.set(teamId, {
+          team: teamName,
+          played: 0,
+          won: 0,
+          lost: 0,
+          runsFor: 0,
+          runsAgainst: 0,
+          ballsFaced: 0,
+          ballsBowled: 0,
+        });
+      }
+
+      return teamMap.get(teamId)!;
     };
-  }, [tournamentReport]);
 
-  const teamLeaderboard = useMemo<TeamStanding[]>(() => {
-    if (!tournamentReport) {
-      return [];
-    }
+    const ensurePlayer = (playerId: string, name: string, teamName: string) => {
+      if (!playerMap.has(playerId)) {
+        playerMap.set(playerId, {
+          name,
+          team: teamName,
+          runs: 0,
+          wickets: 0,
+          ballsFaced: 0,
+          ballsBowled: 0,
+          runsConceded: 0,
+        });
+      }
 
-    return tournamentReport.teams
-      .map((team) => ({
-        team: team.teamName,
-        played: team.matches,
-        won: team.wins,
-        lost: team.losses,
-        points: team.wins * 2,
-        netRunRate: team.economy > 0 ? Number(((team.strikeRate / 100) * 6 - team.economy).toFixed(2)) : 0
-      }))
-      .sort((a, b) => b.points - a.points || b.netRunRate - a.netRunRate);
-  }, [tournamentReport]);
+      return playerMap.get(playerId)!;
+    };
 
-  const playerLeaderboard = useMemo<PlayerStanding[]>(() => {
-    if (!tournamentReport) {
-      return [];
-    }
+    matches.forEach((match, index) => {
+      const teamA = ensureTeam(match.teamA.id, match.teamA.name);
+      const teamB = ensureTeam(match.teamB.id, match.teamB.name);
+      teamA.played += 1;
+      teamB.played += 1;
 
-    return [...tournamentReport.players]
-      .map((player) => ({
-        player: player.playerName,
-        team: player.teamName,
-        runs: player.runs,
-        wickets: player.wickets,
-        strikeRate: Number(player.strikeRate.toFixed(1))
-      }))
-      .sort((a, b) => b.runs - a.runs || b.wickets - a.wickets)
-      .slice(0, 5);
-  }, [tournamentReport]);
+      const playersById = new Map<string, { name: string; teamName: string }>();
+      match.teamA.players.forEach((player) =>
+        playersById.set(player.id, { name: player.name, teamName: match.teamA.name }),
+      );
+      match.teamB.players.forEach((player) =>
+        playersById.set(player.id, { name: player.name, teamName: match.teamB.name }),
+      );
 
-  const recentMatches = useMemo<MatchItem[]>(() => {
-    if (!tournamentReport) {
-      return [];
-    }
+      let totalMatchRuns = 0;
 
-    return tournamentReport.matches.slice(0, 3).map((match) => {
+      match.innings.forEach((innings) => {
+        const battingTeam = innings.teamId === match.teamA.id ? teamA : teamB;
+        const bowlingTeam = innings.teamId === match.teamA.id ? teamB : teamA;
+
+        battingTeam.runsFor += innings.totalRuns;
+        battingTeam.ballsFaced += oversToBalls(innings.totalOvers);
+        bowlingTeam.runsAgainst += innings.totalRuns;
+        bowlingTeam.ballsBowled += oversToBalls(innings.totalOvers);
+        totalMatchRuns += innings.totalRuns;
+
+        innings.battingScorecard.forEach((row) => {
+          const playerMeta = playersById.get(row.playerId);
+          if (!playerMeta) return;
+          const player = ensurePlayer(row.playerId, playerMeta.name, playerMeta.teamName);
+          player.runs += row.runs;
+          player.ballsFaced += row.balls;
+        });
+
+        innings.bowlingScorecard.forEach((row) => {
+          const playerMeta = playersById.get(row.playerId);
+          if (!playerMeta) return;
+          const player = ensurePlayer(row.playerId, playerMeta.name, playerMeta.teamName);
+          player.wickets += row.wickets;
+          player.runsConceded += row.runs;
+          player.ballsBowled += oversToBalls(row.overs);
+        });
+      });
+
       const inningsA = match.innings.find((innings) => innings.teamId === match.teamA.id);
       const inningsB = match.innings.find((innings) => innings.teamId === match.teamB.id);
 
-      const result = inningsA && inningsB
-        ? inningsA.totalRuns > inningsB.totalRuns
-          ? `${match.teamA.name} won`
-          : inningsB.totalRuns > inningsA.totalRuns
-            ? `${match.teamB.name} won`
-            : 'Match tied'
-        : 'Result unavailable';
+      if (inningsA && inningsB) {
+        if (inningsA.totalRuns > inningsB.totalRuns) {
+          teamA.won += 1;
+          teamB.lost += 1;
+        } else if (inningsB.totalRuns > inningsA.totalRuns) {
+          teamB.won += 1;
+          teamA.lost += 1;
+        }
+      }
 
-      return {
+      runsDistribution.push({
+        match: `Match ${index + 1}`,
+        runs: totalMatchRuns,
+      });
+
+      recentMatches.push({
         id: match.id,
         date: match.date ?? '-',
-        venue: '-',
         teamA: match.teamA.name,
         teamB: match.teamB.name,
-        result
-      };
+        scoreSummary: `${match.teamA.name} ${inningsA?.totalRuns ?? 0}/${inningsA?.totalWickets ?? 0} · ${match.teamB.name} ${inningsB?.totalRuns ?? 0}/${inningsB?.totalWickets ?? 0}`,
+        result:
+          inningsA && inningsB
+            ? inningsA.totalRuns === inningsB.totalRuns
+              ? 'Match tied'
+              : inningsA.totalRuns > inningsB.totalRuns
+                ? `${match.teamA.name} won`
+                : `${match.teamB.name} won`
+            : 'Result unavailable',
+        reportHref: '/report',
+      });
     });
-  }, [tournamentReport]);
 
-  const teamStats = useMemo<TeamStatsRow[]>(() => {
-    if (!tournamentReport) {
-      return [];
-    }
+    const teamLeaderboard: TeamStanding[] = [...teamMap.values()]
+      .map((team) => {
+        const runRateFor = team.ballsFaced > 0 ? (team.runsFor / team.ballsFaced) * 6 : 0;
+        const runRateAgainst = team.ballsBowled > 0 ? (team.runsAgainst / team.ballsBowled) * 6 : 0;
+        return {
+          team: team.team,
+          played: team.played,
+          won: team.won,
+          lost: team.lost,
+          points: team.won * 2,
+          netRunRate: Number((runRateFor - runRateAgainst).toFixed(2)),
+        };
+      })
+      .sort((a, b) => b.points - a.points || b.netRunRate - a.netRunRate);
 
-    return tournamentReport.teams.map((team) => ({
-      team: team.teamName,
-      matches: team.matches,
-      wins: team.wins,
-      losses: team.losses,
-      runsScored: team.runs,
-      runsConceded: Math.round(team.economy * team.overs),
-      netRunRate: Number(((team.strikeRate / 100) * 6 - team.economy).toFixed(2))
+    const players = [...playerMap.values()];
+
+    const topRuns: LeaderboardRow[] = [...players]
+      .sort((a, b) => b.runs - a.runs)
+      .slice(0, 5)
+      .map((player) => ({ name: player.name, team: player.team, value: player.runs }));
+
+    const topWickets: LeaderboardRow[] = [...players]
+      .sort((a, b) => b.wickets - a.wickets)
+      .slice(0, 5)
+      .map((player) => ({ name: player.name, team: player.team, value: player.wickets }));
+
+    const topStrikeRate: LeaderboardRow[] = [...players]
+      .filter((player) => player.ballsFaced >= 10)
+      .sort((a, b) => b.runs / b.ballsFaced - a.runs / a.ballsFaced)
+      .slice(0, 5)
+      .map((player) => ({
+        name: player.name,
+        team: player.team,
+        value: (player.runs / player.ballsFaced) * 100,
+      }));
+
+    const bestEconomy: LeaderboardRow[] = [...players]
+      .filter((player) => player.ballsBowled >= 6)
+      .sort((a, b) => a.runsConceded / a.ballsBowled - b.runsConceded / b.ballsBowled)
+      .slice(0, 5)
+      .map((player) => ({
+        name: player.name,
+        team: player.team,
+        value: (player.runsConceded / player.ballsBowled) * 6,
+      }));
+
+    const summary: TournamentSummaryData = {
+      title: tournamentReport?.tournamentName ?? '',
+      stage: 'Tournament Summary',
+      totalMatches: matches.length,
+      teams: teamMap.size,
+      totalRuns: runsDistribution.reduce((acc, item) => acc + item.runs, 0),
+      totalWickets: players.reduce((acc, player) => acc + player.wickets, 0),
+    };
+
+    const wicketsByTeam = players.reduce<Record<string, number>>((acc, player) => {
+      acc[player.team] = (acc[player.team] ?? 0) + player.wickets;
+      return acc;
+    }, {});
+
+    const teamPerformance: TeamPerformancePoint[] = [...teamMap.values()].map((team) => ({
+      team: team.team,
+      runs: team.runsFor,
+      wickets: wicketsByTeam[team.team] ?? 0,
     }));
-  }, [tournamentReport]);
 
-  const playerStats = useMemo<PlayerStatsRow[]>(() => {
-    if (!tournamentReport) {
-      return [];
-    }
-
-    return tournamentReport.players.map((player) => ({
-      player: player.playerName,
-      team: player.teamName,
-      matches: player.matches,
-      runs: player.runs,
-      average: Number((player.matches > 0 ? player.runs / player.matches : 0).toFixed(1)),
-      strikeRate: Number(player.strikeRate.toFixed(1)),
-      wickets: player.wickets
-    }));
-  }, [tournamentReport]);
+    return {
+      summary,
+      teamLeaderboard,
+      topRuns,
+      topWickets,
+      topStrikeRate,
+      bestEconomy,
+      recentMatches: recentMatches.slice(0, 6),
+      runsDistribution,
+      teamPerformance,
+    };
+  }, [matches, tournamentReport?.tournamentName]);
 
   if (!tournamentReport) {
     return null;
@@ -147,23 +261,22 @@ export default function TournamentPage() {
 
   return (
     <main className="mx-auto w-full max-w-7xl space-y-6 p-4 md:p-8">
-      <TournamentSummary summary={summary} />
+      <TournamentSummary summary={computed.summary} />
 
-      <section className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <TeamLeaderboard teams={teamLeaderboard} />
-        </div>
-        <MatchList matches={recentMatches} />
-      </section>
+      <LeaderboardTables
+        runs={computed.topRuns}
+        wickets={computed.topWickets}
+        strikeRate={computed.topStrikeRate}
+        economy={computed.bestEconomy}
+        teams={computed.teamLeaderboard}
+      />
 
-      <section className="grid gap-6 xl:grid-cols-2">
-        <PlayerLeaderboard players={playerLeaderboard} />
-        <TeamStatsTable rows={teamStats} />
-      </section>
+      <TournamentCharts
+        runsDistribution={computed.runsDistribution}
+        teamPerformance={computed.teamPerformance}
+      />
 
-      <section>
-        <PlayerStatsTable rows={playerStats} />
-      </section>
+      <MatchList matches={computed.recentMatches} />
     </main>
   );
 }

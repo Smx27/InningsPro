@@ -49,7 +49,11 @@ const config: Config = {
       boxShadow: {
         'elevated-card': '0 20px 45px -22px hsl(var(--primary) / 0.35), 0 14px 30px -24px rgb(15 23 42 / 0.42)',
         'elevated-panel': '0 26px 64px -30px hsl(var(--primary) / 0.4), 0 20px 42px -30px rgb(15 23 42 / 0.55)',
-        'elevated-float': '0 30px 90px -40px hsl(var(--primary) / 0.5), 0 24px 56px -36px rgb(15 23 42 / 0.58)'
+        'elevated-float': '0 30px 90px -40px hsl(var(--primary) / 0.5), 0 24px 56px -36px rgb(15 23 42 / 0.58)',
+        'glow-primary':
+          '0 18px 40px -24px hsl(var(--primary) / 0.72), 0 0 0 1px hsl(var(--primary) / 0.36), 0 0 18px -4px hsl(var(--primary) / 0.48)',
+        'glow-soft':
+          '0 18px 40px -26px hsl(var(--primary) / 0.42), 0 0 0 1px hsl(var(--primary) / 0.2), 0 0 14px -8px hsl(var(--primary) / 0.34)'
       },
       fontSize: {
         hero: ['clamp(2.8rem, 6vw, 5.2rem)', { lineHeight: '1.02', letterSpacing: '-0.03em', fontWeight: '700' }],

@@ -5,10 +5,10 @@ import { Section } from '../ui/Section';
 
 export function AnalyticsPreview() {
   return (
-    <Section className="bg-muted/30" id="analytics-preview">
+    <Section className="accent-gradient-soft" id="analytics-preview">
       <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
         <div className="space-y-4">
-          <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Analytics Preview</h2>
+          <h2 className="text-section-title">Analytics Preview</h2>
           <p className="text-muted-foreground md:text-lg">
             Instantly explore run-rate momentum, contribution splits, and key turning points from every innings.
           </p>
@@ -27,7 +27,7 @@ export function AnalyticsPreview() {
         <div className="grid gap-4 sm:grid-cols-2">
           <Card className="p-4 sm:col-span-2">
             <div className="mb-3 h-3 w-28 rounded bg-muted" />
-            <div className="h-40 rounded-md bg-gradient-to-r from-primary/20 via-primary/10 to-transparent" />
+            <div className="accent-gradient h-40 rounded-md" />
           </Card>
           <Card className="p-4">
             <div className="mb-3 h-3 w-20 rounded bg-muted" />

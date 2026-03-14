@@ -25,7 +25,7 @@ export function Features() {
   return (
     <Section id="features">
       <div className="mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Features</h2>
+        <h2 className="text-section-title">Features</h2>
       </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         {featureItems.map(({ title, description, icon: Icon }) => (

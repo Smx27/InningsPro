@@ -43,7 +43,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 max-w-7xl items-center px-4 md:px-8">
         <Link href="/" className="flex items-center space-x-2">
-          <Activity className="h-6 w-6 text-[#22c55e]" />
+          <Activity className="h-6 w-6 text-primary" />
           <span className="hidden font-bold sm:inline-block">Innings Pro Reports</span>
         </Link>
 
@@ -57,10 +57,10 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e] focus-visible:ring-offset-2 ${
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     isActive
-                      ? 'bg-[#22c55e]/15 text-[#22c55e]'
-                      : 'text-foreground/80 hover:text-[#22c55e] hover:bg-[#22c55e]/10'
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-foreground/80 hover:bg-primary/10 hover:text-primary'
                   }`}
                 >
                   {item.label}
@@ -71,7 +71,7 @@ export function Header() {
 
           <Button
             asChild
-            className="bg-[#22c55e] text-white hover:bg-[#16a34a] focus-visible:ring-[#22c55e]"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary"
           >
             <Link href="/#upload">Upload Report</Link>
           </Button>
@@ -80,7 +80,7 @@ export function Header() {
             type="button"
             variant="ghost"
             size="icon"
-            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
+            className="hover:text-primary focus-visible:ring-primary"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           >
@@ -93,7 +93,7 @@ export function Header() {
             type="button"
             variant="ghost"
             size="icon"
-            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
+            className="hover:text-primary focus-visible:ring-primary"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           >
@@ -103,7 +103,7 @@ export function Header() {
             type="button"
             variant="ghost"
             size="icon"
-            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
+            className="hover:text-primary focus-visible:ring-primary"
             onClick={() => setIsMobileMenuOpen((open) => !open)}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-nav"
@@ -125,10 +125,10 @@ export function Header() {
                   key={item.href}
                   href={item.href}
                   aria-current={isActive ? 'page' : undefined}
-                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e] focus-visible:ring-offset-2 ${
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     isActive
-                      ? 'bg-[#22c55e]/15 text-[#22c55e]'
-                      : 'text-foreground/80 hover:bg-[#22c55e]/10 hover:text-[#22c55e]'
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-foreground/80 hover:bg-primary/10 hover:text-primary'
                   }`}
                 >
                   {item.label}
@@ -139,7 +139,7 @@ export function Header() {
 
           <Button
             asChild
-            className="mt-3 w-full bg-[#22c55e] text-white hover:bg-[#16a34a] focus-visible:ring-[#22c55e]"
+            className="mt-3 w-full bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-primary"
           >
             <Link href="/#upload">Upload Report</Link>
           </Button>

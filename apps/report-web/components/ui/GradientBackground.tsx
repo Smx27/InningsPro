@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 const blobs = [
   {
     className:
-      '-left-24 top-4 h-64 w-64 bg-cyan-400/35 md:-left-12 md:h-80 md:w-80 lg:h-96 lg:w-96',
+      '-left-24 top-4 h-64 w-64 bg-sky-400/20 md:-left-12 md:h-80 md:w-80 lg:h-96 lg:w-96',
     animate: {
       x: [0, 40, -20, 0],
       y: [0, -28, 24, 0],
@@ -14,7 +14,7 @@ const blobs = [
   },
   {
     className:
-      'right-0 top-20 h-56 w-56 bg-indigo-500/30 md:right-8 md:h-72 md:w-72 lg:right-16 lg:h-96 lg:w-96',
+      'right-0 top-20 h-56 w-56 bg-emerald-400/18 md:right-8 md:h-72 md:w-72 lg:right-16 lg:h-96 lg:w-96',
     animate: {
       x: [0, -30, 14, 0],
       y: [0, 28, -22, 0],
@@ -23,7 +23,7 @@ const blobs = [
   },
   {
     className:
-      'bottom-0 left-1/2 h-52 w-52 -translate-x-1/2 bg-violet-500/25 md:bottom-6 md:h-64 md:w-64 lg:bottom-10 lg:h-80 lg:w-80',
+      'bottom-0 left-1/2 h-52 w-52 -translate-x-1/2 bg-sky-500/14 md:bottom-6 md:h-64 md:w-64 lg:bottom-10 lg:h-80 lg:w-80',
     animate: {
       x: [0, 20, -24, 0],
       y: [0, -18, 28, 0],

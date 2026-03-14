@@ -1,20 +1,40 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 
 import { BallTimeline } from './BallTimeline';
 import { BattingScorecard } from './BattingScorecard';
 import { BowlingScorecard } from './BowlingScorecard';
-import { ManhattanChart } from './ManhattanChart';
 import { MatchHeader } from './MatchHeader';
-import { RunRateComparisonChart } from './RunRateComparisonChart';
-import { WormChart } from './WormChart';
 import { buildManhattanData } from '../../lib/charts/buildManhattanData';
 import { buildRunRateComparison } from '../../lib/charts/buildRunRateComparison';
 import { buildWormChartData } from '../../lib/charts/buildWormChartData';
 import { Card, CardHeader, CardTitle } from '../ui/Card';
+import { ChartSkeleton } from '../ui/ChartSkeleton';
 
 import type { InningsReport, MatchReport } from '../../types/report.types';
+
+const RunRateComparisonChart = dynamic(
+  () => import('./RunRateComparisonChart').then((module) => module.RunRateComparisonChart),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  },
+);
+
+const WormChart = dynamic(() => import('./WormChart').then((module) => module.WormChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+});
+
+const ManhattanChart = dynamic(
+  () => import('./ManhattanChart').then((module) => module.ManhattanChart),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  },
+);
 
 function formatInningsSummary(innings: InningsReport) {
   return `${innings.totalRuns}/${innings.totalWickets} (${innings.totalOvers.toFixed(1)} ov)`;

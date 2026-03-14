@@ -80,7 +80,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
         viewport={{ once: true, amount: 0.2 }}
       >
         <motion.div variants={chartItemVariants}>
-          <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+          <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
             <RunRateComparisonChart
               data={runRateData}
               teamAName={report.teamA.name}
@@ -89,7 +89,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
           </Card>
         </motion.div>
         <motion.div variants={chartItemVariants}>
-          <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+          <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
             <WormChart
               data={wormData}
               teamAName={report.teamA.name}
@@ -107,7 +107,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
 
         return (
           <section key={`${inning.teamId}-${idx}`} className="mb-10 last:mb-0">
-            <Card className="mb-4 rounded-2xl shadow-xl backdrop-blur p-5">
+            <Card interactive className="mb-4 rounded-2xl shadow-xl backdrop-blur p-5">
               <h2 className="text-xl font-bold text-primary">
                 Innings {idx + 1}: {battingTeam.name}
               </h2>
@@ -121,7 +121,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
               viewport={{ once: true, amount: 0.2 }}
             >
               <motion.div variants={chartItemVariants}>
-                <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
                   <CardHeader className="p-2 pb-4">
                     <CardTitle className="text-base">Batting Scorecard</CardTitle>
                   </CardHeader>
@@ -133,7 +133,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
               </motion.div>
 
               <motion.div variants={chartItemVariants}>
-                <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
                   <CardHeader className="p-2 pb-4">
                     <CardTitle className="text-base">Bowling Scorecard</CardTitle>
                   </CardHeader>
@@ -145,7 +145,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
               </motion.div>
 
               <motion.div variants={chartItemVariants}>
-                <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
                   <CardHeader className="p-2 pb-4">
                     <CardTitle className="text-base">Manhattan Chart</CardTitle>
                   </CardHeader>
@@ -154,7 +154,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
               </motion.div>
 
               <motion.div variants={chartItemVariants}>
-                <Card className="rounded-2xl shadow-xl backdrop-blur p-4">
+                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
                   <CardHeader className="p-2 pb-4">
                     <CardTitle className="text-base">Ball Timeline</CardTitle>
                   </CardHeader>

@@ -1,15 +1,35 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 
-import { RunRateComparisonChart } from './RunRateComparisonChart';
-import { WinProbabilityChart } from './WinProbabilityChart';
-import { WormChart } from './WormChart';
+import { ChartSkeleton } from '../ui/ChartSkeleton';
 
 import type { RunRateComparisonPoint } from '../../lib/charts/buildRunRateComparison';
 import type { WinProbabilityPoint } from '../../lib/charts/buildWinProbabilityData';
 import type { WormChartPoint } from '../../lib/charts/buildWormChartData';
 import type { BallEvent, MatchReport } from '../../types/report.types';
+
+const WormChart = dynamic(() => import('./WormChart').then((module) => module.WormChart), {
+  ssr: false,
+  loading: () => <ChartSkeleton />,
+});
+
+const RunRateComparisonChart = dynamic(
+  () => import('./RunRateComparisonChart').then((module) => module.RunRateComparisonChart),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  },
+);
+
+const WinProbabilityChart = dynamic(
+  () => import('./WinProbabilityChart').then((module) => module.WinProbabilityChart),
+  {
+    ssr: false,
+    loading: () => <ChartSkeleton />,
+  },
+);
 
 function buildRunsByOver(ballEvents: BallEvent[]) {
   const runsByOver = new Map<number, number>();
@@ -56,7 +76,10 @@ function buildWormData(teamABalls: BallEvent[], teamBBalls: BallEvent[]): WormCh
   return points;
 }
 
-function buildRunRateData(teamABalls: BallEvent[], teamBBalls: BallEvent[]): RunRateComparisonPoint[] {
+function buildRunRateData(
+  teamABalls: BallEvent[],
+  teamBBalls: BallEvent[],
+): RunRateComparisonPoint[] {
   const buildRunRateByOver = (balls: BallEvent[]) => {
     const cumulativeByOver = buildCumulativeRunsByCompletedOver(balls);
     const runRateByOver = new Map<number, number>();
@@ -90,7 +113,10 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-function buildWinProbability(report: MatchReport, secondInningsBalls: BallEvent[]): WinProbabilityPoint[] {
+function buildWinProbability(
+  report: MatchReport,
+  secondInningsBalls: BallEvent[],
+): WinProbabilityPoint[] {
   const [firstInnings, secondInnings] = report.innings;
   if (!firstInnings || !secondInnings) return [];
 
@@ -122,7 +148,9 @@ function buildWinProbability(report: MatchReport, secondInningsBalls: BallEvent[
       chasingWinProbability = clamp((scoreProgress * 0.65 + pressureFactor * 0.35) * 100, 0, 100);
     }
 
-    const teamAProbability = battingSecondIsTeamA ? chasingWinProbability : 100 - chasingWinProbability;
+    const teamAProbability = battingSecondIsTeamA
+      ? chasingWinProbability
+      : 100 - chasingWinProbability;
 
     data.push({
       over,
@@ -137,9 +165,19 @@ function buildWinProbability(report: MatchReport, secondInningsBalls: BallEvent[
 export function MatchAnalyticsCharts({ report }: { report: MatchReport }) {
   const hasBothInnings = Boolean(report.innings[0] && report.innings[1]);
 
-  const wormData = useMemo(() => buildWormData(report.innings[0]?.ballEvents || [], report.innings[1]?.ballEvents || []), [report]);
-  const runRateData = useMemo(() => buildRunRateData(report.innings[0]?.ballEvents || [], report.innings[1]?.ballEvents || []), [report]);
-  const winProbabilityData = useMemo(() => buildWinProbability(report, report.innings[1]?.ballEvents || []), [report]);
+  const wormData = useMemo(
+    () => buildWormData(report.innings[0]?.ballEvents || [], report.innings[1]?.ballEvents || []),
+    [report],
+  );
+  const runRateData = useMemo(
+    () =>
+      buildRunRateData(report.innings[0]?.ballEvents || [], report.innings[1]?.ballEvents || []),
+    [report],
+  );
+  const winProbabilityData = useMemo(
+    () => buildWinProbability(report, report.innings[1]?.ballEvents || []),
+    [report],
+  );
 
   if (!hasBothInnings) return null;
 
@@ -149,10 +187,18 @@ export function MatchAnalyticsCharts({ report }: { report: MatchReport }) {
         <WormChart data={wormData} teamAName={report.teamA.name} teamBName={report.teamB.name} />
       </div>
       <div className="print:w-full print:h-[300px] print:mb-8 break-inside-avoid">
-        <RunRateComparisonChart data={runRateData} teamAName={report.teamA.name} teamBName={report.teamB.name} />
+        <RunRateComparisonChart
+          data={runRateData}
+          teamAName={report.teamA.name}
+          teamBName={report.teamB.name}
+        />
       </div>
       <div className="print:w-full print:h-[300px] print:mb-8 break-inside-avoid">
-        <WinProbabilityChart data={winProbabilityData} teamAName={report.teamA.name} teamBName={report.teamB.name} />
+        <WinProbabilityChart
+          data={winProbabilityData}
+          teamAName={report.teamA.name}
+          teamBName={report.teamB.name}
+        />
       </div>
     </div>
   );

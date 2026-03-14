@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Modal, Pressable, Text, View } from 'react-native';
 
 import type { Player } from '@core/database/schema';
@@ -43,14 +43,23 @@ export const NewBatsmanModal = memo(function NewBatsmanModal({
     [players],
   );
 
-  const confirmSelection = () => {
+  const confirmSelection = useCallback(() => {
     if (!selectedPlayerId) {
       return;
     }
 
     onSelect(selectedPlayerId);
     setSelectedPlayerId(null);
-  };
+  }, [onSelect, selectedPlayerId]);
+
+  const keyExtractor = useCallback((item: Player) => item.id, []);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Player }) => {
+      return <PlayerRow item={item} selected={item.id === selectedPlayerId} onPress={setSelectedPlayerId} />;
+    },
+    [selectedPlayerId],
+  );
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={() => undefined}>
@@ -64,11 +73,9 @@ export const NewBatsmanModal = memo(function NewBatsmanModal({
 
         <FlatList
           data={sortedPlayers}
-          keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
           contentContainerClassName="gap-3 pb-28"
-          renderItem={({ item }) => (
-            <PlayerRow item={item} selected={item.id === selectedPlayerId} onPress={setSelectedPlayerId} />
-          )}
+          renderItem={renderItem}
           ListEmptyComponent={
             <View className="rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/70 dark:bg-amber-950/30">
               <Text className="text-sm font-medium text-amber-800 dark:text-amber-300">

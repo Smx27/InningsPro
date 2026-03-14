@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { FlatList, Modal, Pressable, Text, View } from 'react-native';
 
 import type { Player } from '@core/database/schema';
@@ -45,19 +45,28 @@ export const BowlerSelectionModal = memo(function BowlerSelectionModal({
     [players],
   );
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setSelectedBowlerId(null);
     onClose();
-  };
+  }, [onClose]);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     if (!selectedBowlerId) {
       return;
     }
 
     onSelect(selectedBowlerId);
     setSelectedBowlerId(null);
-  };
+  }, [onSelect, selectedBowlerId]);
+
+  const renderItem = useCallback(
+    ({ item }: { item: Player }) => {
+      return <BowlerRow player={item} selected={item.id === selectedBowlerId} onPress={setSelectedBowlerId} />;
+    },
+    [selectedBowlerId],
+  );
+
+  const keyExtractor = useCallback((item: Player) => item.id, []);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
@@ -71,11 +80,9 @@ export const BowlerSelectionModal = memo(function BowlerSelectionModal({
 
         <FlatList
           data={sortedPlayers}
-          keyExtractor={(item) => item.id}
+          keyExtractor={keyExtractor}
           contentContainerClassName="gap-3 pb-28"
-          renderItem={({ item }) => (
-            <BowlerRow player={item} selected={item.id === selectedBowlerId} onPress={setSelectedBowlerId} />
-          )}
+          renderItem={renderItem}
           ListEmptyComponent={
             <View className="rounded-2xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/70 dark:bg-amber-950/30">
               <Text className="text-sm font-medium text-amber-800 dark:text-amber-300">

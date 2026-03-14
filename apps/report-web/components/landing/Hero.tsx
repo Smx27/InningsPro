@@ -3,7 +3,6 @@
 import { motion, type Variants } from 'framer-motion';
 
 import { GlowButton } from '../ui/GlowButton';
-import { GradientBackground } from '../ui/GradientBackground';
 import { Section } from '../ui/Section';
 
 const containerVariants: Variants = {
@@ -44,7 +43,6 @@ const ctaVariants: Variants = {
 export function Hero() {
   return (
     <Section className="relative overflow-hidden" id="hero" spacing="hero">
-      <GradientBackground />
       <motion.div
         animate="visible"
         className="relative mx-auto flex max-w-3xl flex-col items-center space-y-6 text-center"

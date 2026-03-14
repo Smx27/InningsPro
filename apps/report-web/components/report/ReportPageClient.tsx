@@ -9,7 +9,6 @@ import { ReportDocument } from './ReportDocument';
 import { useExportPdf } from '../../lib/export/exportPdf';
 import { useReportStore } from '../../lib/store';
 import { Card } from '../ui/Card';
-import { GradientBackground } from '../ui/GradientBackground';
 import { Section } from '../ui/Section';
 
 export function ReportPageClient() {
@@ -30,7 +29,6 @@ export function ReportPageClient() {
 
   return (
     <Section className="relative overflow-hidden" spacing="compact">
-      <GradientBackground />
       <div className="relative mx-auto w-full max-w-7xl space-y-6">
         <Card className="rounded-2xl shadow-xl backdrop-blur p-5 print:hidden">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

@@ -1,6 +1,7 @@
 'use client';
 
-import { UploadCloud } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckCircle2, Loader2, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -27,18 +28,18 @@ const formatPath = (rawPath: string): string => {
 const getReadableErrorMessage = (error: unknown): string => {
   if (isMatchReportParseError(error) || isTournamentReportParseError(error)) {
     if (error.issues.length === 0) {
-      return error.message;
+      return 'The report schema is invalid. Please check required fields and try again.';
     }
 
-    const issueMessages = error.issues.slice(0, 5).map((issue) => {
+    const issueMessages = error.issues.slice(0, 3).map((issue) => {
       const label = formatPath(issue.path);
-      return `• ${label}: ${issue.message}`;
+      return `${label}: ${issue.message}`;
     });
 
     const remainingIssueCount = error.issues.length - issueMessages.length;
-    const suffix = remainingIssueCount > 0 ? `\n• +${remainingIssueCount} more issue(s)` : '';
+    const suffix = remainingIssueCount > 0 ? ` +${remainingIssueCount} more issue(s).` : '';
 
-    return `Please fix the following report fields:\n${issueMessages.join('\n')}${suffix}`;
+    return `Fix these fields: ${issueMessages.join(' · ')}.${suffix}`;
   }
 
   if (error instanceof Error) {
@@ -50,6 +51,9 @@ const getReadableErrorMessage = (error: unknown): string => {
 
 export function UploadCard() {
   const [isDragging, setIsDragging] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const setReport = useReportStore((state) => state.setReport);
@@ -57,17 +61,27 @@ export function UploadCard() {
 
   const handleFile = async (file: File) => {
     setError(null);
+    setIsSuccess(false);
+    setStatusMessage(null);
+
     if (!file.name.endsWith('.json')) {
       setError('Please upload a JSON file.');
       return;
     }
 
+    setIsProcessing(true);
+    setStatusMessage('Uploading report...');
+
     try {
       const text = await file.text();
+      setStatusMessage('Validating report...');
 
       try {
         const tournamentReport = parseTournamentReport(text);
         setTournamentReport(tournamentReport, text);
+        setStatusMessage('Tournament report ready.');
+        setIsSuccess(true);
+        await new Promise((resolve) => setTimeout(resolve, 700));
         router.push('/tournament');
         return;
       } catch (tournamentError) {
@@ -78,9 +92,14 @@ export function UploadCard() {
 
       const report = parseMatchReport(text);
       setReport(report, text);
+      setStatusMessage('Match report ready.');
+      setIsSuccess(true);
+      await new Promise((resolve) => setTimeout(resolve, 700));
       router.push('/report');
     } catch (err: unknown) {
       setError(getReadableErrorMessage(err));
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -112,27 +131,77 @@ export function UploadCard() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      <Card>
+      <Card className="overflow-hidden border-white/30 bg-white/40 shadow-2xl shadow-primary/10 backdrop-blur-xl dark:border-white/15 dark:bg-slate-950/40">
         <CardContent
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           className={cn(
-            'rounded-xl border-2 border-dashed p-10 text-center transition-colors duration-200',
-            isDragging ? 'border-primary bg-primary/10' : 'border-border hover:border-primary/70'
+            'rounded-xl border-2 border-dashed p-10 text-center transition-all duration-300',
+            isDragging
+              ? 'scale-[1.01] border-primary bg-primary/15 shadow-[0_0_0_6px_rgba(56,189,248,0.18)]'
+              : 'border-border/60 bg-background/50 hover:border-primary/70 hover:bg-primary/5',
+            (isProcessing || isSuccess) && 'pointer-events-none'
           )}
         >
-          <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" />
-          <label htmlFor="file-upload" className="flex cursor-pointer flex-col items-center gap-2">
-            <UploadCloud className={cn('mb-2 h-12 w-12', isDragging ? 'text-primary' : 'text-muted-foreground')} />
-            <h3 className="text-lg font-semibold">Upload Report</h3>
-            <p className="mb-4 text-sm text-muted-foreground">Drag and drop your Innings Pro JSON here, or click to browse</p>
-            <Button type="button">Select File</Button>
-          </label>
+          <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" disabled={isProcessing || isSuccess} />
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              {isSuccess ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <motion.div
+                    initial={{ scale: 0.75, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 14 }}
+                  >
+                    <CheckCircle2 className="mb-2 h-14 w-14 text-emerald-500" />
+                  </motion.div>
+                  <h3 className="text-lg font-semibold">Report parsed successfully</h3>
+                  <p className="text-sm text-muted-foreground">Taking you to your report...</p>
+                </motion.div>
+              ) : (
+                <motion.label
+                  key="idle"
+                  htmlFor="file-upload"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className={cn('flex cursor-pointer flex-col items-center gap-2', isProcessing && 'cursor-progress')}
+                >
+                  <UploadCloud className={cn('mb-2 h-12 w-12 transition-colors duration-300', isDragging ? 'text-primary' : 'text-muted-foreground')} />
+                  <h3 className="text-xl font-semibold tracking-tight">Upload Report</h3>
+                  <p className="mb-4 text-sm text-muted-foreground">Drag and drop your Innings Pro JSON here, or click to browse.</p>
+                  <Button type="button" disabled={isProcessing}>
+                    Select File
+                  </Button>
+                </motion.label>
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {isProcessing && !isSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="mt-6 flex items-center justify-center gap-2 rounded-md bg-primary/10 px-3 py-2 text-sm text-primary"
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>{statusMessage ?? 'Processing report...'}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </CardContent>
       </Card>
       {error && (
-        <p className="mt-4 whitespace-pre-line rounded-md border border-red-500/40 bg-red-500/10 p-3 text-center text-sm text-red-700 dark:text-red-300">{error}</p>
+        <p className="mt-4 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-center text-sm text-red-700 dark:text-red-300">{error}</p>
       )}
     </div>
   );

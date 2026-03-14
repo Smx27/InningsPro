@@ -26,7 +26,7 @@ export function ExportButtons({ report, rawJson, onPdfExport }: Props) {
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 py-8 print:hidden">
+    <div className="flex flex-wrap gap-3 print:hidden md:justify-end">
       <Button onClick={onPdfExport} variant="outline">
         <FileText className="h-4 w-4 text-red-500" />
         Download PDF

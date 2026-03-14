@@ -2,11 +2,17 @@ import * as React from 'react';
 
 import { cn } from '../../lib/utils';
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+  interactive?: boolean;
+};
+
+const Card = React.forwardRef<HTMLDivElement, CardProps>(({ className, interactive = false, ...props }, ref) => (
   <div
     ref={ref}
+    data-interactive={interactive ? 'true' : undefined}
     className={cn(
       'surface-glass rounded-2xl border text-card-foreground shadow-elevated-card',
+      'data-[interactive=true]:transition-smooth data-[interactive=true]:hover:scale-[1.01] data-[interactive=true]:hover:shadow-xl',
       className,
     )}
     {...props}

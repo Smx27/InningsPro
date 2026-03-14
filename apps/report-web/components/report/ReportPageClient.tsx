@@ -62,7 +62,7 @@ export function ReportPageClient() {
         animate="visible"
       >
         <motion.div variants={staggerItemVariants}>
-          <Card className="rounded-2xl shadow-xl backdrop-blur p-5 print:hidden">
+          <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-5 print:hidden">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="space-y-1">
                 <p className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
@@ -80,7 +80,7 @@ export function ReportPageClient() {
         </motion.div>
 
         <motion.div variants={staggerItemVariants}>
-          <Card className="rounded-2xl shadow-xl backdrop-blur p-3 md:p-6">
+          <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-3 md:p-6">
             <div ref={componentRef}>
               <ReportDocument report={report} />
             </div>

@@ -25,15 +25,15 @@ export function AnalyticsPreview() {
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="p-4 sm:col-span-2">
+          <Card interactive className="p-4 sm:col-span-2">
             <div className="mb-3 h-3 w-28 rounded bg-muted" />
             <div className="accent-gradient h-40 rounded-md" />
           </Card>
-          <Card className="p-4">
+          <Card interactive className="p-4">
             <div className="mb-3 h-3 w-20 rounded bg-muted" />
             <div className="h-24 rounded-md bg-primary/10" />
           </Card>
-          <Card className="p-4">
+          <Card interactive className="p-4">
             <div className="mb-3 h-3 w-24 rounded bg-muted" />
             <div className="h-24 rounded-md bg-primary/10" />
           </Card>

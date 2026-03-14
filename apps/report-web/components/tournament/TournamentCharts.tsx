@@ -11,7 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 import type { RunsDistributionPoint, TeamPerformancePoint } from './types';
 

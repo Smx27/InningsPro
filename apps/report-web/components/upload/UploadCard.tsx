@@ -9,7 +9,7 @@ import { isTournamentReportParseError, parseTournamentReport } from '../../lib/p
 import { useReportStore } from '../../lib/store';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent } from '../ui/Card';
 import { Input } from '../ui/input';
 
 const formatPath = (rawPath: string): string => {

@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { databaseService } from '@services/db.service';
+import { logError, logMatchEvent } from '@services/logger';
 import { MatchState, matchEngineService } from '@services/match-engine.service';
 
 type ExtraType = 'wide' | 'noball' | 'bye' | 'legbye';
@@ -8,6 +10,7 @@ export type WicketType = 'bowled' | 'caught' | 'lbw' | 'runout' | 'stumped';
 type ScoringStore = {
   matchState: MatchState;
   isLoading: boolean;
+  isMatchCompleted: boolean;
   currentBowlerId: string | null;
   lastOverBowlerId: string | null;
   isBowlerModalOpen: boolean;
@@ -31,9 +34,15 @@ const didOverEnd = (previousState: MatchState, nextState: MatchState): boolean =
   return nextState.legalBalls > previousState.legalBalls && Number.isInteger(nextState.overs);
 };
 
+const syncMatchCompletion = async (matchId: string): Promise<boolean> => {
+  const match = await databaseService.getMatchById(matchId);
+  return match?.status === 'completed';
+};
+
 export const useScoringStore = create<ScoringStore>((set, get) => ({
   matchState: matchEngineService.initialState(),
   isLoading: false,
+  isMatchCompleted: false,
   currentBowlerId: null,
   lastOverBowlerId: null,
   isBowlerModalOpen: false,
@@ -45,9 +54,14 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const state = await matchEngineService.startMatch(matchId);
+      const [state, completed] = await Promise.all([
+        matchEngineService.startMatch(matchId),
+        syncMatchCompletion(matchId),
+      ]);
+
       set({
         matchState: { ...state, matchId },
+        isMatchCompleted: completed,
         currentBowlerId: null,
         lastOverBowlerId: null,
         isBowlerModalOpen: true,
@@ -55,6 +69,9 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
         isBatsmanModalOpen: false,
         pendingWicketType: null,
       });
+    } catch (error) {
+      logError(error, { operation: 'loadMatch', matchId });
+      throw error;
     } finally {
       set({ isLoading: false });
     }
@@ -80,17 +97,25 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       bowlerId: currentBowlerId,
     });
 
+    const completed = await syncMatchCompletion(matchState.matchId);
+    logMatchEvent({
+      type: runs >= 4 ? 'boundary' : 'run',
+      matchId: matchState.matchId,
+      payload: { runs },
+    });
+
     if (didOverEnd(matchState, nextState)) {
       set({
         matchState: nextState,
+        isMatchCompleted: completed,
         lastOverBowlerId: currentBowlerId,
         currentBowlerId: null,
-        isBowlerModalOpen: true,
+        isBowlerModalOpen: !completed,
       });
       return;
     }
 
-    set({ matchState: nextState });
+    set({ matchState: nextState, isMatchCompleted: completed });
   },
 
   recordExtra: async (type) => {
@@ -114,17 +139,21 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       bowlerId: currentBowlerId,
     });
 
+    const completed = await syncMatchCompletion(matchState.matchId);
+    logMatchEvent({ type: 'extra', matchId: matchState.matchId, payload: { extraType: type } });
+
     if (didOverEnd(matchState, nextState)) {
       set({
         matchState: nextState,
+        isMatchCompleted: completed,
         lastOverBowlerId: currentBowlerId,
         currentBowlerId: null,
-        isBowlerModalOpen: true,
+        isBowlerModalOpen: !completed,
       });
       return;
     }
 
-    set({ matchState: nextState });
+    set({ matchState: nextState, isMatchCompleted: completed });
   },
 
   openBowlerModal: () => {
@@ -190,21 +219,30 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       bowlerId: currentBowlerId,
     });
 
+    const completed = await syncMatchCompletion(matchState.matchId);
+    logMatchEvent({
+      type: 'wicket',
+      matchId: matchState.matchId,
+      payload: { wicketType: pendingWicketType, incomingBatterId: playerId },
+    });
+
     if (didOverEnd(matchState, nextState)) {
       set({
         matchState: nextState,
+        isMatchCompleted: completed,
         isBatsmanModalOpen: false,
         isWicketSheetOpen: false,
         pendingWicketType: null,
         lastOverBowlerId: currentBowlerId,
         currentBowlerId: null,
-        isBowlerModalOpen: true,
+        isBowlerModalOpen: !completed,
       });
       return;
     }
 
     set({
       matchState: nextState,
+      isMatchCompleted: completed,
       isBatsmanModalOpen: false,
       isWicketSheetOpen: false,
       pendingWicketType: null,
@@ -217,7 +255,11 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       return;
     }
 
-    const nextState = await matchEngineService.undoLastBall(matchId);
-    set({ matchState: nextState });
+    const [nextState, completed] = await Promise.all([
+      matchEngineService.undoLastBall(matchId),
+      syncMatchCompletion(matchId),
+    ]);
+    logMatchEvent({ type: 'undo', matchId });
+    set({ matchState: nextState, isMatchCompleted: completed });
   },
 }));

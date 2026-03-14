@@ -1,7 +1,11 @@
 import { PropsWithChildren } from 'react';
 
+import { ErrorBoundary } from '@components/ErrorBoundary';
+
 import { DatabaseProvider } from './DatabaseProvider';
 
 export const AppProviders = ({ children }: PropsWithChildren) => (
-  <DatabaseProvider>{children}</DatabaseProvider>
+  <ErrorBoundary>
+    <DatabaseProvider>{children}</DatabaseProvider>
+  </ErrorBoundary>
 );

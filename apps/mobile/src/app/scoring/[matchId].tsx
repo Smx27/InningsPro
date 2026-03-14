@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
@@ -16,13 +16,17 @@ import {
 } from '@features/scoring/components';
 import { useScoringStore, type WicketType } from '@features/scoring/store/useScoringStore';
 
+type MatchHapticType = 'run' | 'boundary' | 'wicket' | 'undo';
+
 export default function LiveScoringScreen() {
+  const router = useRouter();
   const params = useLocalSearchParams<{ matchId: string }>();
   const matchId = Array.isArray(params.matchId) ? params.matchId[0] : params.matchId;
 
   const {
     matchState,
     isLoading,
+    isMatchCompleted,
     isBowlerModalOpen,
     isWicketSheetOpen,
     isBatsmanModalOpen,
@@ -42,6 +46,7 @@ export default function LiveScoringScreen() {
     useShallow((state) => ({
       matchState: state.matchState,
       isLoading: state.isLoading,
+      isMatchCompleted: state.isMatchCompleted,
       isBowlerModalOpen: state.isBowlerModalOpen,
       isWicketSheetOpen: state.isWicketSheetOpen,
       isBatsmanModalOpen: state.isBatsmanModalOpen,
@@ -60,7 +65,14 @@ export default function LiveScoringScreen() {
     })),
   );
 
-  const { loadMatchContext, contextBowlingTeamId, contextBattingTeamId, contextTeamAId, contextTeamAPlayers, contextTeamBPlayers } = useMatchContextStore(
+  const {
+    loadMatchContext,
+    contextBowlingTeamId,
+    contextBattingTeamId,
+    contextTeamAId,
+    contextTeamAPlayers,
+    contextTeamBPlayers,
+  } = useMatchContextStore(
     useShallow((state) => ({
       loadMatchContext: state.loadMatchContext,
       contextBowlingTeamId: state.bowlingTeamId,
@@ -79,6 +91,14 @@ export default function LiveScoringScreen() {
     void Promise.all([loadMatch(matchId), loadMatchContext(matchId)]);
   }, [loadMatch, loadMatchContext, matchId]);
 
+  useEffect(() => {
+    if (!matchId || !isMatchCompleted) {
+      return;
+    }
+
+    router.replace(`/scoring/${matchId}/summary`);
+  }, [isMatchCompleted, matchId, router]);
+
   const bowlingPlayers = useMemo(() => {
     if (!contextBowlingTeamId) {
       return [];
@@ -92,43 +112,66 @@ export default function LiveScoringScreen() {
       return [];
     }
 
-    const battingPlayers = contextBattingTeamId === contextTeamAId ? contextTeamAPlayers : contextTeamBPlayers;
+    const battingPlayers =
+      contextBattingTeamId === contextTeamAId ? contextTeamAPlayers : contextTeamBPlayers;
 
     return battingPlayers.filter(
       (player) => player.id !== matchState.currentStriker && player.id !== matchState.currentNonStriker,
     );
-  }, [contextBattingTeamId, contextTeamAId, contextTeamAPlayers, contextTeamBPlayers, matchState.currentNonStriker, matchState.currentStriker]);
+  }, [
+    contextBattingTeamId,
+    contextTeamAId,
+    contextTeamAPlayers,
+    contextTeamBPlayers,
+    matchState.currentNonStriker,
+    matchState.currentStriker,
+  ]);
 
-  const triggerHaptic = useCallback(() => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const triggerHaptic = useCallback((type: MatchHapticType) => {
+    switch (type) {
+      case 'run':
+        void Haptics.selectionAsync();
+        return;
+      case 'boundary':
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        return;
+      case 'wicket':
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        return;
+      case 'undo':
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        return;
+      default:
+        return;
+    }
   }, []);
 
   const handleRunPress = useCallback(
     async (runs: number) => {
-      triggerHaptic();
+      triggerHaptic(runs >= 4 ? 'boundary' : 'run');
       await recordRun(runs);
     },
     [recordRun, triggerHaptic],
   );
 
   const handleWide = useCallback(async () => {
-    triggerHaptic();
+    triggerHaptic('run');
     await recordExtra('wide');
   }, [recordExtra, triggerHaptic]);
 
   const handleNoBall = useCallback(async () => {
-    triggerHaptic();
+    triggerHaptic('run');
     await recordExtra('noball');
   }, [recordExtra, triggerHaptic]);
 
   const handleOpenWicketFlow = useCallback(() => {
-    triggerHaptic();
+    triggerHaptic('wicket');
     openWicketFlow();
   }, [openWicketFlow, triggerHaptic]);
 
   const handleWicketTypeSelect = useCallback(
     (type: WicketType) => {
-      triggerHaptic();
+      triggerHaptic('wicket');
       selectWicketType(type);
     },
     [selectWicketType, triggerHaptic],
@@ -136,7 +179,7 @@ export default function LiveScoringScreen() {
 
   const handleConfirmBatsman = useCallback(
     async (playerId: string) => {
-      triggerHaptic();
+      triggerHaptic('wicket');
       await confirmNewBatsman(playerId);
     },
     [confirmNewBatsman, triggerHaptic],
@@ -144,14 +187,14 @@ export default function LiveScoringScreen() {
 
   const handleSelectBowler = useCallback(
     (bowlerId: string) => {
-      triggerHaptic();
+      triggerHaptic('run');
       setBowler(bowlerId);
     },
     [setBowler, triggerHaptic],
   );
 
   const handleUndo = useCallback(async () => {
-    triggerHaptic();
+    triggerHaptic('undo');
     await undoLastBall();
   }, [triggerHaptic, undoLastBall]);
 

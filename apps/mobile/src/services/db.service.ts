@@ -1,7 +1,6 @@
 import { and, desc, eq, isNotNull, sql, sum } from 'drizzle-orm';
 
 import { getDatabase } from '@core/database';
-import { logError } from '../utils';
 import {
   ballEvents,
   BallEvent,
@@ -22,6 +21,8 @@ import {
   tournaments,
   Tournament,
 } from '@core/database/schema';
+
+import { logError } from './logger';
 
 type DatabaseErrorContext = Record<string, number | string>;
 
@@ -48,6 +49,12 @@ export class DatabaseService {
 
   private ballEventsCache = new Map<string, BallEvent[]>();
 
+
+  invalidateCaches(): void {
+    this.matchCache.clear();
+    this.inningsCache.clear();
+    this.ballEventsCache.clear();
+  }
   private getBallEventsCacheKey(matchId: string, inningsNumber: number): string {
     return `${matchId}:${inningsNumber}`;
   }

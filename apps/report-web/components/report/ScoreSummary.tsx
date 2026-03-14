@@ -1,32 +1,33 @@
 import { InningsReport } from '../../types/report.types';
+import { Card } from '../ui/Card';
 
 export function ScoreSummary({ innings, teamName }: { innings: InningsReport; teamName: string }) {
   const extras = innings.ballEvents.reduce((sum, ball) => sum + (ball.extras || 0), 0);
 
   return (
     <div className="mb-6 space-y-3">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-muted/50 rounded-lg p-4 border flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase text-muted-foreground mb-1">Total Runs</span>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Card className="flex flex-col items-center justify-center rounded-xl border-white/30 bg-muted/25 p-4 text-center backdrop-blur-sm dark:border-white/10">
+          <span className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Total Runs</span>
           <span className="text-xl font-bold">{innings.totalRuns}</span>
-        </div>
-        <div className="bg-muted/50 rounded-lg p-4 border flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase text-muted-foreground mb-1">Wickets</span>
+        </Card>
+        <Card className="flex flex-col items-center justify-center rounded-xl border-white/30 bg-muted/25 p-4 text-center backdrop-blur-sm dark:border-white/10">
+          <span className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Wickets</span>
           <span className="text-xl font-bold">{innings.totalWickets}</span>
-        </div>
-        <div className="bg-muted/50 rounded-lg p-4 border flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase text-muted-foreground mb-1">Overs</span>
+        </Card>
+        <Card className="flex flex-col items-center justify-center rounded-xl border-white/30 bg-muted/25 p-4 text-center backdrop-blur-sm dark:border-white/10">
+          <span className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Overs</span>
           <span className="text-xl font-bold">{innings.totalOvers}</span>
-        </div>
-        <div className="bg-muted/50 rounded-lg p-4 border flex flex-col justify-center items-center text-center">
-          <span className="text-xs font-semibold uppercase text-muted-foreground mb-1">Run Rate</span>
+        </Card>
+        <Card className="flex flex-col items-center justify-center rounded-xl border-white/30 bg-muted/25 p-4 text-center backdrop-blur-sm dark:border-white/10">
+          <span className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Run Rate</span>
           <span className="text-xl font-bold">{innings.runRate.toFixed(2)}</span>
-        </div>
+        </Card>
       </div>
-      <div className="bg-muted/30 rounded-lg px-4 py-2 border text-sm text-muted-foreground flex items-center justify-between">
+      <Card className="flex items-center justify-between rounded-xl border-white/30 bg-muted/20 px-4 py-2 text-sm text-muted-foreground dark:border-white/10">
         <span className="font-semibold uppercase">{teamName} Extras</span>
         <span className="font-bold text-foreground">{extras}</span>
-      </div>
+      </Card>
     </div>
   );
 }

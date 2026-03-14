@@ -1,5 +1,6 @@
 import { Activity, BarChart2, Download } from 'lucide-react';
 
+import { Card } from '../ui/Card';
 import { Section } from '../ui/Section';
 
 const featureItems = [
@@ -28,11 +29,11 @@ export function Features() {
       </div>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         {featureItems.map(({ title, description, icon: Icon }) => (
-          <div key={title} className="rounded-2xl border bg-card p-6 text-center shadow-sm">
+          <Card key={title} className="text-center">
             <Icon className="mx-auto mb-4 h-12 w-12 text-primary" />
             <h3 className="mb-2 text-xl font-bold">{title}</h3>
             <p className="text-muted-foreground">{description}</p>
-          </div>
+          </Card>
         ))}
       </div>
     </Section>

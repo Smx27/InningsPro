@@ -1,15 +1,28 @@
+import { cva, type VariantProps } from 'class-variance-authority';
+
 import { cn } from '../../lib/utils';
 
-type SectionProps = {
-  children: React.ReactNode;
-  className?: string;
-  containerClassName?: string;
-  id?: string;
-};
+const sectionSpacingVariants = cva('w-full', {
+  variants: {
+    spacing: {
+      default: 'py-12 md:py-20 lg:py-24',
+      compact: 'py-8 md:py-12',
+      hero: 'py-24 md:py-32 lg:py-40',
+    },
+  },
+  defaultVariants: {
+    spacing: 'default',
+  },
+});
 
-export function Section({ children, className, containerClassName, id }: SectionProps) {
+type SectionProps = React.HTMLAttributes<HTMLElement> &
+  VariantProps<typeof sectionSpacingVariants> & {
+    containerClassName?: string;
+  };
+
+export function Section({ children, className, containerClassName, spacing, ...props }: SectionProps) {
   return (
-    <section id={id} className={cn('w-full py-12 md:py-20 lg:py-24', className)}>
+    <section className={cn(sectionSpacingVariants({ spacing }), className)} {...props}>
       <div className={cn('container mx-auto max-w-7xl px-4 md:px-6', containerClassName)}>{children}</div>
     </section>
   );

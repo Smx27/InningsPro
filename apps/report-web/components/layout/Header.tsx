@@ -1,55 +1,150 @@
 'use client';
 
-import { Activity, Moon, Sun } from 'lucide-react';
+import { Activity, Menu, Moon, Sun, X } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 import { Button } from '../ui/button';
 
+const NAV_ITEMS = [
+  { label: 'Home', href: '/' },
+  { label: 'Reports', href: '/reports' },
+  { label: 'Tournament Analytics', href: '/tournament-analytics' },
+  { label: 'Contact', href: '/contact' }
+];
+
 export function Header() {
+  const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   const isDark = mounted && resolvedTheme === 'dark';
+
+  const isActiveLink = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center px-4 md:px-8 max-w-7xl mx-auto">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center px-4 md:px-8">
         <Link href="/" className="flex items-center space-x-2">
-          <Activity className="h-6 w-6 text-primary" />
-          <span className="font-bold inline-block">Innings Pro Reports</span>
+          <Activity className="h-6 w-6 text-[#22c55e]" />
+          <span className="hidden font-bold sm:inline-block">Innings Pro Reports</span>
         </Link>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-4">
-            <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
-              Home
-            </Link>
-            <Link href="/tournament" className="text-sm font-medium transition-colors hover:text-primary">
-              Tournament
-            </Link>
-            <Link href="/support" className="text-sm font-medium transition-colors hover:text-primary">
-              Support
-            </Link>
-            <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
-              Contact
-            </Link>
+
+        <div className="ml-auto hidden items-center gap-3 md:flex">
+          <nav className="flex items-center gap-1">
+            {NAV_ITEMS.map((item) => {
+              const isActive = isActiveLink(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e] focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-[#22c55e]/15 text-[#22c55e]'
+                      : 'text-foreground/80 hover:text-[#22c55e] hover:bg-[#22c55e]/10'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
+
+          <Button
+            asChild
+            className="bg-[#22c55e] text-white hover:bg-[#16a34a] focus-visible:ring-[#22c55e]"
+          >
+            <Link href="/#upload">Upload Report</Link>
+          </Button>
+
           <Button
             type="button"
             variant="ghost"
             size="icon"
+            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
             onClick={() => setTheme(isDark ? 'light' : 'dark')}
             aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           >
             {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
         </div>
+
+        <div className="ml-auto flex items-center gap-2 md:hidden">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
+            onClick={() => setTheme(isDark ? 'light' : 'dark')}
+            aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+          >
+            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="hover:text-[#22c55e] focus-visible:ring-[#22c55e]"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav"
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          >
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
+
+      {isMobileMenuOpen && (
+        <div id="mobile-nav" className="border-t bg-background/95 px-4 py-4 backdrop-blur md:hidden">
+          <nav className="flex flex-col gap-1">
+            {NAV_ITEMS.map((item) => {
+              const isActive = isActiveLink(item.href);
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#22c55e] focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-[#22c55e]/15 text-[#22c55e]'
+                      : 'text-foreground/80 hover:bg-[#22c55e]/10 hover:text-[#22c55e]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <Button
+            asChild
+            className="mt-3 w-full bg-[#22c55e] text-white hover:bg-[#16a34a] focus-visible:ring-[#22c55e]"
+          >
+            <Link href="/#upload">Upload Report</Link>
+          </Button>
+        </div>
+      )}
     </header>
   );
 }

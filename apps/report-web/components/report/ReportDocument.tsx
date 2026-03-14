@@ -73,7 +73,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
       <StatCards report={report} />
 
       <motion.div
-        className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2"
+        className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2"
         variants={chartGroupVariants}
         initial="hidden"
         whileInView="visible"
@@ -114,7 +114,7 @@ export function ReportDocument({ report }: { report: MatchReport }) {
             </Card>
 
             <motion.div
-              className="grid grid-cols-1 gap-6 2xl:grid-cols-2"
+              className="grid grid-cols-1 gap-6 md:grid-cols-2"
               variants={chartGroupVariants}
               initial="hidden"
               whileInView="visible"

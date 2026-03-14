@@ -1,5 +1,5 @@
 import { PlayerReport, BattingScore } from '../../types/report.types';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface Props {

@@ -7,6 +7,9 @@ import { ExportButtons } from './ExportButtons';
 import { ReportDocument } from './ReportDocument';
 import { useExportPdf } from '../../lib/export/exportPdf';
 import { useReportStore } from '../../lib/store';
+import { Card } from '../ui/Card';
+import { GradientBackground } from '../ui/GradientBackground';
+import { Section } from '../ui/Section';
 
 export function ReportPageClient() {
   const router = useRouter();
@@ -25,12 +28,17 @@ export function ReportPageClient() {
   if (!report || !rawJson) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <ExportButtons report={report} rawJson={rawJson} onPdfExport={handlePdfExport} />
+    <Section className="relative overflow-hidden" spacing="compact">
+      <GradientBackground />
+      <div className="relative mx-auto w-full max-w-5xl space-y-6">
+        <ExportButtons report={report} rawJson={rawJson} onPdfExport={handlePdfExport} />
 
-      <div ref={componentRef}>
-        <ReportDocument report={report} />
+        <Card className="p-3 md:p-6">
+          <div ref={componentRef}>
+            <ReportDocument report={report} />
+          </div>
+        </Card>
       </div>
-    </div>
+    </Section>
   );
 }

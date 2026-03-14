@@ -1,5 +1,6 @@
 import { LineChart, PieChart, TrendingUp } from 'lucide-react';
 
+import { Card } from '../ui/Card';
 import { Section } from '../ui/Section';
 
 export function AnalyticsPreview() {
@@ -24,18 +25,18 @@ export function AnalyticsPreview() {
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border bg-card p-4 shadow-sm sm:col-span-2">
+          <Card className="p-4 sm:col-span-2">
             <div className="mb-3 h-3 w-28 rounded bg-muted" />
             <div className="h-40 rounded-md bg-gradient-to-r from-primary/20 via-primary/10 to-transparent" />
-          </div>
-          <div className="rounded-xl border bg-card p-4 shadow-sm">
+          </Card>
+          <Card className="p-4">
             <div className="mb-3 h-3 w-20 rounded bg-muted" />
             <div className="h-24 rounded-md bg-primary/10" />
-          </div>
-          <div className="rounded-xl border bg-card p-4 shadow-sm">
+          </Card>
+          <Card className="p-4">
             <div className="mb-3 h-3 w-24 rounded bg-muted" />
             <div className="h-24 rounded-md bg-primary/10" />
-          </div>
+          </Card>
         </div>
       </div>
     </Section>

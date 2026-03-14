@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 
-import { Button } from '../ui/button';
+import { GlowButton } from '../ui/GlowButton';
 import { GradientBackground } from '../ui/GradientBackground';
 import { Section } from '../ui/Section';
 
@@ -43,7 +43,7 @@ const ctaVariants: Variants = {
 
 export function Hero() {
   return (
-    <Section className="relative overflow-hidden py-24 md:py-32 lg:py-40" id="hero">
+    <Section className="relative overflow-hidden" id="hero" spacing="hero">
       <GradientBackground />
       <motion.div
         animate="visible"
@@ -58,12 +58,12 @@ export function Hero() {
           Turn cricket match data into beautiful insights
         </motion.p>
         <motion.div className="flex flex-wrap items-center justify-center gap-3" variants={ctaVariants}>
-          <Button asChild size="lg">
+          <GlowButton asChild size="lg">
             <a href="#upload">Upload Match Report</a>
-          </Button>
-          <Button asChild size="lg" variant="outline">
+          </GlowButton>
+          <GlowButton asChild size="lg" variant="secondary">
             <a href="#analytics-preview">View Example Report</a>
-          </Button>
+          </GlowButton>
         </motion.div>
       </motion.div>
     </Section>

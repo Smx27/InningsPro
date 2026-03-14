@@ -4,14 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const glowButtonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'transition-smooth inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-6 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         primary:
-          'bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/40',
+          'bg-primary text-primary-foreground shadow-elevated-card hover:-translate-y-0.5 hover:shadow-elevated-panel',
         secondary:
-          'border border-white/30 bg-white/10 text-foreground shadow-lg shadow-black/5 backdrop-blur-md hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white/20 hover:shadow-xl hover:shadow-primary/20 dark:border-white/20 dark:bg-white/5 dark:hover:bg-white/10',
+          'surface-glass border text-foreground shadow-elevated-card hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-elevated-panel dark:bg-white/5',
       },
       size: {
         default: 'h-11',

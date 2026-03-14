@@ -51,7 +51,7 @@ export function Hero() {
         initial="hidden"
         variants={containerVariants}
       >
-        <motion.h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl" variants={itemVariants}>
+        <motion.h1 className="text-hero" variants={itemVariants}>
           Innings Pro Analytics
         </motion.h1>
         <motion.p className="max-w-[700px] text-lg text-muted-foreground md:text-xl" variants={itemVariants}>

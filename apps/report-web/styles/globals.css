@@ -23,6 +23,9 @@
     --input: 214.3 31.8% 88%;
     --ring: 141.7 70.6% 45.3%;
     --radius: 0.75rem;
+    --glass-bg-alpha: 0.72;
+    --glass-border-alpha: 0.2;
+    --glass-blur: 22px;
   }
 
   .dark {
@@ -44,6 +47,9 @@
     --border: 217.2 32.6% 24%;
     --input: 217.2 32.6% 24%;
     --ring: 141.7 70.6% 45.3%;
+    --glass-bg-alpha: 0.2;
+    --glass-border-alpha: 0.28;
+    --glass-blur: 26px;
   }
 
   * {
@@ -52,6 +58,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   @media print {
@@ -80,5 +97,43 @@
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
+  }
+}
+
+@layer components {
+  .surface-glass {
+    background-color: hsl(var(--background) / var(--glass-bg-alpha));
+    border-color: hsl(var(--primary) / var(--glass-border-alpha));
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  .accent-gradient {
+    background-image: linear-gradient(135deg, hsl(var(--primary) / 0.26), hsl(var(--primary) / 0.08) 45%, transparent 90%);
+  }
+
+  .accent-gradient-soft {
+    background-image: radial-gradient(circle at 20% 20%, hsl(var(--primary) / 0.18), transparent 60%),
+      linear-gradient(135deg, hsl(var(--primary) / 0.12), transparent 70%);
+  }
+}
+
+@layer utilities {
+  .text-hero {
+    @apply text-balance text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl;
+    line-height: 1.02;
+  }
+
+  .text-section-title {
+    @apply text-balance text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl;
+    line-height: 1.08;
+  }
+
+  .transition-smooth {
+    @apply motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out motion-reduce:transition-none;
+  }
+
+  .transition-accent {
+    @apply motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out motion-reduce:transition-none;
   }
 }

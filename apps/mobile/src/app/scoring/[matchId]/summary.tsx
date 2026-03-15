@@ -1,11 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, Share, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, Share, Text, View } from 'react-native';
 
 import { backupService } from '@services/backup.service';
 import { databaseService } from '@services/db.service';
 import { exportService } from '@services/export.service';
 import { logError, logInfo } from '@services/logger';
+import { shareService } from '@services/share.service';
 
 type SummaryState = {
   winner: string;
@@ -68,9 +69,14 @@ export default function MatchSummaryScreen() {
       return;
     }
 
-    const report = await exportService.exportMatchReport(matchId);
-    await Share.share({ message: report });
-    logInfo('Match report shared', { matchId });
+    try {
+      await shareService.shareMatchReport(matchId);
+      logInfo('Match report shared', { matchId });
+    } catch (error) {
+      logError(error, { operation: 'shareMatchReport', matchId });
+      const message = error instanceof Error ? error.message : 'Unable to share match report';
+      Alert.alert('Share failed', message);
+    }
   }, [matchId]);
 
   const handleExportMatch = useCallback(async () => {
@@ -129,7 +135,7 @@ export default function MatchSummaryScreen() {
         }}
         className="mt-6 h-12 items-center justify-center rounded-2xl border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900"
       >
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Download Report</Text>
+        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Share Match Report</Text>
       </Pressable>
 
       <View className="mt-auto gap-3">

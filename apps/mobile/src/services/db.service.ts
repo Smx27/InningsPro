@@ -176,6 +176,28 @@ export class DatabaseService {
   }
 
   /**
+   * Gets a team by id.
+   *
+   * @param id - Team id.
+   * @returns The team row when found, otherwise `undefined`.
+   * @throws {DatabaseError} When the query fails.
+   */
+  async getTeamById(id: string): Promise<Team | undefined> {
+    try {
+      const db = getDatabase();
+      const [record] = await db.select().from(teams).where(eq(teams.id, id)).limit(1);
+
+      if (!record) {
+        return undefined;
+      }
+
+      return record;
+    } catch (error) {
+      throw this.toDatabaseError('getTeamById', { id }, error);
+    }
+  }
+
+  /**
    * Creates a player record.
    *
    * @param payload - Player values to persist.
@@ -272,6 +294,45 @@ export class DatabaseService {
       return record;
     } catch (error) {
       throw this.toDatabaseError('getMatchById', { id }, error);
+    }
+  }
+
+  /**
+   * Retrieves recent matches with resolved team names.
+   *
+   * @param limit - Maximum number of matches to return.
+   * @returns Recent match summaries ordered by newest first.
+   * @throws {DatabaseError} When the query fails.
+   */
+  async getRecentMatches(limit = 5): Promise<Array<{
+    id: string;
+    status: string;
+    createdAt: Date;
+    teamAName: string;
+    teamBName: string;
+  }>> {
+    try {
+      const db = getDatabase();
+      const recentMatches = await db.select().from(matches).orderBy(desc(matches.createdAt)).limit(limit);
+
+      return Promise.all(
+        recentMatches.map(async (match) => {
+          const [teamA, teamB] = await Promise.all([
+            this.getTeamById(match.teamAId),
+            this.getTeamById(match.teamBId),
+          ]);
+
+          return {
+            id: match.id,
+            status: match.status,
+            createdAt: match.createdAt,
+            teamAName: teamA?.name ?? 'Team A',
+            teamBName: teamB?.name ?? 'Team B',
+          };
+        }),
+      );
+    } catch (error) {
+      throw this.toDatabaseError('getRecentMatches', { limit }, error);
     }
   }
 

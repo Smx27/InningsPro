@@ -54,13 +54,23 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const [state, completed] = await Promise.all([
+      const [state, completed, match] = await Promise.all([
         matchEngineService.startMatch(matchId),
         syncMatchCompletion(matchId),
+        databaseService.getMatchById(matchId),
       ]);
 
+      let seededStriker = state.currentStriker;
+      let seededNonStriker = state.currentNonStriker;
+
+      if ((!seededStriker || !seededNonStriker) && match) {
+        const battingPlayers = await databaseService.getPlayersByTeam(match.teamAId);
+        seededStriker = battingPlayers[0]?.id ?? null;
+        seededNonStriker = battingPlayers[1]?.id ?? battingPlayers[0]?.id ?? null;
+      }
+
       set({
-        matchState: { ...state, matchId },
+        matchState: { ...state, matchId, currentStriker: seededStriker, currentNonStriker: seededNonStriker },
         isMatchCompleted: completed,
         currentBowlerId: null,
         lastOverBowlerId: null,

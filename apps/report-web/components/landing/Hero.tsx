@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, type Variants } from 'framer-motion';
+import Link from 'next/link';
 
 import { GlowButton } from '../ui/GlowButton';
 import { Section } from '../ui/Section';
@@ -60,7 +61,7 @@ export function Hero() {
             <a href="#upload">Upload Match Report</a>
           </GlowButton>
           <GlowButton asChild size="lg" variant="secondary">
-            <a href="#analytics-preview">View Example Report</a>
+            <Link href="/reports?demo=true">View Example Report</Link>
           </GlowButton>
         </motion.div>
       </motion.div>

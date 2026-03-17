@@ -2,12 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { Crown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { ExportButtons } from './ExportButtons';
 import { ReportDocument } from './ReportDocument';
+import demoMatchReport from '../../lib/demo/demoMatchReport.json';
 import { useExportPdf } from '../../lib/export/exportPdf';
+import { parseMatchReportData } from '../../lib/parser/parseMatchReport';
 import { useReportStore } from '../../lib/store';
 import { Card } from '../ui/Card';
 import { Section } from '../ui/Section';
@@ -41,15 +43,24 @@ export function ReportPageClient() {
   const router = useRouter();
   const report = useReportStore((state) => state.report);
   const rawJson = useReportStore((state) => state.rawJson);
+  const setReport = useReportStore((state) => state.setReport);
+  const searchParams = useSearchParams();
+  const isDemoReport = searchParams.get('demo') === 'true';
   const componentRef = useRef<HTMLDivElement>(null);
 
   const handlePdfExport = useExportPdf(componentRef, `match-report-${report?.id}`);
 
   useEffect(() => {
-    if (!report) {
-      router.push('/');
+    if (report) return;
+
+    if (isDemoReport) {
+      const parsedDemoReport = parseMatchReportData(demoMatchReport);
+      setReport(parsedDemoReport, JSON.stringify(demoMatchReport));
+      return;
     }
-  }, [report, router]);
+
+    router.push('/');
+  }, [isDemoReport, report, router, setReport]);
 
   if (!report || !rawJson) return null;
 

@@ -1,0 +1,171 @@
+{
+  "id": "demo-match-001",
+  "name": "Innings Pro Demo Match",
+  "date": "2026-02-11",
+  "overs": 5,
+  "teamA": {
+    "id": "team-a",
+    "name": "Mumbai Meteors",
+    "players": [
+      { "id": "a1", "name": "Arjun Patel", "role": "Batter" },
+      { "id": "a2", "name": "Rohan Iyer", "role": "All-rounder" },
+      { "id": "a3", "name": "Karan Shah", "role": "Bowler" }
+    ]
+  },
+  "teamB": {
+    "id": "team-b",
+    "name": "Delhi Dynamos",
+    "players": [
+      { "id": "b1", "name": "Vikram Singh", "role": "Batter" },
+      { "id": "b2", "name": "Aman Verma", "role": "All-rounder" },
+      { "id": "b3", "name": "Nikhil Rao", "role": "Bowler" }
+    ]
+  },
+  "innings": [
+    {
+      "teamId": "team-a",
+      "totalRuns": 45,
+      "totalWickets": 2,
+      "totalOvers": 5,
+      "runRate": 9,
+      "battingScorecard": [
+        {
+          "playerId": "a1",
+          "runs": 21,
+          "balls": 14,
+          "fours": 2,
+          "sixes": 1,
+          "strikeRate": 150,
+          "isOut": true,
+          "dismissal": "c b1 b b3"
+        },
+        {
+          "playerId": "a2",
+          "runs": 17,
+          "balls": 11,
+          "fours": 1,
+          "sixes": 1,
+          "strikeRate": 154.55,
+          "isOut": true,
+          "dismissal": "b b2"
+        },
+        {
+          "playerId": "a3",
+          "runs": 7,
+          "balls": 5,
+          "fours": 0,
+          "sixes": 0,
+          "strikeRate": 140,
+          "isOut": false
+        }
+      ],
+      "bowlingScorecard": [
+        {
+          "playerId": "b1",
+          "overs": 2,
+          "runs": 16,
+          "wickets": 0,
+          "economy": 8,
+          "maidens": 0
+        },
+        {
+          "playerId": "b2",
+          "overs": 2,
+          "runs": 17,
+          "wickets": 1,
+          "economy": 8.5,
+          "maidens": 0
+        },
+        {
+          "playerId": "b3",
+          "overs": 1,
+          "runs": 12,
+          "wickets": 1,
+          "economy": 12,
+          "maidens": 0
+        }
+      ],
+      "ballEvents": [
+        { "over": 0, "ball": 1, "runs": 1, "isWicket": false, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "b1", "batsmanId": "a1" },
+        { "over": 0, "ball": 2, "runs": 4, "isWicket": false, "isFour": true, "isSix": false, "extras": 0, "bowlerId": "b1", "batsmanId": "a1" },
+        { "over": 1, "ball": 3, "runs": 6, "isWicket": false, "isFour": false, "isSix": true, "extras": 0, "bowlerId": "b2", "batsmanId": "a2" },
+        { "over": 2, "ball": 4, "runs": 0, "isWicket": true, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "b3", "batsmanId": "a1" },
+        { "over": 3, "ball": 5, "runs": 2, "isWicket": false, "isFour": false, "isSix": false, "extras": 1, "extraType": "wide", "bowlerId": "b2", "batsmanId": "a2" },
+        { "over": 4, "ball": 6, "runs": 3, "isWicket": true, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "b2", "batsmanId": "a2" }
+      ]
+    },
+    {
+      "teamId": "team-b",
+      "totalRuns": 41,
+      "totalWickets": 3,
+      "totalOvers": 5,
+      "runRate": 8.2,
+      "battingScorecard": [
+        {
+          "playerId": "b1",
+          "runs": 19,
+          "balls": 13,
+          "fours": 2,
+          "sixes": 1,
+          "strikeRate": 146.15,
+          "isOut": true,
+          "dismissal": "b a3"
+        },
+        {
+          "playerId": "b2",
+          "runs": 13,
+          "balls": 10,
+          "fours": 1,
+          "sixes": 0,
+          "strikeRate": 130,
+          "isOut": true,
+          "dismissal": "run out"
+        },
+        {
+          "playerId": "b3",
+          "runs": 9,
+          "balls": 7,
+          "fours": 0,
+          "sixes": 0,
+          "strikeRate": 128.57,
+          "isOut": true,
+          "dismissal": "c a2 b a1"
+        }
+      ],
+      "bowlingScorecard": [
+        {
+          "playerId": "a1",
+          "overs": 1,
+          "runs": 9,
+          "wickets": 1,
+          "economy": 9,
+          "maidens": 0
+        },
+        {
+          "playerId": "a2",
+          "overs": 2,
+          "runs": 15,
+          "wickets": 1,
+          "economy": 7.5,
+          "maidens": 0
+        },
+        {
+          "playerId": "a3",
+          "overs": 2,
+          "runs": 17,
+          "wickets": 1,
+          "economy": 8.5,
+          "maidens": 0
+        }
+      ],
+      "ballEvents": [
+        { "over": 0, "ball": 1, "runs": 2, "isWicket": false, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "a1", "batsmanId": "b1" },
+        { "over": 0, "ball": 2, "runs": 4, "isWicket": false, "isFour": true, "isSix": false, "extras": 0, "bowlerId": "a1", "batsmanId": "b1" },
+        { "over": 1, "ball": 3, "runs": 1, "isWicket": false, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "a2", "batsmanId": "b2" },
+        { "over": 2, "ball": 4, "runs": 0, "isWicket": true, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "a3", "batsmanId": "b1" },
+        { "over": 3, "ball": 5, "runs": 6, "isWicket": false, "isFour": false, "isSix": true, "extras": 0, "bowlerId": "a2", "batsmanId": "b2" },
+        { "over": 4, "ball": 6, "runs": 1, "isWicket": true, "isFour": false, "isSix": false, "extras": 0, "bowlerId": "a3", "batsmanId": "b3" }
+      ]
+    }
+  ]
+}

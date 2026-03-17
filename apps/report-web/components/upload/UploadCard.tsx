@@ -82,7 +82,7 @@ export function UploadCard() {
         setStatusMessage('Tournament report ready.');
         setIsSuccess(true);
         await new Promise((resolve) => setTimeout(resolve, 700));
-        router.push('/tournament');
+        router.push('/tournament-analytics');
         return;
       } catch (tournamentError) {
         if (!isTournamentReportParseError(tournamentError)) {
@@ -95,7 +95,7 @@ export function UploadCard() {
       setStatusMessage('Match report ready.');
       setIsSuccess(true);
       await new Promise((resolve) => setTimeout(resolve, 700));
-      router.push('/report');
+      router.push('/reports');
     } catch (err: unknown) {
       setError(getReadableErrorMessage(err));
     } finally {

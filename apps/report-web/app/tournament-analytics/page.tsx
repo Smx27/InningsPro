@@ -1,5 +1,5 @@
 import { TournamentAnalyticsPage } from '../../components/tournament/TournamentAnalyticsPage';
 
-export default function TournamentPage() {
+export default function TournamentAnalyticsRoutePage() {
   return <TournamentAnalyticsPage />;
 }

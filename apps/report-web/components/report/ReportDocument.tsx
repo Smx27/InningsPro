@@ -4,15 +4,12 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 
-import { BallTimeline } from './BallTimeline';
-import { BattingScorecard } from './BattingScorecard';
-import { BowlingScorecard } from './BowlingScorecard';
+import { InningsSection } from './InningsSection';
 import { MatchHeader } from './MatchHeader';
 import { StatCards } from './StatCards';
-import { buildManhattanData } from '../../lib/charts/buildManhattanData';
 import { buildRunRateComparison } from '../../lib/charts/buildRunRateComparison';
 import { buildWormChartData } from '../../lib/charts/buildWormChartData';
-import { Card, CardHeader, CardTitle } from '../ui/Card';
+import { Card } from '../ui/Card';
 import { ChartSkeleton } from '../ui/ChartSkeleton';
 
 import type { MatchReport } from '../../types/report.types';
@@ -23,7 +20,7 @@ const chartGroupVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
       duration: 0.45,
       staggerChildren: 0.12,
     },
@@ -36,7 +33,7 @@ const chartItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
       duration: 0.35,
     },
   },
@@ -47,21 +44,13 @@ const RunRateComparisonChart = dynamic(
   {
     ssr: false,
     loading: () => <ChartSkeleton />,
-  },
+  }
 );
 
 const WormChart = dynamic(() => import('./WormChart').then((module) => module.WormChart), {
   ssr: false,
   loading: () => <ChartSkeleton />,
 });
-
-const ManhattanChart = dynamic(
-  () => import('./ManhattanChart').then((module) => module.ManhattanChart),
-  {
-    ssr: false,
-    loading: () => <ChartSkeleton />,
-  },
-);
 
 export function ReportDocument({ report }: { report: MatchReport }) {
   const runRateData = useMemo(() => buildRunRateComparison(report), [report]);
@@ -99,72 +88,14 @@ export function ReportDocument({ report }: { report: MatchReport }) {
         </motion.div>
       </motion.div>
 
-      {report.innings.map((inning, idx) => {
-        const isTeamA = inning.teamId === report.teamA.id;
-        const battingTeam = isTeamA ? report.teamA : report.teamB;
-        const bowlingTeam = isTeamA ? report.teamB : report.teamA;
-        const manhattanData = buildManhattanData(inning);
-
-        return (
-          <section key={`${inning.teamId}-${idx}`} className="mb-10 last:mb-0">
-            <Card interactive className="mb-4 rounded-2xl shadow-xl backdrop-blur p-5">
-              <h2 className="text-xl font-bold text-primary">
-                Innings {idx + 1}: {battingTeam.name}
-              </h2>
-            </Card>
-
-            <motion.div
-              className="grid grid-cols-1 gap-6 md:grid-cols-2"
-              variants={chartGroupVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              <motion.div variants={chartItemVariants}>
-                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
-                  <CardHeader className="p-2 pb-4">
-                    <CardTitle className="text-base">Batting Scorecard</CardTitle>
-                  </CardHeader>
-                  <BattingScorecard
-                    scorecard={inning.battingScorecard}
-                    players={battingTeam.players}
-                  />
-                </Card>
-              </motion.div>
-
-              <motion.div variants={chartItemVariants}>
-                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
-                  <CardHeader className="p-2 pb-4">
-                    <CardTitle className="text-base">Bowling Scorecard</CardTitle>
-                  </CardHeader>
-                  <BowlingScorecard
-                    scorecard={inning.bowlingScorecard}
-                    players={bowlingTeam.players}
-                  />
-                </Card>
-              </motion.div>
-
-              <motion.div variants={chartItemVariants}>
-                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
-                  <CardHeader className="p-2 pb-4">
-                    <CardTitle className="text-base">Manhattan Chart</CardTitle>
-                  </CardHeader>
-                  <ManhattanChart data={manhattanData} />
-                </Card>
-              </motion.div>
-
-              <motion.div variants={chartItemVariants}>
-                <Card interactive className="rounded-2xl shadow-xl backdrop-blur p-4">
-                  <CardHeader className="p-2 pb-4">
-                    <CardTitle className="text-base">Ball Timeline</CardTitle>
-                  </CardHeader>
-                  <BallTimeline balls={inning.ballEvents} />
-                </Card>
-              </motion.div>
-            </motion.div>
-          </section>
-        );
-      })}
+      {report.innings.map((inning, idx) => (
+        <InningsSection
+          key={`${inning.teamId}-${idx}`}
+          inning={inning}
+          report={report}
+          inningNumber={idx + 1}
+        />
+      ))}
     </div>
   );
 }

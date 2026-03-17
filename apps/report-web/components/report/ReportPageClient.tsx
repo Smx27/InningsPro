@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Crown } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 
 import { ExportButtons } from './ExportButtons';
@@ -11,8 +12,10 @@ import demoMatchReport from '../../lib/demo/demoMatchReport.json';
 import { useExportPdf } from '../../lib/export/exportPdf';
 import { parseMatchReportData } from '../../lib/parser/parseMatchReport';
 import { useReportStore } from '../../lib/store';
+import { Button } from '../ui/button';
 import { Card } from '../ui/Card';
 import { Section } from '../ui/Section';
+import { UploadCard } from '../upload/UploadCard';
 
 const staggerContainerVariants = {
   hidden: { opacity: 0, y: 24 },
@@ -20,7 +23,7 @@ const staggerContainerVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
       duration: 0.45,
       staggerChildren: 0.12,
     },
@@ -33,14 +36,13 @@ const staggerItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
       duration: 0.35,
     },
   },
 };
 
 export function ReportPageClient() {
-  const router = useRouter();
   const report = useReportStore((state) => state.report);
   const rawJson = useReportStore((state) => state.rawJson);
   const setReport = useReportStore((state) => state.setReport);
@@ -56,13 +58,37 @@ export function ReportPageClient() {
     if (isDemoReport) {
       const parsedDemoReport = parseMatchReportData(demoMatchReport);
       setReport(parsedDemoReport, JSON.stringify(demoMatchReport));
-      return;
     }
+  }, [isDemoReport, report, setReport]);
 
-    router.push('/');
-  }, [isDemoReport, report, router, setReport]);
+  if (!report || !rawJson) {
+    return (
+      <Section className="relative overflow-hidden" spacing="compact">
+        <motion.div
+          className="relative mx-auto flex w-full max-w-5xl flex-col gap-6"
+          variants={staggerContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={staggerItemVariants}>
+            <Card interactive className="rounded-2xl p-6 text-center shadow-xl backdrop-blur md:p-8">
+              <h1 className="text-2xl font-bold">Match Report Builder</h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Upload a match report JSON to render a full breakdown, or start with the demo report.
+              </p>
+              <Button asChild className="mt-5" variant="outline">
+                <Link href="/reports?demo=true">Load Demo Report</Link>
+              </Button>
+            </Card>
+          </motion.div>
 
-  if (!report || !rawJson) return null;
+          <motion.div variants={staggerItemVariants}>
+            <UploadCard />
+          </motion.div>
+        </motion.div>
+      </Section>
+    );
+  }
 
   return (
     <Section className="relative overflow-hidden" spacing="compact">

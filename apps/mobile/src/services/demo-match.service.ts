@@ -1,25 +1,24 @@
 import { DEMO_MATCH_SEED } from '@features/demo/demoMatchData';
+import { generateId } from '@utils/id';
 
 import { databaseService } from './db.service';
-
-const getTimestampId = (prefix: string): string => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export class DemoMatchService {
   async loadDemoMatch(): Promise<string> {
     const tournament = await databaseService.createTournament({
-      id: getTimestampId(DEMO_MATCH_SEED.tournamentId),
+      id: generateId(DEMO_MATCH_SEED.tournamentId),
       name: `${DEMO_MATCH_SEED.tournamentName} ${new Date().toLocaleTimeString()}`,
       rulesJson: JSON.stringify(DEMO_MATCH_SEED.rules),
     });
 
     const [teamA, teamB] = await Promise.all([
       databaseService.createTeam({
-        id: getTimestampId('demo-team-a'),
+        id: generateId('demo-team-a'),
         tournamentId: tournament.id,
         name: DEMO_MATCH_SEED.teamA.name,
       }),
       databaseService.createTeam({
-        id: getTimestampId('demo-team-b'),
+        id: generateId('demo-team-b'),
         tournamentId: tournament.id,
         name: DEMO_MATCH_SEED.teamB.name,
       }),
@@ -48,7 +47,7 @@ export class DemoMatchService {
     );
 
     const match = await databaseService.createMatch({
-      id: getTimestampId('demo-match'),
+      id: generateId('demo-match'),
       tournamentId: tournament.id,
       teamAId: teamA.id,
       teamBId: teamB.id,

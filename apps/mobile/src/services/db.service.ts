@@ -524,6 +524,56 @@ export class DatabaseService {
   }
 
   /**
+   * Creates multiple ball events and updates cached events for the affected innings.
+   *
+   * @param payloads - Array of ball event values to persist.
+   * @returns The created ball event rows.
+   * @throws {DatabaseError} When the insert fails.
+   */
+  async addBallEvents(payloads: NewBallEvent[]): Promise<BallEvent[]> {
+    try {
+      const db = getDatabase();
+      const createdEvents = await db.insert(ballEvents).values(payloads).returning();
+
+      if (createdEvents.length === 0) {
+        return [];
+      }
+
+      // Group by innings to update cache
+      const groupedByInnings = new Map<string, BallEvent[]>();
+      for (const event of createdEvents) {
+        const key = this.getBallEventsCacheKey(event.matchId, event.inningsNumber);
+        const existing = groupedByInnings.get(key) ?? [];
+        existing.push(event);
+        groupedByInnings.set(key, existing);
+      }
+
+      for (const [cacheKey, newEvents] of groupedByInnings) {
+        const cachedEvents = this.ballEventsCache.get(cacheKey);
+        if (cachedEvents) {
+          const merged = [...cachedEvents, ...newEvents].sort((a, b) => {
+            if (a.inningsNumber !== b.inningsNumber) {
+              return a.inningsNumber - b.inningsNumber;
+            }
+            if (a.overNumber !== b.overNumber) {
+              return a.overNumber - b.overNumber;
+            }
+            if (a.ballNumber !== b.ballNumber) {
+              return a.ballNumber - b.ballNumber;
+            }
+            return a.createdAt.getTime() - b.createdAt.getTime();
+          });
+          this.ballEventsCache.set(cacheKey, merged);
+        }
+      }
+
+      return createdEvents;
+    } catch (error) {
+      throw this.toDatabaseError('addBallEvents', { count: payloads.length }, error);
+    }
+  }
+
+  /**
    * Retrieves ball events for a match, optionally scoped to a single innings.
    *
    * @param matchId - Match id.

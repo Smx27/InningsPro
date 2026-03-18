@@ -1,5 +1,5 @@
-import { TournamentAnalyticsPage } from '../../components/tournament/TournamentAnalyticsPage';
+import { redirect } from 'next/navigation';
 
 export default function TournamentPage() {
-  return <TournamentAnalyticsPage />;
+  redirect('/tournament-analytics');
 }

@@ -1,3 +1,4 @@
+import { NewBallEvent } from '@core/database/schema';
 import { DEMO_MATCH_SEED } from '@features/demo/demoMatchData';
 import { generateId } from '@utils/id';
 
@@ -70,13 +71,14 @@ export class DemoMatchService {
     let legalBalls = 0;
     let overNumber = 0;
     let ballInOver = 0;
+    const ballEvents: NewBallEvent[] = [];
 
     for (const [index, event] of DEMO_MATCH_SEED.innings.events.entries()) {
       if (event.isLegalBall) {
         ballInOver += 1;
       }
 
-      await databaseService.addBallEvent({
+      ballEvents.push({
         id: `ball-${match.id}-1-${index + 1}`,
         matchId: match.id,
         inningsNumber: 1,
@@ -101,6 +103,8 @@ export class DemoMatchService {
         ballInOver = 0;
       }
     }
+
+    await databaseService.addBallEvents(ballEvents);
 
     return match.id;
   }

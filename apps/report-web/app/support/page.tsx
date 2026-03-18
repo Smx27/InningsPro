@@ -15,7 +15,6 @@ export default function SupportPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Support ticket submitted:', { ...formData, file });
     setSubmitted(true);
   };
 

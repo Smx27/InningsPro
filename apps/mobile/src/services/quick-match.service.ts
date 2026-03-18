@@ -1,3 +1,5 @@
+import { generateId } from '@utils/id';
+
 import { databaseService } from './db.service';
 
 export type QuickMatchInput = {
@@ -11,8 +13,6 @@ const normalizeLabel = (value: string, fallback: string): string => {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : fallback;
 };
-
-const createId = (prefix: string): string => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 export class QuickMatchService {
   async createQuickMatch(input: QuickMatchInput): Promise<string> {
@@ -31,14 +31,14 @@ export class QuickMatchService {
     };
 
     const tournament = await databaseService.createTournament({
-      id: createId('quick-tournament'),
+      id: generateId('quick-tournament'),
       name: `Quick Match ${new Date().toLocaleString()}`,
       rulesJson: JSON.stringify(rules),
     });
 
     const [teamA, teamB] = await Promise.all([
-      databaseService.createTeam({ id: createId('quick-team-a'), tournamentId: tournament.id, name: teamAName }),
-      databaseService.createTeam({ id: createId('quick-team-b'), tournamentId: tournament.id, name: teamBName }),
+      databaseService.createTeam({ id: generateId('quick-team-a'), tournamentId: tournament.id, name: teamAName }),
+      databaseService.createTeam({ id: generateId('quick-team-b'), tournamentId: tournament.id, name: teamBName }),
     ]);
 
     await Promise.all([
@@ -61,7 +61,7 @@ export class QuickMatchService {
     ]);
 
     const match = await databaseService.createMatch({
-      id: createId('quick-match'),
+      id: generateId('quick-match'),
       tournamentId: tournament.id,
       teamAId: teamA.id,
       teamBId: teamB.id,

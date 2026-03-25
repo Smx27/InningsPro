@@ -25,27 +25,24 @@ export class DemoMatchService {
       }),
     ]);
 
-    const teamAPlayers = await Promise.all(
-      DEMO_MATCH_SEED.teamA.players.map((name, index) =>
-        databaseService.createPlayer({
+    const [teamAPlayers, teamBPlayers] = await Promise.all([
+      databaseService.createPlayers(
+        DEMO_MATCH_SEED.teamA.players.map((name, index) => ({
           id: `${teamA.id}-p-${index + 1}`,
           teamId: teamA.id,
           name,
           role: 'batter',
-        }),
+        })),
       ),
-    );
-
-    const teamBPlayers = await Promise.all(
-      DEMO_MATCH_SEED.teamB.players.map((name, index) =>
-        databaseService.createPlayer({
+      databaseService.createPlayers(
+        DEMO_MATCH_SEED.teamB.players.map((name, index) => ({
           id: `${teamB.id}-p-${index + 1}`,
           teamId: teamB.id,
           name,
           role: 'bowler',
-        }),
+        })),
       ),
-    );
+    ]);
 
     const match = await databaseService.createMatch({
       id: generateId('demo-match'),

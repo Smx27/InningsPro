@@ -1,4 +1,4 @@
-import { InningsReport } from '../../types/report.types';
+import type { BallEvent, InningsReport } from '../../types/report.types';
 
 export function buildManhattanData(innings: InningsReport) {
   if (!innings.ballEvents || innings.ballEvents.length === 0) return [];
@@ -11,7 +11,7 @@ export function buildManhattanData(innings: InningsReport) {
     }
     a[ball.over]!.push(ball);
     return a;
-  }, {} as Record<number, any[]>);
+  }, {} as Record<number, BallEvent[]>);
 
   const sortedOvers = Object.keys(ballsByOver || {}).map(Number).sort((a, b) => a - b);
   const data: { over: number; runs: number }[] = [];

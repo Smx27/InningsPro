@@ -224,6 +224,26 @@ export class DatabaseService {
   }
 
   /**
+   * Creates multiple player records in a single bulk operation.
+   *
+   * @param payloads - Array of player values to persist.
+   * @returns The created player rows.
+   * @throws {DatabaseError} When the bulk insert fails.
+   */
+  async createPlayers(payloads: NewPlayer[]): Promise<Player[]> {
+    try {
+      if (payloads.length === 0) {
+        return [];
+      }
+
+      const db = getDatabase();
+      return db.insert(players).values(payloads).returning();
+    } catch (error) {
+      throw this.toDatabaseError('createPlayers', { count: payloads.length }, error);
+    }
+  }
+
+  /**
    * Retrieves players for a team sorted by most recently created.
    *
    * @param teamId - Parent team id.

@@ -1,8 +1,8 @@
 ---
-name: "🏏 Scoring Bug Report"
-about: "Report an incorrect scoring calculation or cricket law violation"
-title: "[SCORING BUG] "
-labels: ["bug", "scoring", "triage"]
+name: '🏏 Scoring Bug Report'
+about: 'Report an incorrect scoring calculation or cricket law violation'
+title: '[SCORING BUG] '
+labels: ['bug', 'scoring', 'triage']
 assignees: []
 ---
 
@@ -136,7 +136,7 @@ Innings 1:
 - [ ] Over progression
 - [ ] Strike rotation
 - [ ] Player statistics
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ---
 

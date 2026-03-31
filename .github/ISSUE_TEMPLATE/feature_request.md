@@ -1,8 +1,8 @@
 ---
-name: "✨ Feature Request"
-about: "Suggest a new feature or enhancement"
-title: "[FEATURE] "
-labels: ["enhancement", "triage"]
+name: '✨ Feature Request'
+about: 'Suggest a new feature or enhancement'
+title: '[FEATURE] '
+labels: ['enhancement', 'triage']
 assignees: []
 ---
 
@@ -50,7 +50,7 @@ assignees: []
 - [ ] Captains/Coaches
 - [ ] Administrators
 - [ ] Team Members
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ### Use Cases
 
@@ -73,7 +73,7 @@ assignees: []
 - [ ] `packages/export-schema` — Export schemas
 - [ ] `docs/` — Documentation
 - [ ] Scoring Engine
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ### Implementation Approach
 

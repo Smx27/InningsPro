@@ -1,5 +1,6 @@
-import { test } from 'node:test';
 import assert from 'node:assert';
+import { test } from 'node:test';
+
 import { calculateChasingWinProbability } from './buildWinProbabilityData';
 
 test('calculateChasingWinProbability - returns 100 when remaining runs is 0', () => {

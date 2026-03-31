@@ -1,8 +1,8 @@
 ---
-name: "📚 Documentation"
-about: "Suggest improvements to documentation"
-title: "[DOCS] "
-labels: ["documentation", "triage"]
+name: '📚 Documentation'
+about: 'Suggest improvements to documentation'
+title: '[DOCS] '
+labels: ['documentation', 'triage']
 assignees: []
 ---
 
@@ -20,7 +20,7 @@ assignees: []
 - [ ] ❌ Broken links or references
 - [ ] 🎯 Needs better examples
 - [ ] 📍 Wrong location
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ---
 
@@ -40,7 +40,7 @@ assignees: []
 - [ ] docs/EXPORT_SCHEMA.md
 - [ ] docs/PRD.md
 - [ ] Inline code comments
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ### Specific Section
 
@@ -89,7 +89,7 @@ Link or reference: ...
 - [ ] Web app developers
 - [ ] Architects
 - [ ] Users
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ### What's the impact?
 
@@ -126,10 +126,12 @@ Link or reference: ...
 # Title
 
 ## Section 1
+
 - Point 1
 - Point 2
 
 ## Section 2
+
 - Content
 ```
 

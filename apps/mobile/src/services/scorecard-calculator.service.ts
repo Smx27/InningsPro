@@ -1,5 +1,5 @@
-import type { BallEvent } from '@core/database/schema';
 import type { BattingScore, BowlingScore } from '@/types/report.types';
+import type { BallEvent } from '@core/database/schema';
 
 type BattingAccumulator = {
   playerId: string;

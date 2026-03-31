@@ -16,15 +16,9 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": [
-        "packages/shared-types/src/*"
-      ],
-      "@schema/*": [
-        "packages/export-schema/src/*"
-      ],
-      "@ui/*": [
-        "packages/ui-tokens/src/*"
-      ]
+      "@shared/*": ["packages/shared-types/src/*"],
+      "@schema/*": ["packages/export-schema/src/*"],
+      "@ui/*": ["packages/ui-tokens/src/*"]
     }
   }
 }

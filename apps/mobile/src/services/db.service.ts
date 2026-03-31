@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, sql, sum } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNotNull, sql, sum } from 'drizzle-orm';
 
 import { getDatabase } from '@core/database';
 import {
@@ -181,6 +181,25 @@ export class DatabaseService {
    * @returns The team row when found, otherwise `undefined`.
    * @throws {DatabaseError} When the query fails.
    */
+  /**
+   * Retrieves multiple teams by their IDs in a single query.
+   *
+   * @param ids - Array of team IDs.
+   * @returns Array of found team rows.
+   * @throws {DatabaseError} When the query fails.
+   */
+  async getTeamsByIds(ids: string[]): Promise<Team[]> {
+    try {
+      if (ids.length === 0) {
+        return [];
+      }
+      const db = getDatabase();
+      return db.select().from(teams).where(inArray(teams.id, ids));
+    } catch (error) {
+      throw this.toDatabaseError('getTeamsByIds', { count: ids.length }, error);
+    }
+  }
+
   async getTeamById(id: string): Promise<Team | undefined> {
     try {
       const db = getDatabase();
@@ -340,22 +359,35 @@ export class DatabaseService {
         .orderBy(desc(matches.createdAt))
         .limit(limit);
 
-      return Promise.all(
-        recentMatches.map(async (match) => {
-          const [teamA, teamB] = await Promise.all([
-            this.getTeamById(match.teamAId),
-            this.getTeamById(match.teamBId),
-          ]);
+      if (recentMatches.length === 0) {
+        return [];
+      }
 
-          return {
-            id: match.id,
-            status: match.status,
-            createdAt: match.createdAt,
-            teamAName: teamA?.name ?? 'Team A',
-            teamBName: teamB?.name ?? 'Team B',
-          };
-        }),
-      );
+      // Collect unique team IDs
+      const teamIds = new Set<string>();
+      recentMatches.forEach((match) => {
+        teamIds.add(match.teamAId);
+        teamIds.add(match.teamBId);
+      });
+
+      // Fetch all required teams in one query
+      const teamsList = await this.getTeamsByIds(Array.from(teamIds));
+
+      // Create a lookup map for faster access
+      const teamMap = new Map(teamsList.map((team) => [team.id, team]));
+
+      return recentMatches.map((match) => {
+        const teamA = teamMap.get(match.teamAId);
+        const teamB = teamMap.get(match.teamBId);
+
+        return {
+          id: match.id,
+          status: match.status,
+          createdAt: match.createdAt,
+          teamAName: teamA?.name ?? 'Team A',
+          teamBName: teamB?.name ?? 'Team B',
+        };
+      });
     } catch (error) {
       throw this.toDatabaseError('getRecentMatches', { limit }, error);
     }

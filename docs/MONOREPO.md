@@ -39,12 +39,14 @@
 ### Problems Solved
 
 **Before Monorepo:**
+
 - Duplicated domain logic (scoring engine copied in mobile and web)
 - Inconsistent types across applications
 - Complex dependency management
 - Slow build/test cycles
 
 **After Monorepo:**
+
 - ✅ Single source of truth for shared code
 - ✅ Consistent types across all packages
 - ✅ Unified dependency management
@@ -192,13 +194,13 @@ tooling/
 ### Task Definition Syntax
 
 ```yaml
-build:                      # Task name
-  dependsOn:                # Dependencies
-    - ^build                # "^" = depends on pkg dependencies' build
-  outputs:                  # Folders to cache
-    - "dist/**"
-  cache: true               # Enable caching
-  persistent: true          # Keep running (for dev servers)
+build: # Task name
+  dependsOn: # Dependencies
+    - ^build # "^" = depends on pkg dependencies' build
+  outputs: # Folders to cache
+    - 'dist/**'
+  cache: true # Enable caching
+  persistent: true # Keep running (for dev servers)
 ```
 
 ---
@@ -218,9 +220,9 @@ build:                      # Task name
 
 ```yaml
 packages:
-  - "apps/*"      # All packages in apps/
-  - "packages/*"  # All packages in packages/
-  - "tooling/*"   # All packages in tooling/
+  - 'apps/*' # All packages in apps/
+  - 'packages/*' # All packages in packages/
+  - 'tooling/*' # All packages in tooling/
 ```
 
 ### Cross-Package Dependencies
@@ -309,11 +311,13 @@ pnpm build --filter=mobile -- --verbose
 ### Understanding Cache
 
 **Turborepo caches:**
+
 - Task outputs (build artifacts, compiled code)
 - Test results
 - Lint/typecheck results
 
 **Turbo skips re-running a task if:**
+
 - Source code hasn't changed
 - Dependencies haven't changed
 - Output cache exists locally
@@ -489,11 +493,11 @@ In `turbo.json`:
 ```json
 {
   "build": {
-    "dependsOn": ["^build"]  // Build dependencies first
+    "dependsOn": ["^build"] // Build dependencies first
   },
   "dev": {
-    "cache": false,          // Don't cache dev servers
-    "persistent": true       // Keep running
+    "cache": false, // Don't cache dev servers
+    "persistent": true // Keep running
   }
 }
 ```
@@ -519,6 +523,7 @@ Cannot find module '@inningspro/shared-types'
 ```
 
 **Solution:**
+
 ```bash
 # Make sure package is in pnpm-workspace.yaml
 # Reinstall dependencies
@@ -589,7 +594,7 @@ pnpm add @inningspro/shared-types@0.1.0 --filter=mobile
 - ❌ **Don't bypass exports** — Import from `src/` directly
 - ❌ **Don't create circular dependencies** — Package A → B → A
 - ❌ **Don't duplicate domain logic** — Use shared packages instead
-- ❌ **Don't forget workspace:* prefix** — Use for local dependencies
+- ❌ **Don't forget workspace:\* prefix** — Use for local dependencies
 - ❌ **Don't commit node_modules** — It's auto-generated
 - ❌ **Don't modify pnpm-lock.yaml manually** — Let pnpm manage it
 - ❌ **Don't ignore TypeScript errors** — Fix or use // @ts-ignore with reason
@@ -625,17 +630,17 @@ This speeds up CI by caching artifacts across runs.
 
 ## Quick Reference
 
-| Command | Purpose |
-|---------|---------|
-| `pnpm install` | Install all dependencies |
-| `pnpm dev` | Start all dev servers |
-| `pnpm build` | Build all packages |
-| `pnpm test` | Test all packages |
-| `pnpm lint` | Lint all packages |
-| `pnpm build --filter=mobile` | Build only mobile |
-| `pnpm add pkg --filter=mobile` | Add to mobile package |
-| `turbo build --graph` | View dependency graph |
-| `pnpm list @inningspro/shared-types` | Check installed version |
+| Command                              | Purpose                  |
+| ------------------------------------ | ------------------------ |
+| `pnpm install`                       | Install all dependencies |
+| `pnpm dev`                           | Start all dev servers    |
+| `pnpm build`                         | Build all packages       |
+| `pnpm test`                          | Test all packages        |
+| `pnpm lint`                          | Lint all packages        |
+| `pnpm build --filter=mobile`         | Build only mobile        |
+| `pnpm add pkg --filter=mobile`       | Add to mobile package    |
+| `turbo build --graph`                | View dependency graph    |
+| `pnpm list @inningspro/shared-types` | Check installed version  |
 
 ---
 

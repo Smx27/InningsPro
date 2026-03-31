@@ -106,9 +106,11 @@ pnpm build --filter=report-web
 ## 📦 Packages
 
 ### `apps/mobile`
+
 **React Native + Expo mobile application** for live match scoring.
 
 **Key responsibilities:**
+
 - Capture ball-by-ball events from scorers
 - Local storage and offline support
 - Real-time validation using the scoring engine
@@ -117,9 +119,11 @@ pnpm build --filter=report-web
 **Run:** `pnpm dev --filter=mobile`
 
 ### `apps/report-web`
+
 **Web application** for viewing, exporting, and sharing match reports.
 
 **Key responsibilities:**
+
 - Render innings and match summaries
 - Generate printable/shareable reports
 - Validate and export score data in machine-readable formats
@@ -127,9 +131,11 @@ pnpm build --filter=report-web
 **Run:** `pnpm dev --filter=report-web`
 
 ### `packages/shared-types`
+
 **Canonical TypeScript domain models** used across all applications.
 
 **Exports:**
+
 - Cricket domain types (Match, Innings, Delivery, Wicket, etc.)
 - Scoring state contracts
 - Event and correction type definitions
@@ -137,9 +143,11 @@ pnpm build --filter=report-web
 **Usage:** `import { Match, Innings } from '@inningspro/shared-types'`
 
 ### `packages/ui-tokens`
+
 **Design tokens, themes, and reusable UI primitives.**
 
 **Exports:**
+
 - Color palettes and spacing scales
 - Typography and component styles
 - Consistent theming across mobile and web
@@ -147,9 +155,11 @@ pnpm build --filter=report-web
 **Usage:** `import { theme } from '@inningspro/ui-tokens'`
 
 ### `packages/export-schema`
+
 **Export format specification and validation layer.**
 
 **Key features:**
+
 - JSON schema definitions for score exports
 - Validation utilities
 - Version management for exported data
@@ -159,17 +169,22 @@ pnpm build --filter=report-web
 ## 🎯 Core Features & Flows
 
 ### 1. Match & Innings Creation
+
 Initialize a new match with teams, venues, and match format details.
 
 ### 2. Live Score Capture
+
 Enter delivery outcomes with:
+
 - Runs (batter runs, extras, penalties)
 - Wicket events (modes, attribution, legality)
 - Over progression and strike rotation
 - Full correction and undo support
 
 ### 3. Deterministic Scoring Engine
+
 The scoring engine ensures:
+
 - Consistent state transitions from identical event streams
 - Compliance with cricket laws
 - Deterministic computation for historical replays
@@ -178,6 +193,7 @@ The scoring engine ensures:
 See [`docs/SCORING_ENGINE.md`](docs/SCORING_ENGINE.md) for detailed scoring rules.
 
 ### 4. Report Generation & Export
+
 - View innings summaries with batting/bowling statistics
 - Export scores in machine-readable formats
 - Generate printable match reports
@@ -200,6 +216,7 @@ All technical and product documentation lives in the `docs/` folder:
 ### Architecture Decision Records (ADRs)
 
 Major technical decisions are documented in `docs/adr/`. Each ADR includes:
+
 - Decision date and owner
 - Alternatives considered
 - Rollback plan

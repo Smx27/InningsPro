@@ -1,11 +1,11 @@
 blank_issues_enabled: true
 contact_links:
-  - name: "❓ Questions & Discussions"
+  - name: '❓ Questions & Discussions'
     url: https://github.com/Smx27/InningsPro/discussions
-    about: "Ask questions and start discussions about features or architecture"
-  - name: "🌐 Documentation"
+    about: 'Ask questions and start discussions about features or architecture'
+  - name: '🌐 Documentation'
     url: https://github.com/Smx27/InningsPro/tree/main/docs
-    about: "Read the complete documentation and guides"
-  - name: "🏏 Cricket Laws Reference"
+    about: 'Read the complete documentation and guides'
+  - name: '🏏 Cricket Laws Reference'
     url: https://www.lords.org/mcc/laws-of-cricket
-    about: "Reference the official MCC Laws of Cricket"
+    about: 'Reference the official MCC Laws of Cricket'

@@ -1,8 +1,8 @@
 ---
-name: "🐛 Bug Report"
-about: "Report a bug or unexpected behavior"
-title: "[BUG] "
-labels: ["bug", "triage"]
+name: '🐛 Bug Report'
+about: 'Report a bug or unexpected behavior'
+title: '[BUG] '
+labels: ['bug', 'triage']
 assignees: []
 ---
 
@@ -32,7 +32,7 @@ assignees: []
   - [ ] `packages/shared-types` — Domain types
   - [ ] `packages/ui-tokens` — Design tokens
   - [ ] `packages/export-schema` — Export schemas
-  - [ ] Other: _______________
+  - [ ] Other: ******\_\_\_******
 
 - **App Version:** [If applicable]
 - **Device/Browser:** [For mobile/web bugs, e.g., iPhone 14 Pro, Chrome 120]

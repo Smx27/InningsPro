@@ -1,8 +1,8 @@
 import { databaseService } from './db.service';
 import { ScorecardCalculatorService } from './scorecard-calculator.service';
 
-import type { BallEvent } from '@core/database/schema';
 import type { InningsReport, MatchReport, TeamReport } from '@/types/report.types';
+import type { BallEvent } from '@core/database/schema';
 
 type MatchRules = {
   oversPerInnings: number;

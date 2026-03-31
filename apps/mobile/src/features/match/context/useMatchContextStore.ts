@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 
-import type { Player } from '@core/database/schema';
 import { databaseService } from '@services/db.service';
+
+import type { Player } from '@core/database/schema';
 
 type MatchContextStore = {
   matchId: string | null;

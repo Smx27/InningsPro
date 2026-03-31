@@ -113,6 +113,7 @@ git rebase upstream/main
 ### 2. Create Feature Branch
 
 Use descriptive branch names following this pattern:
+
 ```
 {type}/{description}
 
@@ -133,6 +134,7 @@ git checkout -b feature/your-feature-name
 #### Golden Rules
 
 ✅ **Do:**
+
 - Keep changes **atomic and focused** on one concern
 - Update **tests and documentation** with your code
 - Use **shared package contracts** instead of duplicating domain logic
@@ -141,6 +143,7 @@ git checkout -b feature/your-feature-name
 - Write **clear, descriptive commit messages**
 
 ❌ **Don't:**
+
 - Mix refactoring with feature changes
 - Bypass type checking or linting
 - Duplicate domain logic across apps
@@ -150,15 +153,15 @@ git checkout -b feature/your-feature-name
 
 #### Where to Make Changes
 
-| Change Type | Location | Reference |
-|---|---|---|
-| Cricket domain logic | `packages/shared-types/` | [SCORING_ENGINE.md](docs/SCORING_ENGINE.md) |
-| Scoring engine implementation | `packages/shared-types/` | [SCORING_ENGINE.md](docs/SCORING_ENGINE.md) |
-| Mobile UI/UX | `apps/mobile/` | [UI_SYSTEM.md](docs/UI_SYSTEM.md) |
-| Web reporting | `apps/report-web/` | [UI_SYSTEM.md](docs/UI_SYSTEM.md) |
-| Export formats | `packages/export-schema/` | [EXPORT_SCHEMA.md](docs/EXPORT_SCHEMA.md) |
-| Database models | See docs | [DATABASE.md](docs/DATABASE.md) |
-| Design tokens | `packages/ui-tokens/` | [UI_SYSTEM.md](docs/UI_SYSTEM.md) |
+| Change Type                   | Location                  | Reference                                   |
+| ----------------------------- | ------------------------- | ------------------------------------------- |
+| Cricket domain logic          | `packages/shared-types/`  | [SCORING_ENGINE.md](docs/SCORING_ENGINE.md) |
+| Scoring engine implementation | `packages/shared-types/`  | [SCORING_ENGINE.md](docs/SCORING_ENGINE.md) |
+| Mobile UI/UX                  | `apps/mobile/`            | [UI_SYSTEM.md](docs/UI_SYSTEM.md)           |
+| Web reporting                 | `apps/report-web/`        | [UI_SYSTEM.md](docs/UI_SYSTEM.md)           |
+| Export formats                | `packages/export-schema/` | [EXPORT_SCHEMA.md](docs/EXPORT_SCHEMA.md)   |
+| Database models               | See docs                  | [DATABASE.md](docs/DATABASE.md)             |
+| Design tokens                 | `packages/ui-tokens/`     | [UI_SYSTEM.md](docs/UI_SYSTEM.md)           |
 
 ---
 
@@ -255,6 +258,7 @@ Breaking change: DeliveryType enum has been restructured
 Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md) (automatically loaded).
 
 **At minimum include:**
+
 - Clear description of the change
 - Motivation and context
 - Related issues/ADRs
@@ -265,26 +269,32 @@ Use the [PR template](.github/PULL_REQUEST_TEMPLATE.md) (automatically loaded).
 
 ```markdown
 ## Description
+
 Implements deterministic ball-by-ball scoring for Test/ODI formats.
 
 ## Motivation
+
 Enables scorers to enter deliveries with automatic validation against cricket laws.
 
 ## Changes
+
 - Add Delivery type to shared-types
 - Implement scoring engine with pure functions
 - Add validation tests for law compliance
 
 ## Related Issues
+
 Closes #42
 Refs ADR-003 (Scoring engine architecture)
 
 ## Testing
+
 - Added 150+ test cases for scoring rules
 - Verified against MCC Laws of Cricket
 - Tested replay-safety with historical matches
 
 ## Breaking Changes
+
 None for v1.0
 ```
 
@@ -298,6 +308,7 @@ None for v1.0
 ### 5. Merge
 
 Once approved and all checks pass:
+
 - Maintainers merge with a squashed commit
 - Branch is automatically deleted
 - Change is added to release notes
@@ -351,6 +362,7 @@ pnpm format
 ### Quality Expectations
 
 For **all changes:**
+
 - ✅ Types must be strict (no `any`)
 - ✅ New code must have tests
 - ✅ Tests must pass locally
@@ -358,12 +370,14 @@ For **all changes:**
 - ✅ No console.log or debug code
 
 For **domain logic:**
+
 - ✅ Scoring logic must be pure (no side effects)
 - ✅ Must handle all cricket law edge cases
 - ✅ Must be deterministic (identical input → identical output)
 - ✅ Must include law reference in comments
 
 For **UI changes:**
+
 - ✅ Must follow design system (ui-tokens)
 - ✅ Must work on mobile and web (as applicable)
 - ✅ Must include accessibility considerations
@@ -376,6 +390,7 @@ For **UI changes:**
 ### What to Document
 
 Always update documentation when:
+
 - Adding/changing public APIs
 - Modifying domain logic or scoring rules
 - Introducing new patterns or architecture
@@ -383,14 +398,14 @@ Always update documentation when:
 
 ### Where to Document
 
-| Type | Location |
-|---|---|
-| API changes | JSDoc comments + `docs/` reference guide |
-| Domain logic | `docs/SCORING_ENGINE.md` with law references |
-| Architecture decisions | `docs/adr/ADR-NNN.md` |
-| User features | `docs/` + README.md |
-| Setup/dev workflow | `docs/DEVELOPER_GUIDE.md` |
-| Database schema | `docs/DATABASE.md` |
+| Type                   | Location                                     |
+| ---------------------- | -------------------------------------------- |
+| API changes            | JSDoc comments + `docs/` reference guide     |
+| Domain logic           | `docs/SCORING_ENGINE.md` with law references |
+| Architecture decisions | `docs/adr/ADR-NNN.md`                        |
+| User features          | `docs/` + README.md                          |
+| Setup/dev workflow     | `docs/DEVELOPER_GUIDE.md`                    |
+| Database schema        | `docs/DATABASE.md`                           |
 
 ### ADR (Architecture Decision Record)
 
@@ -404,26 +419,34 @@ For any significant architectural decision, create an ADR:
 **Owner:** @your-username
 
 ## Context
+
 Why this decision was needed...
 
 ## Decision
+
 What we decided...
 
 ## Rationale
+
 Why this is the best option...
 
 ## Alternatives Considered
+
 1. ...
 2. ...
 
 ## Consequences
+
 Positive:
+
 - ...
 
 Negative:
+
 - ...
 
 ## Links
+
 - Related ADRs: ADR-XXX
 - Implementation: `apps/mobile/scoring.ts`
 ```
@@ -481,18 +504,23 @@ We follow **Semantic Versioning** (MAJOR.MINOR.PATCH):
 ## [1.2.3] - 2026-03-03
 
 ### Added
+
 - New feature with ADR reference
 
 ### Fixed
+
 - Bug fix with test coverage
 
 ### Changed
+
 - API change or refactoring
 
 ### Deprecated
+
 - Feature marked for removal
 
 ### Removed
+
 - Breaking change with migration guide
 ```
 

@@ -70,7 +70,7 @@ Refs ADR-
 - [ ] `packages/export-schema` — Export schemas
 - [ ] `docs/` — Documentation
 - [ ] `tooling/` — Dev tools
-- [ ] Other: _______________
+- [ ] Other: ******\_\_\_******
 
 ---
 

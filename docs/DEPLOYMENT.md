@@ -226,17 +226,21 @@ Create `RELEASE_NOTES.md`:
 # InningsPro v1.1.0
 
 ## 🎉 New Features
+
 - Ball-by-ball scoring validation
 - Match export to PDF
 
 ## 🐛 Bug Fixes
+
 - Fixed wide delivery calculation
 - Corrected wicket attribution
 
 ## 📱 iOS Build: 1.1.0
+
 ## 🤖 Android Build: 1.1.0
 
 ## Installation
+
 - Update via App Store (iOS)
 - Update via Google Play (Android)
 ```
@@ -379,7 +383,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to Production
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -404,7 +408,7 @@ name: Build & Deploy
 on:
   push:
     branches: [main, staging]
-    tags: ["v*"]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -413,28 +417,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: pnpm/action-setup@v2
         with:
           version: 9.15.4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "pnpm"
-      
+          node-version: '20'
+          cache: 'pnpm'
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Type check
         run: pnpm typecheck
-      
+
       - name: Lint
         run: pnpm lint
-      
+
       - name: Test
         run: pnpm test
-      
+
       - name: Build
         run: pnpm build
 
@@ -444,7 +448,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to Vercel Staging
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -458,14 +462,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Deploy to Vercel Production
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           pnpm install
           vercel deploy --prod --token $VERCEL_TOKEN --scope ${{ secrets.VERCEL_ORG }}
-      
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -480,7 +484,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Publish to npm
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -560,7 +564,7 @@ export default function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).end();
   }
-  
+
   // Basic health check
   res.status(200).json({
     status: 'healthy',
@@ -599,19 +603,20 @@ Options:
    - Users with older version remain unaffected
 
 2. **Release patch version quickly**
+
    ```bash
    # Fix bug
    git checkout -b hotfix/scoring-bug
    # Make fix
    git commit -m "fix: correct wide delivery"
-   
+
    # Increment patch version in app.json
    # 1.1.0 → 1.1.1
-   
+
    # Create release
    git tag v1.1.1
    git push origin v1.1.1
-   
+
    # Build and submit
    eas build --platform all
    eas submit --platform all
@@ -813,6 +818,7 @@ echo $DATABASE_URL
 
 ```markdown
 Pre-Deployment
+
 - [ ] All tests passing
 - [ ] TypeScript strict mode clean
 - [ ] No console.log or debug code
@@ -823,6 +829,7 @@ Pre-Deployment
 - [ ] Release notes prepared
 
 Deployment
+
 - [ ] Build successful locally
 - [ ] CI/CD pipeline passing
 - [ ] Staging deployment verified
@@ -831,6 +838,7 @@ Deployment
 - [ ] Error tracking configured
 
 Post-Deployment
+
 - [ ] Monitor error rates
 - [ ] Check user metrics
 - [ ] Verify all features working
@@ -843,17 +851,17 @@ Post-Deployment
 
 ## Quick Reference
 
-| Task | Command |
-|------|---------|
-| Build all | `pnpm build` |
-| Deploy web (Vercel) | `vercel deploy --prod` |
-| Build mobile | `eas build --platform all` |
-| Submit iOS | `eas submit --platform ios --latest` |
-| Submit Android | `eas submit --platform android --latest` |
-| Check Expo status | `eas build:view` |
-| View Sentry errors | Open Sentry dashboard |
-| Monitor performance | Vercel Analytics or Datadog |
-| Rollback web | `vercel promote <url>` |
+| Task                | Command                                  |
+| ------------------- | ---------------------------------------- |
+| Build all           | `pnpm build`                             |
+| Deploy web (Vercel) | `vercel deploy --prod`                   |
+| Build mobile        | `eas build --platform all`               |
+| Submit iOS          | `eas submit --platform ios --latest`     |
+| Submit Android      | `eas submit --platform android --latest` |
+| Check Expo status   | `eas build:view`                         |
+| View Sentry errors  | Open Sentry dashboard                    |
+| Monitor performance | Vercel Analytics or Datadog              |
+| Rollback web        | `vercel promote <url>`                   |
 
 ---
 

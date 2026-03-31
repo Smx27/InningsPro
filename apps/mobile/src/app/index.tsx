@@ -86,10 +86,16 @@ export default function HomeScreen() {
   }, [loadRecentMatches, router]);
 
   return (
-    <ScrollView className="flex-1 bg-zinc-100 px-4 pt-12 dark:bg-black" contentContainerClassName="gap-4 pb-10">
+    <ScrollView
+      className="flex-1 bg-zinc-100 px-4 pt-12 dark:bg-black"
+      contentContainerClassName="gap-4 pb-10"
+    >
       <Text className="text-3xl font-black text-zinc-900 dark:text-zinc-100">Innings Pro</Text>
 
-      <Pressable className="h-12 items-center justify-center rounded-2xl bg-emerald-500" disabled={isLoading}>
+      <Pressable
+        className="h-12 items-center justify-center rounded-2xl bg-emerald-500"
+        disabled={isLoading}
+      >
         <Text className="text-base font-semibold text-white">Start Tournament</Text>
       </Pressable>
 
@@ -103,14 +109,18 @@ export default function HomeScreen() {
 
       {showQuickForm ? (
         <View className="gap-3 rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">Team A Name</Text>
+          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+            Team A Name
+          </Text>
           <TextInput
             value={form.teamAName}
             onChangeText={(teamAName) => setForm((current) => ({ ...current, teamAName }))}
             className="rounded-xl border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
           />
 
-          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">Team B Name</Text>
+          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+            Team B Name
+          </Text>
           <TextInput
             value={form.teamBName}
             onChangeText={(teamBName) => setForm((current) => ({ ...current, teamBName }))}
@@ -125,7 +135,9 @@ export default function HomeScreen() {
             className="rounded-xl border border-zinc-300 px-3 py-2 text-zinc-900 dark:border-zinc-700 dark:text-zinc-100"
           />
 
-          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">Players per Team</Text>
+          <Text className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+            Players per Team
+          </Text>
           <TextInput
             keyboardType="numeric"
             value={form.players}
@@ -152,7 +164,9 @@ export default function HomeScreen() {
         className="h-12 items-center justify-center rounded-2xl border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900"
         disabled={isLoading}
       >
-        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Try Demo Match</Text>
+        <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          Try Demo Match
+        </Text>
       </Pressable>
 
       <View className="mt-2 gap-3">
@@ -169,7 +183,9 @@ export default function HomeScreen() {
               <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                 {match.teamAName} vs {match.teamBName}
               </Text>
-              <Text className="mt-1 text-sm capitalize text-zinc-500 dark:text-zinc-400">{match.status}</Text>
+              <Text className="mt-1 text-sm capitalize text-zinc-500 dark:text-zinc-400">
+                {match.status}
+              </Text>
             </Pressable>
           ))
         )}

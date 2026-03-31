@@ -12,7 +12,7 @@ export const useAppStore = create<AppStore>((set) => ({
   currentMatch: matchEngineService.initialState(),
   incrementBall: (runsScored, wicket = false) =>
     set((state) => ({
-      currentMatch: matchEngineService.addBall(state.currentMatch, runsScored, wicket)
+      currentMatch: matchEngineService.addBall(state.currentMatch, runsScored, wicket),
     })),
-  resetMatch: () => set({ currentMatch: matchEngineService.initialState() })
+  resetMatch: () => set({ currentMatch: matchEngineService.initialState() }),
 }));

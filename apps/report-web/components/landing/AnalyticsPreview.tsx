@@ -10,17 +10,20 @@ export function AnalyticsPreview() {
         <div className="space-y-4">
           <h2 className="text-section-title">Analytics Preview</h2>
           <p className="text-muted-foreground md:text-lg">
-            Instantly explore run-rate momentum, contribution splits, and key turning points from every innings.
+            Instantly explore run-rate momentum, contribution splits, and key turning points from
+            every innings.
           </p>
           <div className="space-y-3 text-sm text-muted-foreground">
             <p className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-primary" /> Win probability and momentum insights.
             </p>
             <p className="flex items-center gap-2">
-              <LineChart className="h-4 w-4 text-primary" /> Over-by-over trend and run-rate analysis.
+              <LineChart className="h-4 w-4 text-primary" /> Over-by-over trend and run-rate
+              analysis.
             </p>
             <p className="flex items-center gap-2">
-              <PieChart className="h-4 w-4 text-primary" /> Batting and bowling contribution breakdowns.
+              <PieChart className="h-4 w-4 text-primary" /> Batting and bowling contribution
+              breakdowns.
             </p>
           </div>
         </div>

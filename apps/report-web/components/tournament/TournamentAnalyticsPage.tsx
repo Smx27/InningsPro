@@ -7,12 +7,20 @@ import { MatchList } from './MatchList';
 import { PlayerLeaderboard } from './PlayerLeaderboard';
 import { TeamLeaderboard } from './TeamLeaderboard';
 import { TournamentSummary } from './TournamentSummary';
-import { computeTeamLeaderboard, computeTopRunScorers } from '../../lib/analytics/tournamentAnalytics';
+import {
+  computeTeamLeaderboard,
+  computeTopRunScorers,
+} from '../../lib/analytics/tournamentAnalytics';
 import { useReportStore } from '../../lib/store';
 
 import type { MatchItem, PlayerStanding, TeamStanding, TournamentSummaryData } from './types';
 
-function formatMatchResult(teamAName: string, teamBName: string, teamARuns?: number, teamBRuns?: number) {
+function formatMatchResult(
+  teamAName: string,
+  teamBName: string,
+  teamARuns?: number,
+  teamBRuns?: number,
+) {
   if (teamARuns == null || teamBRuns == null) {
     return 'Result unavailable';
   }
@@ -60,7 +68,12 @@ export function TournamentAnalyticsPage() {
         teamA: match.teamA.name,
         teamB: match.teamB.name,
         scoreSummary: `${match.teamA.name} ${inningsA?.totalRuns ?? 0}/${inningsA?.totalWickets ?? 0} · ${match.teamB.name} ${inningsB?.totalRuns ?? 0}/${inningsB?.totalWickets ?? 0}`,
-        result: formatMatchResult(match.teamA.name, match.teamB.name, inningsA?.totalRuns, inningsB?.totalRuns),
+        result: formatMatchResult(
+          match.teamA.name,
+          match.teamB.name,
+          inningsA?.totalRuns,
+          inningsB?.totalRuns,
+        ),
         reportHref: '/reports',
       };
     });
@@ -87,10 +100,13 @@ export function TournamentAnalyticsPage() {
       <main className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 p-4 text-center md:p-8">
         <h1 className="text-2xl font-semibold">No tournament report loaded</h1>
         <p className="max-w-2xl text-muted-foreground">
-          Upload your Innings Pro JSON on the home page to generate a tournament report with standings, leaderboards,
-          and match summaries.
+          Upload your Innings Pro JSON on the home page to generate a tournament report with
+          standings, leaderboards, and match summaries.
         </p>
-        <Link href="/" className="text-sm font-medium text-primary transition-colors hover:text-primary/80">
+        <Link
+          href="/"
+          className="text-sm font-medium text-primary transition-colors hover:text-primary/80"
+        >
           Go to upload page
         </Link>
       </main>

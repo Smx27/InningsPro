@@ -37,8 +37,16 @@ export class QuickMatchService {
     });
 
     const [teamA, teamB] = await Promise.all([
-      databaseService.createTeam({ id: generateId('quick-team-a'), tournamentId: tournament.id, name: teamAName }),
-      databaseService.createTeam({ id: generateId('quick-team-b'), tournamentId: tournament.id, name: teamBName }),
+      databaseService.createTeam({
+        id: generateId('quick-team-a'),
+        tournamentId: tournament.id,
+        name: teamAName,
+      }),
+      databaseService.createTeam({
+        id: generateId('quick-team-b'),
+        tournamentId: tournament.id,
+        name: teamBName,
+      }),
     ]);
 
     await Promise.all([

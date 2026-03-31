@@ -21,13 +21,25 @@ export const QuickActionsBar = memo(function QuickActionsBar({
 }: QuickActionsBarProps) {
   return (
     <View className="flex-row gap-2">
-      <Pressable disabled={disabled} onPress={onWide} className={`${actionClassName} disabled:opacity-50`}>
+      <Pressable
+        disabled={disabled}
+        onPress={onWide}
+        className={`${actionClassName} disabled:opacity-50`}
+      >
         <Text className="font-semibold text-zinc-800 dark:text-zinc-100">Wide</Text>
       </Pressable>
-      <Pressable disabled={disabled} onPress={onNoBall} className={`${actionClassName} disabled:opacity-50`}>
+      <Pressable
+        disabled={disabled}
+        onPress={onNoBall}
+        className={`${actionClassName} disabled:opacity-50`}
+      >
         <Text className="font-semibold text-zinc-800 dark:text-zinc-100">No Ball</Text>
       </Pressable>
-      <Pressable disabled={disabled} onPress={onWicket} className={`${actionClassName} disabled:opacity-50`}>
+      <Pressable
+        disabled={disabled}
+        onPress={onWicket}
+        className={`${actionClassName} disabled:opacity-50`}
+      >
         <Text className="font-semibold text-zinc-800 dark:text-zinc-100">Wicket</Text>
       </Pressable>
       <Pressable

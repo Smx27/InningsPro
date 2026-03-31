@@ -70,7 +70,12 @@ export const useScoringStore = create<ScoringStore>((set, get) => ({
       }
 
       set({
-        matchState: { ...state, matchId, currentStriker: seededStriker, currentNonStriker: seededNonStriker },
+        matchState: {
+          ...state,
+          matchId,
+          currentStriker: seededStriker,
+          currentNonStriker: seededNonStriker,
+        },
         isMatchCompleted: completed,
         currentBowlerId: null,
         lastOverBowlerId: null,

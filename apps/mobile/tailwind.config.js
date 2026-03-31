@@ -8,9 +8,9 @@ module.exports = {
         bg: 'rgb(var(--color-bg) / <alpha-value>)',
         surface: 'rgb(var(--color-surface) / <alpha-value>)',
         text: 'rgb(var(--color-text) / <alpha-value>)',
-        primary: 'rgb(var(--color-primary) / <alpha-value>)'
-      }
-    }
+        primary: 'rgb(var(--color-primary) / <alpha-value>)',
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };

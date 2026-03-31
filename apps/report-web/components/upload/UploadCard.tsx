@@ -6,7 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { isMatchReportParseError, parseMatchReport } from '../../lib/parser/parseMatchReport';
-import { isTournamentReportParseError, parseTournamentReport } from '../../lib/parser/parseTournamentReport';
+import {
+  isTournamentReportParseError,
+  parseTournamentReport,
+} from '../../lib/parser/parseTournamentReport';
 import { useReportStore } from '../../lib/store';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
@@ -141,10 +144,17 @@ export function UploadCard() {
             isDragging
               ? 'scale-[1.01] border-primary bg-primary/15 shadow-[0_0_0_6px_rgba(56,189,248,0.18)]'
               : 'border-border/60 bg-background/50 hover:border-primary/70 hover:bg-primary/5',
-            (isProcessing || isSuccess) && 'pointer-events-none'
+            (isProcessing || isSuccess) && 'pointer-events-none',
           )}
         >
-          <Input id="file-upload" type="file" accept=".json" onChange={onChange} className="hidden" disabled={isProcessing || isSuccess} />
+          <Input
+            id="file-upload"
+            type="file"
+            accept=".json"
+            onChange={onChange}
+            className="hidden"
+            disabled={isProcessing || isSuccess}
+          />
           <div className="relative">
             <AnimatePresence mode="wait">
               {isSuccess ? (
@@ -172,11 +182,21 @@ export function UploadCard() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className={cn('flex cursor-pointer flex-col items-center gap-2', isProcessing && 'cursor-progress')}
+                  className={cn(
+                    'flex cursor-pointer flex-col items-center gap-2',
+                    isProcessing && 'cursor-progress',
+                  )}
                 >
-                  <UploadCloud className={cn('mb-2 h-12 w-12 transition-colors duration-300', isDragging ? 'text-primary' : 'text-muted-foreground')} />
+                  <UploadCloud
+                    className={cn(
+                      'mb-2 h-12 w-12 transition-colors duration-300',
+                      isDragging ? 'text-primary' : 'text-muted-foreground',
+                    )}
+                  />
                   <h3 className="text-xl font-semibold tracking-tight">Upload Report</h3>
-                  <p className="mb-4 text-sm text-muted-foreground">Drag and drop your Innings Pro JSON here, or click to browse.</p>
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    Drag and drop your Innings Pro JSON here, or click to browse.
+                  </p>
                   <Button type="button" disabled={isProcessing}>
                     Select File
                   </Button>
@@ -201,7 +221,9 @@ export function UploadCard() {
         </CardContent>
       </Card>
       {error && (
-        <p className="mt-4 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-center text-sm text-red-700 dark:text-red-300">{error}</p>
+        <p className="mt-4 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-center text-sm text-red-700 dark:text-red-300">
+          {error}
+        </p>
       )}
     </div>
   );

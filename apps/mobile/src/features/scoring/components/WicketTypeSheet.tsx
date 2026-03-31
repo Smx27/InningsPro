@@ -31,7 +31,9 @@ export const WicketTypeSheet = memo(function WicketTypeSheet({
         >
           <View className="mb-4 items-center">
             <View className="h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-            <Text className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">Select wicket type</Text>
+            <Text className="mt-3 text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              Select wicket type
+            </Text>
           </View>
 
           <View className="gap-3">
@@ -41,7 +43,9 @@ export const WicketTypeSheet = memo(function WicketTypeSheet({
                 onPress={() => onSelect(option.value)}
                 className="h-14 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-900"
               >
-                <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{option.label}</Text>
+                <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {option.label}
+                </Text>
               </Pressable>
             ))}
           </View>

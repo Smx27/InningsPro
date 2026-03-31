@@ -39,13 +39,20 @@ export default function MatchSummaryScreen() {
         const report = await exportService.exportMatchReport(matchId);
         const parsed = JSON.parse(report) as {
           match: { teamA: string; teamB: string };
-          innings: Array<{ battingTeamId: string; totalRuns: number; wickets: number; runRate: number }>;
+          innings: Array<{
+            battingTeamId: string;
+            totalRuns: number;
+            wickets: number;
+            runRate: number;
+          }>;
           teams: Array<{ id: string; name: string }>;
         };
 
         const innings = parsed.innings.at(-1);
         const teamNameById = new Map(parsed.teams.map((team) => [team.id, team.name]));
-        const winner = innings ? teamNameById.get(innings.battingTeamId) ?? parsed.match.teamA : parsed.match.teamA;
+        const winner = innings
+          ? (teamNameById.get(innings.battingTeamId) ?? parsed.match.teamA)
+          : parsed.match.teamA;
 
         setSummary({
           winner,
@@ -119,14 +126,26 @@ export default function MatchSummaryScreen() {
       <Text className="text-3xl font-black text-zinc-900 dark:text-zinc-100">Match Summary</Text>
 
       <View className="mt-6 gap-3 rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <Text className="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Winner</Text>
-        <Text className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{summary.winner}</Text>
+        <Text className="text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Winner
+        </Text>
+        <Text className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+          {summary.winner}
+        </Text>
 
-        <Text className="mt-2 text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Final score</Text>
-        <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{summary.finalScore}</Text>
+        <Text className="mt-2 text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Final score
+        </Text>
+        <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+          {summary.finalScore}
+        </Text>
 
-        <Text className="mt-2 text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Run rate</Text>
-        <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{summary.runRate}</Text>
+        <Text className="mt-2 text-sm uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+          Run rate
+        </Text>
+        <Text className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+          {summary.runRate}
+        </Text>
       </View>
 
       <Pressable
@@ -135,7 +154,9 @@ export default function MatchSummaryScreen() {
         }}
         className="mt-6 h-12 items-center justify-center rounded-2xl border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900"
       >
-        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Share Match Report</Text>
+        <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          Share Match Report
+        </Text>
       </Pressable>
 
       <View className="mt-auto gap-3">
@@ -153,7 +174,9 @@ export default function MatchSummaryScreen() {
           }}
           className="h-12 items-center justify-center rounded-2xl border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900"
         >
-          <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">Start New Match</Text>
+          <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+            Start New Match
+          </Text>
         </Pressable>
       </View>
     </View>

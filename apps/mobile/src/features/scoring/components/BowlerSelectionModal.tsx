@@ -26,8 +26,12 @@ const BowlerRow = memo(function BowlerRow({ player, selected, onPress }: BowlerR
           : 'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900'
       }`}
     >
-      <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{player.name}</Text>
-      <Text className="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{player.role}</Text>
+      <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        {player.name}
+      </Text>
+      <Text className="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        {player.role}
+      </Text>
     </Pressable>
   );
 });
@@ -41,7 +45,8 @@ export const BowlerSelectionModal = memo(function BowlerSelectionModal({
   const [selectedBowlerId, setSelectedBowlerId] = useState<string | null>(null);
 
   const sortedPlayers = useMemo(
-    () => [...players].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })),
+    () =>
+      [...players].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })),
     [players],
   );
 
@@ -61,7 +66,13 @@ export const BowlerSelectionModal = memo(function BowlerSelectionModal({
 
   const renderItem = useCallback(
     ({ item }: { item: Player }) => {
-      return <BowlerRow player={item} selected={item.id === selectedBowlerId} onPress={setSelectedBowlerId} />;
+      return (
+        <BowlerRow
+          player={item}
+          selected={item.id === selectedBowlerId}
+          onPress={setSelectedBowlerId}
+        />
+      );
     },
     [selectedBowlerId],
   );
@@ -72,7 +83,9 @@ export const BowlerSelectionModal = memo(function BowlerSelectionModal({
     <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
       <View className="flex-1 bg-zinc-100 px-4 pb-8 pt-14 dark:bg-black">
         <View className="mb-5">
-          <Text className="text-2xl font-black text-zinc-900 dark:text-zinc-100">Select Bowler</Text>
+          <Text className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
+            Select Bowler
+          </Text>
           <Text className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
             Choose the current bowler to continue scoring this over.
           </Text>

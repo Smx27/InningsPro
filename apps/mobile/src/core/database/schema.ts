@@ -5,8 +5,10 @@ export const tournaments = sqliteTable('tournaments', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   rulesJson: text('rules_json').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }),
 });
 
 export const teams = sqliteTable('teams', {
@@ -15,7 +17,9 @@ export const teams = sqliteTable('teams', {
     .notNull()
     .references(() => tournaments.id),
   name: text('name').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`)
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 export const players = sqliteTable('players', {
@@ -25,7 +29,9 @@ export const players = sqliteTable('players', {
     .references(() => teams.id),
   name: text('name').notNull(),
   role: text('role').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`)
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 export const matches = sqliteTable('matches', {
@@ -42,8 +48,10 @@ export const matches = sqliteTable('matches', {
   status: text('status').notNull(),
   rulesJson: text('rules_json').notNull(),
   currentInnings: integer('current_innings').notNull().default(1),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }),
 });
 
 export const innings = sqliteTable('innings', {
@@ -61,8 +69,10 @@ export const innings = sqliteTable('innings', {
   totalRuns: integer('total_runs').notNull().default(0),
   totalWickets: integer('total_wickets').notNull().default(0),
   totalOvers: real('total_overs').notNull().default(0),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }),
 });
 
 export const ballEvents = sqliteTable(
@@ -83,7 +93,9 @@ export const ballEvents = sqliteTable(
     nonStrikerId: text('non_striker_id').references(() => players.id),
     bowlerId: text('bowler_id').references(() => players.id),
     commentary: text('commentary'),
-    createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`)
+    createdAt: integer('created_at', { mode: 'timestamp' })
+      .notNull()
+      .default(sql`(unixepoch())`),
   },
   (table) => ({
     matchIdIdx: index('ball_events_match_id_idx').on(table.matchId),
@@ -92,10 +104,10 @@ export const ballEvents = sqliteTable(
       table.matchId,
       table.inningsNumber,
       table.overNumber,
-      table.ballNumber
+      table.ballNumber,
     ),
-    createdAtIdx: index('ball_events_created_at_idx').on(table.createdAt)
-  })
+    createdAtIdx: index('ball_events_created_at_idx').on(table.createdAt),
+  }),
 );
 
 export type Tournament = typeof tournaments.$inferSelect;

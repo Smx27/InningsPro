@@ -30,7 +30,13 @@ type GlowButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     asChild?: boolean;
   };
 
-export function GlowButton({ className, variant, size, asChild = false, ...props }: GlowButtonProps) {
+export function GlowButton({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: GlowButtonProps) {
   const Comp = asChild ? Slot : 'button';
 
   return <Comp className={cn(glowButtonVariants({ variant, size, className }))} {...props} />;

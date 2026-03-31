@@ -49,7 +49,6 @@ export class DatabaseService {
 
   private ballEventsCache = new Map<string, BallEvent[]>();
 
-
   invalidateCaches(): void {
     this.matchCache.clear();
     this.inningsCache.clear();
@@ -324,16 +323,22 @@ export class DatabaseService {
    * @returns Recent match summaries ordered by newest first.
    * @throws {DatabaseError} When the query fails.
    */
-  async getRecentMatches(limit = 5): Promise<Array<{
-    id: string;
-    status: string;
-    createdAt: Date;
-    teamAName: string;
-    teamBName: string;
-  }>> {
+  async getRecentMatches(limit = 5): Promise<
+    Array<{
+      id: string;
+      status: string;
+      createdAt: Date;
+      teamAName: string;
+      teamBName: string;
+    }>
+  > {
     try {
       const db = getDatabase();
-      const recentMatches = await db.select().from(matches).orderBy(desc(matches.createdAt)).limit(limit);
+      const recentMatches = await db
+        .select()
+        .from(matches)
+        .orderBy(desc(matches.createdAt))
+        .limit(limit);
 
       return Promise.all(
         recentMatches.map(async (match) => {
@@ -364,10 +369,7 @@ export class DatabaseService {
    * @returns The updated match row.
    * @throws {DatabaseError} When the update fails or does not return a row.
    */
-  async updateMatchStatus(
-    id: string,
-    status: 'upcoming' | 'live' | 'completed',
-  ): Promise<Match> {
+  async updateMatchStatus(id: string, status: 'upcoming' | 'live' | 'completed'): Promise<Match> {
     try {
       const db = getDatabase();
       const [updated] = await db

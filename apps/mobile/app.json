@@ -7,10 +7,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "plugins": [
-      "expo-router",
-      "expo-sqlite"
-    ],
+    "plugins": ["expo-router", "expo-sqlite"],
     "android": { "package": "com.inningspro" },
     "experiments": {
       "typedRoutes": true

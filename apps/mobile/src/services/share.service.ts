@@ -17,7 +17,9 @@ export class ShareService {
     }
 
     const fileUri = `${directory}match-report-${matchId}.json`;
-    await FileSystem.writeAsStringAsync(fileUri, report, { encoding: FileSystem.EncodingType.UTF8 });
+    await FileSystem.writeAsStringAsync(fileUri, report, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
 
     await Sharing.shareAsync(fileUri, {
       UTI: 'public.json',

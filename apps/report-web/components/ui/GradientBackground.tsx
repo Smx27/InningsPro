@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 
 const blobs = [
   {
-    className:
-      '-left-24 top-4 h-64 w-64 bg-sky-400/20 md:-left-12 md:h-80 md:w-80 lg:h-96 lg:w-96',
+    className: '-left-24 top-4 h-64 w-64 bg-sky-400/20 md:-left-12 md:h-80 md:w-80 lg:h-96 lg:w-96',
     animate: {
       x: [0, 40, -20, 0],
       y: [0, -28, 24, 0],

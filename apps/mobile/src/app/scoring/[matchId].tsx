@@ -116,7 +116,8 @@ export default function LiveScoringScreen() {
       contextBattingTeamId === contextTeamAId ? contextTeamAPlayers : contextTeamBPlayers;
 
     return battingPlayers.filter(
-      (player) => player.id !== matchState.currentStriker && player.id !== matchState.currentNonStriker,
+      (player) =>
+        player.id !== matchState.currentStriker && player.id !== matchState.currentNonStriker,
     );
   }, [
     contextBattingTeamId,

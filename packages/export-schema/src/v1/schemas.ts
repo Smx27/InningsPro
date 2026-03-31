@@ -10,7 +10,7 @@ export const matchRulesSchema = z.object({
   powerplayOvers: z.number().int().positive().optional(),
   wideBallAddsRun: z.boolean(),
   noBallAddsRun: z.boolean(),
-  freeHitAfterNoBall: z.boolean()
+  freeHitAfterNoBall: z.boolean(),
 });
 
 export const playerSchema = z.object({
@@ -28,11 +28,11 @@ export const playerSchema = z.object({
       'right-arm-spin',
       'left-arm-fast',
       'left-arm-medium',
-      'left-arm-spin'
+      'left-arm-spin',
     ])
     .optional(),
   isCaptain: z.boolean().optional(),
-  isWicketKeeper: z.boolean().optional()
+  isWicketKeeper: z.boolean().optional(),
 });
 
 export const teamSchema = z.object({
@@ -42,7 +42,7 @@ export const teamSchema = z.object({
   shortName: z.string().min(1).optional(),
   players: z.array(playerSchema),
   coachName: z.string().min(1).optional(),
-  homeGround: z.string().min(1).optional()
+  homeGround: z.string().min(1).optional(),
 });
 
 export const tournamentSchema = z.object({
@@ -53,7 +53,7 @@ export const tournamentSchema = z.object({
   rules: matchRulesSchema,
   teamIds: z.array(idSchema),
   startsAt: isoDateTimeSchema,
-  endsAt: isoDateTimeSchema.optional()
+  endsAt: isoDateTimeSchema.optional(),
 });
 
 const ballEventBaseSchema = z.object({
@@ -65,7 +65,7 @@ const ballEventBaseSchema = z.object({
   batterId: idSchema,
   bowlerId: idSchema,
   nonStrikerId: idSchema,
-  comment: z.string().optional()
+  comment: z.string().optional(),
 });
 
 const deliveryBallEventSchema = ballEventBaseSchema.extend({
@@ -77,9 +77,9 @@ const deliveryBallEventSchema = ballEventBaseSchema.extend({
     z.literal(3),
     z.literal(4),
     z.literal(5),
-    z.literal(6)
+    z.literal(6),
   ]),
-  isBoundary: z.boolean()
+  isBoundary: z.boolean(),
 });
 
 const wicketBallEventSchema = ballEventBaseSchema.extend({
@@ -92,12 +92,12 @@ const wicketBallEventSchema = ballEventBaseSchema.extend({
     'stumped',
     'hit-wicket',
     'retired-out',
-    'obstructing-the-field'
+    'obstructing-the-field',
   ]),
   playerOutId: idSchema,
   creditedToBowler: z.boolean(),
   fielderIds: z.array(idSchema).optional(),
-  runsCompleted: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
+  runsCompleted: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
 });
 
 const extraBallEventSchema = ballEventBaseSchema.extend({
@@ -110,16 +110,22 @@ const extraBallEventSchema = ballEventBaseSchema.extend({
     z.literal(4),
     z.literal(5),
     z.literal(6),
-    z.literal(7)
+    z.literal(7),
   ]),
-  rebowled: z.boolean()
+  rebowled: z.boolean(),
 });
 
 const penaltyBallEventSchema = ballEventBaseSchema.extend({
   kind: z.literal('penalty'),
   awardedTo: z.enum(['batting', 'bowling']),
   runs: z.literal(5),
-  reason: z.enum(['slow-over-rate', 'ball-tampering', 'unfair-play', 'time-wasting', 'disciplinary'])
+  reason: z.enum([
+    'slow-over-rate',
+    'ball-tampering',
+    'unfair-play',
+    'time-wasting',
+    'disciplinary',
+  ]),
 });
 
 const reviewBallEventSchema = ballEventBaseSchema.extend({
@@ -128,7 +134,7 @@ const reviewBallEventSchema = ballEventBaseSchema.extend({
   requestedBy: z.enum(['batting', 'bowling', 'umpire']),
   decision: z.enum(['upheld', 'overturned', 'inconclusive']),
   originalDecision: z.enum(['out', 'not-out', 'wide', 'no-ball']).optional(),
-  finalDecision: z.enum(['out', 'not-out', 'wide', 'no-ball']).optional()
+  finalDecision: z.enum(['out', 'not-out', 'wide', 'no-ball']).optional(),
 });
 
 export const ballEventSchema = z.discriminatedUnion('kind', [
@@ -136,7 +142,7 @@ export const ballEventSchema = z.discriminatedUnion('kind', [
   wicketBallEventSchema,
   extraBallEventSchema,
   penaltyBallEventSchema,
-  reviewBallEventSchema
+  reviewBallEventSchema,
 ]);
 
 export const inningsSchema = z.object({
@@ -149,7 +155,7 @@ export const inningsSchema = z.object({
   endsAt: isoDateTimeSchema.optional(),
   declared: z.boolean(),
   targetRuns: z.number().int().nonnegative().optional(),
-  events: z.array(ballEventSchema)
+  events: z.array(ballEventSchema),
 });
 
 export const matchSchema = z.object({
@@ -164,7 +170,7 @@ export const matchSchema = z.object({
   rules: matchRulesSchema,
   innings: z.array(inningsSchema),
   status: z.enum(['scheduled', 'live', 'completed', 'abandoned']),
-  winnerTeamId: idSchema.optional()
+  winnerTeamId: idSchema.optional(),
 });
 
 export const schemaVersionV1 = z.literal('1.0.0');
@@ -174,7 +180,7 @@ export const matchExportSchemaV1 = z.object({
   exportedAt: isoDateTimeSchema,
   tournament: tournamentSchema,
   teams: z.array(teamSchema),
-  match: matchSchema
+  match: matchSchema,
 });
 
 export const tournamentExportSchemaV1 = z.object({
@@ -182,7 +188,7 @@ export const tournamentExportSchemaV1 = z.object({
   exportedAt: isoDateTimeSchema,
   tournament: tournamentSchema,
   teams: z.array(teamSchema),
-  matches: z.array(matchSchema)
+  matches: z.array(matchSchema),
 });
 
 export type MatchExportSchemaV1 = z.infer<typeof matchExportSchemaV1>;

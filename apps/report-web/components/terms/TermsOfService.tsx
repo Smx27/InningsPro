@@ -24,7 +24,7 @@ const TERMS_SECTIONS = [
     title: 'Data Ownership',
     body: [
       'You retain ownership of the match and tournament data you create in Innings Pro.',
-      "All match data is stored locally on your device unless you intentionally export and share it through channels you control.",
+      'All match data is stored locally on your device unless you intentionally export and share it through channels you control.',
     ],
   },
   {
@@ -67,7 +67,9 @@ export function TermsOfService() {
       <div className="space-y-10">
         {TERMS_SECTIONS.map((section) => (
           <section key={section.title} className="space-y-4">
-            <h2 className="text-xl font-semibold tracking-tight text-foreground">{section.title}</h2>
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              {section.title}
+            </h2>
             <div className="space-y-3 text-base leading-7 text-muted-foreground">
               {section.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>

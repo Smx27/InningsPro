@@ -31,7 +31,11 @@ const shareJsonPayload = async (title: string, payload: unknown): Promise<void> 
 
 const getLatestTournamentId = async (): Promise<string> => {
   const db = getDatabase();
-  const [latestTournament] = await db.select({ id: tournaments.id }).from(tournaments).orderBy(desc(tournaments.createdAt)).limit(1);
+  const [latestTournament] = await db
+    .select({ id: tournaments.id })
+    .from(tournaments)
+    .orderBy(desc(tournaments.createdAt))
+    .limit(1);
 
   if (!latestTournament) {
     throw new Error('No tournament found to export.');
@@ -42,7 +46,11 @@ const getLatestTournamentId = async (): Promise<string> => {
 
 const getLastMatchId = async (): Promise<string> => {
   const db = getDatabase();
-  const [lastMatch] = await db.select({ id: matches.id }).from(matches).orderBy(desc(matches.createdAt)).limit(1);
+  const [lastMatch] = await db
+    .select({ id: matches.id })
+    .from(matches)
+    .orderBy(desc(matches.createdAt))
+    .limit(1);
 
   if (!lastMatch) {
     throw new Error('No match found to export report.');
@@ -115,7 +123,10 @@ export default function SettingsScreen() {
   }, []);
 
   return (
-    <ScrollView className="flex-1 bg-zinc-50 dark:bg-black" contentContainerClassName="gap-4 p-4 pb-12">
+    <ScrollView
+      className="flex-1 bg-zinc-50 dark:bg-black"
+      contentContainerClassName="gap-4 p-4 pb-12"
+    >
       <View className="gap-1 px-1">
         <Text className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Settings</Text>
         <Text className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -124,7 +135,11 @@ export default function SettingsScreen() {
       </View>
 
       <SettingsSection title="Data">
-        <SettingsItem title="Export Tournament Backup" icon="💾" onPress={handleTournamentBackupExport} />
+        <SettingsItem
+          title="Export Tournament Backup"
+          icon="💾"
+          onPress={handleTournamentBackupExport}
+        />
         <View className="h-px bg-zinc-200 dark:bg-zinc-800" />
         <SettingsItem title="Import Backup" icon="📥" onPress={handleBackupImport} />
       </SettingsSection>
@@ -134,18 +149,32 @@ export default function SettingsScreen() {
       </SettingsSection>
 
       <SettingsSection title="Legal">
-        <SettingsItem title="Privacy Policy" icon="🔒" onPress={() => void openExternalLink(LINKS.privacy)} />
+        <SettingsItem
+          title="Privacy Policy"
+          icon="🔒"
+          onPress={() => void openExternalLink(LINKS.privacy)}
+        />
         <View className="h-px bg-zinc-200 dark:bg-zinc-800" />
-        <SettingsItem title="Terms of Service" icon="📜" onPress={() => void openExternalLink(LINKS.terms)} />
+        <SettingsItem
+          title="Terms of Service"
+          icon="📜"
+          onPress={() => void openExternalLink(LINKS.terms)}
+        />
       </SettingsSection>
 
       <SettingsSection title="Support">
-        <SettingsItem title="Contact Support" icon="✉️" onPress={() => void openExternalLink(LINKS.supportEmail)} />
+        <SettingsItem
+          title="Contact Support"
+          icon="✉️"
+          onPress={() => void openExternalLink(LINKS.supportEmail)}
+        />
       </SettingsSection>
 
       <SettingsSection title="About">
         <View className="flex-row items-center justify-between px-4 py-3">
-          <Text className="text-base font-medium text-zinc-900 dark:text-zinc-100">App Version</Text>
+          <Text className="text-base font-medium text-zinc-900 dark:text-zinc-100">
+            App Version
+          </Text>
           <Text className="text-sm text-zinc-500 dark:text-zinc-400">{appVersion}</Text>
         </View>
       </SettingsSection>

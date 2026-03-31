@@ -13,7 +13,7 @@ export const cricketBrandColors = {
     600: '#2F7F28',
     700: '#266520',
     800: '#1E4E1A',
-    900: '#173C15'
+    900: '#173C15',
   },
   boundary: {
     50: '#EEF7FF',
@@ -25,7 +25,7 @@ export const cricketBrandColors = {
     600: '#1F5EE5',
     700: '#194AC0',
     800: '#173E9B',
-    900: '#173576'
+    900: '#173576',
   },
   leather: {
     50: '#FFF4F2',
@@ -37,7 +37,7 @@ export const cricketBrandColors = {
     600: '#D93A22',
     700: '#B82E1D',
     800: '#93271B',
-    900: '#77231B'
+    900: '#77231B',
   },
   neutral: {
     0: '#FFFFFF',
@@ -51,8 +51,8 @@ export const cricketBrandColors = {
     700: '#334155',
     800: '#1E293B',
     900: '#0F172A',
-    950: '#020617'
-  }
+    950: '#020617',
+  },
 } as const;
 
 export type CricketBrandColors = typeof cricketBrandColors;
@@ -63,7 +63,7 @@ export const semanticColors = {
   success: cricketBrandColors.pitch[500],
   info: cricketBrandColors.boundary[500],
   warning: '#F59E0B',
-  danger: cricketBrandColors.leather[500]
+  danger: cricketBrandColors.leather[500],
 } as const;
 
 export type SemanticColors = typeof semanticColors;

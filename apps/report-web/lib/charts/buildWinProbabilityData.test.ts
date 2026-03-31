@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import { calculateChasingWinProbability } from './buildWinProbabilityData.ts';
+import { calculateChasingWinProbability } from './buildWinProbabilityData';
 
 test('calculateChasingWinProbability - returns 100 when remaining runs is 0', () => {
   const state = {
@@ -84,10 +84,10 @@ test('calculateChasingWinProbability - clamps result between 0 and 100', () => {
   assert.strictEqual(calculateChasingWinProbability(stateLowRRR), 50);
 
   const stateVeryLowRRR = {
-      ballsPlayed: 60,
-      currentRuns: 100,
-      remainingRuns: 1,
-      remainingBalls: 600, // 100 overs. RRR = 1 / 100 = 0.01. Prob = 100 - (0.01/12)*100 = 99.916...
+    ballsPlayed: 60,
+    currentRuns: 100,
+    remainingRuns: 1,
+    remainingBalls: 600, // 100 overs. RRR = 1 / 100 = 0.01. Prob = 100 - (0.01/12)*100 = 99.916...
   };
   const result = calculateChasingWinProbability(stateVeryLowRRR);
   assert.ok(result <= 100);

@@ -1,6 +1,14 @@
-"use client";
+'use client';
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface Props {
   data: { over: number; runRate: number }[];
@@ -12,7 +20,7 @@ const tooltipStyle = {
   borderRadius: '8px',
   borderColor: 'hsl(var(--border))',
   backgroundColor: 'hsl(var(--card))',
-  color: 'hsl(var(--card-foreground))'
+  color: 'hsl(var(--card-foreground))',
 };
 
 export function RunRateChart({ data }: Props) {
@@ -22,10 +30,26 @@ export function RunRateChart({ data }: Props) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid stroke={gridColor} strokeDasharray="3 3" opacity={0.4} />
-          <XAxis dataKey="over" tick={{ fontSize: 12, fill: axisColor }} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
-          <YAxis tick={{ fontSize: 12, fill: axisColor }} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
+          <XAxis
+            dataKey="over"
+            tick={{ fontSize: 12, fill: axisColor }}
+            axisLine={{ stroke: gridColor }}
+            tickLine={{ stroke: gridColor }}
+          />
+          <YAxis
+            tick={{ fontSize: 12, fill: axisColor }}
+            axisLine={{ stroke: gridColor }}
+            tickLine={{ stroke: gridColor }}
+          />
           <Tooltip contentStyle={tooltipStyle} />
-          <Line type="monotone" dataKey="runRate" stroke="hsl(var(--primary))" strokeWidth={3} dot={{ r: 4, fill: 'hsl(var(--primary))' }} activeDot={{ r: 6 }} />
+          <Line
+            type="monotone"
+            dataKey="runRate"
+            stroke="hsl(var(--primary))"
+            strokeWidth={3}
+            dot={{ r: 4, fill: 'hsl(var(--primary))' }}
+            activeDot={{ r: 6 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

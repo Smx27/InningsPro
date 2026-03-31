@@ -20,10 +20,18 @@ type SectionProps = React.HTMLAttributes<HTMLElement> &
     containerClassName?: string;
   };
 
-export function Section({ children, className, containerClassName, spacing, ...props }: SectionProps) {
+export function Section({
+  children,
+  className,
+  containerClassName,
+  spacing,
+  ...props
+}: SectionProps) {
   return (
     <section className={cn(sectionSpacingVariants({ spacing }), className)} {...props}>
-      <div className={cn('container mx-auto max-w-7xl px-4 md:px-6', containerClassName)}>{children}</div>
+      <div className={cn('container mx-auto max-w-7xl px-4 md:px-6', containerClassName)}>
+        {children}
+      </div>
     </section>
   );
 }

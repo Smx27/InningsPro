@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Reports', href: '/reports' },
   { label: 'Tournament Analytics', href: '/tournament-analytics' },
-  { label: 'Contact', href: '/contact' }
+  { label: 'Contact', href: '/contact' },
 ];
 
 export function Header() {
@@ -115,7 +115,10 @@ export function Header() {
       </div>
 
       {isMobileMenuOpen && (
-        <div id="mobile-nav" className="border-t bg-background/95 px-4 py-4 backdrop-blur md:hidden">
+        <div
+          id="mobile-nav"
+          className="border-t bg-background/95 px-4 py-4 backdrop-blur md:hidden"
+        >
           <nav className="flex flex-col gap-1">
             {NAV_ITEMS.map((item) => {
               const isActive = isActiveLink(item.href);

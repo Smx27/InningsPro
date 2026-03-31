@@ -32,8 +32,8 @@ export function BallTimeline({ balls }: { balls: BallEvent[] }) {
           <div
             key={i}
             className={cn(
-              "flex items-center justify-center w-10 h-10 rounded-full border shadow-sm font-bold text-sm",
-              getBallColor(ball)
+              'flex items-center justify-center w-10 h-10 rounded-full border shadow-sm font-bold text-sm',
+              getBallColor(ball),
             )}
             title={`Over ${ball.over + 1}.${ball.ball}`}
           >

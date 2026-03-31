@@ -26,7 +26,9 @@ const PlayerRow = memo(function PlayerRow({ item, selected, onPress }: PlayerRow
       }`}
     >
       <Text className="text-base font-semibold text-zinc-900 dark:text-zinc-100">{item.name}</Text>
-      <Text className="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{item.role}</Text>
+      <Text className="mt-1 text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        {item.role}
+      </Text>
     </Pressable>
   );
 });
@@ -39,7 +41,8 @@ export const NewBatsmanModal = memo(function NewBatsmanModal({
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
 
   const sortedPlayers = useMemo(
-    () => [...players].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })),
+    () =>
+      [...players].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })),
     [players],
   );
 
@@ -56,7 +59,13 @@ export const NewBatsmanModal = memo(function NewBatsmanModal({
 
   const renderItem = useCallback(
     ({ item }: { item: Player }) => {
-      return <PlayerRow item={item} selected={item.id === selectedPlayerId} onPress={setSelectedPlayerId} />;
+      return (
+        <PlayerRow
+          item={item}
+          selected={item.id === selectedPlayerId}
+          onPress={setSelectedPlayerId}
+        />
+      );
     },
     [selectedPlayerId],
   );
@@ -65,7 +74,9 @@ export const NewBatsmanModal = memo(function NewBatsmanModal({
     <Modal visible={visible} animationType="slide" onRequestClose={() => undefined}>
       <View className="flex-1 bg-zinc-100 px-4 pb-8 pt-14 dark:bg-black">
         <View className="mb-5">
-          <Text className="text-2xl font-black text-zinc-900 dark:text-zinc-100">Select New Batsman</Text>
+          <Text className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
+            Select New Batsman
+          </Text>
           <Text className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
             Selection is mandatory to continue wicket scoring.
           </Text>

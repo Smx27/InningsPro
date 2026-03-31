@@ -52,7 +52,6 @@ const DEFAULT_RULES: MatchRules = {
 };
 
 export class MatchEngineService {
-
   initialState(): MatchState {
     return {
       matchId: '',
@@ -114,7 +113,10 @@ export class MatchEngineService {
       throw new Error('Extras are disabled for this match');
     }
 
-    const inningsEvents = await databaseService.getBallEventsByMatch(params.matchId, innings.inningsNumber);
+    const inningsEvents = await databaseService.getBallEventsByMatch(
+      params.matchId,
+      innings.inningsNumber,
+    );
 
     const isLegalBall = this.isLegalBall(params.extrasType);
     const normalizedRuns = this.normalizeRuns(params.runs, params.extrasType);
@@ -188,7 +190,10 @@ export class MatchEngineService {
     const totalRuns = await databaseService.getTotalRuns(matchId, innings.inningsNumber);
     const totalWickets = await databaseService.getTotalWickets(matchId, innings.inningsNumber);
     const legalBalls = await databaseService.getLegalBallCount(matchId, innings.inningsNumber);
-    const inningsEvents = await databaseService.getBallEventsByMatch(matchId, innings.inningsNumber);
+    const inningsEvents = await databaseService.getBallEventsByMatch(
+      matchId,
+      innings.inningsNumber,
+    );
     const lastBall = inningsEvents.length > 0 ? inningsEvents[inningsEvents.length - 1] : undefined;
 
     return {
@@ -260,7 +265,6 @@ export class MatchEngineService {
     };
   }
 
-
   private normalizeRuns(runs: number, extrasType?: ExtrasType): number {
     const normalizedRuns = Math.max(0, Math.trunc(runs));
 
@@ -327,7 +331,11 @@ export class MatchEngineService {
     return legalBalls >= rules.oversPerInnings * rules.ballsPerOver || wickets >= rules.maxWickets;
   }
 
-  private async handleInningsCompletion(match: Match, inningsNumber: number, rules: MatchRules): Promise<void> {
+  private async handleInningsCompletion(
+    match: Match,
+    inningsNumber: number,
+    rules: MatchRules,
+  ): Promise<void> {
     if (inningsNumber < rules.totalInnings) {
       await this.createInnings(match, inningsNumber + 1);
       return;

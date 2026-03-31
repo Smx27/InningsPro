@@ -90,7 +90,11 @@ function getOrCreatePlayerAggregate(
   return created;
 }
 
-function getOrCreateTeamAggregate(teamMap: Map<string, TeamAggregate>, teamId: string, teamName: string): TeamAggregate {
+function getOrCreateTeamAggregate(
+  teamMap: Map<string, TeamAggregate>,
+  teamId: string,
+  teamName: string,
+): TeamAggregate {
   const existing = teamMap.get(teamId);
 
   if (existing) {
@@ -131,7 +135,13 @@ function aggregatePlayers(matches: MatchReport[]): PlayerAggregate[] {
         const playerName = playerNameById.get(playerId) ?? playerId;
         const teamId = playerTeamIdById.get(playerId) ?? battingTeamId;
         const teamName = teamNameById.get(teamId) ?? battingTeamName;
-        const aggregate = getOrCreatePlayerAggregate(playerMap, playerId, playerName, teamId, teamName);
+        const aggregate = getOrCreatePlayerAggregate(
+          playerMap,
+          playerId,
+          playerName,
+          teamId,
+          teamName,
+        );
 
         aggregate.runs += row.runs;
         aggregate.ballsFaced += row.balls;
@@ -146,7 +156,13 @@ function aggregatePlayers(matches: MatchReport[]): PlayerAggregate[] {
         const playerName = playerNameById.get(playerId) ?? playerId;
         const teamId = playerTeamIdById.get(playerId) ?? bowlingTeamId;
         const teamName = teamNameById.get(teamId) ?? bowlingTeamName;
-        const aggregate = getOrCreatePlayerAggregate(playerMap, playerId, playerName, teamId, teamName);
+        const aggregate = getOrCreatePlayerAggregate(
+          playerMap,
+          playerId,
+          playerName,
+          teamId,
+          teamName,
+        );
 
         aggregate.wickets += row.wickets;
         aggregate.runsConceded += row.runs;
@@ -185,7 +201,10 @@ export function computeEconomyLeaders(matches: MatchReport[]): PlayerAggregate[]
 
   return aggregatePlayers(matches)
     .filter((player) => player.ballsBowled >= minimumBallsBowled)
-    .sort((a, b) => safeRate(a.runsConceded, a.ballsBowled, 6) - safeRate(b.runsConceded, b.ballsBowled, 6));
+    .sort(
+      (a, b) =>
+        safeRate(a.runsConceded, a.ballsBowled, 6) - safeRate(b.runsConceded, b.ballsBowled, 6),
+    );
 }
 
 export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] {
@@ -241,7 +260,9 @@ export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] 
     .map((team) => ({
       ...team,
       points: team.wins * 2,
-      netRunRate: safeRate(team.runsScored, team.ballsFaced, 6) - safeRate(team.runsConceded, team.ballsBowled, 6),
+      netRunRate:
+        safeRate(team.runsScored, team.ballsFaced, 6) -
+        safeRate(team.runsConceded, team.ballsBowled, 6),
     }))
     .sort((a, b) => b.points - a.points || b.netRunRate - a.netRunRate);
 }

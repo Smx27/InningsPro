@@ -30,7 +30,9 @@ export const ScoreHeader = memo(function ScoreHeader({
           </Text>
         </View>
         <View className="items-end">
-          <Text className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">Overs {overs.toFixed(1)}</Text>
+          <Text className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+            Overs {overs.toFixed(1)}
+          </Text>
           <Text className="text-sm font-semibold text-emerald-500">RR {runRate.toFixed(2)}</Text>
         </View>
       </View>
@@ -38,13 +40,19 @@ export const ScoreHeader = memo(function ScoreHeader({
       <View className="mt-4 flex-row gap-3">
         <View className="flex-1 rounded-2xl bg-zinc-100/80 px-3 py-2 dark:bg-zinc-800/80">
           <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Striker</Text>
-          <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100" numberOfLines={1}>
+          <Text
+            className="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+            numberOfLines={1}
+          >
             {striker ?? 'Not set'}
           </Text>
         </View>
         <View className="flex-1 rounded-2xl bg-zinc-100/80 px-3 py-2 dark:bg-zinc-800/80">
           <Text className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Non-striker</Text>
-          <Text className="text-sm font-semibold text-zinc-900 dark:text-zinc-100" numberOfLines={1}>
+          <Text
+            className="text-sm font-semibold text-zinc-900 dark:text-zinc-100"
+            numberOfLines={1}
+          >
             {nonStriker ?? 'Not set'}
           </Text>
         </View>

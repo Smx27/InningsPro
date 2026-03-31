@@ -3,9 +3,21 @@
 import { useState } from 'react';
 
 import { Button } from '../../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../../components/ui/Card';
 import { Input } from '../../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { Textarea } from '../../components/ui/textarea';
 
 export default function SupportPage() {
@@ -21,13 +33,17 @@ export default function SupportPage() {
   return (
     <div className="container mx-auto max-w-2xl px-4 py-12">
       <h1 className="mb-6 text-center text-3xl font-bold">Support Request</h1>
-      <p className="mb-8 text-center text-muted-foreground">Need help with a match report? Please provide details below.</p>
+      <p className="mb-8 text-center text-muted-foreground">
+        Need help with a match report? Please provide details below.
+      </p>
 
       {submitted ? (
         <Card className="border-primary/30 bg-primary/10 text-center text-primary">
           <CardHeader>
             <CardTitle className="text-xl">Ticket Submitted!</CardTitle>
-            <CardDescription className="text-primary/90">Our support team will look into your issue and get back to you.</CardDescription>
+            <CardDescription className="text-primary/90">
+              Our support team will look into your issue and get back to you.
+            </CardDescription>
           </CardHeader>
         </Card>
       ) : (
@@ -35,13 +51,25 @@ export default function SupportPage() {
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label htmlFor="matchId" className="text-sm font-medium">Match ID (Optional)</label>
-                <Input id="matchId" type="text" value={formData.matchId} onChange={(e) => setFormData({ ...formData, matchId: e.target.value })} />
+                <label htmlFor="matchId" className="text-sm font-medium">
+                  Match ID (Optional)
+                </label>
+                <Input
+                  id="matchId"
+                  type="text"
+                  value={formData.matchId}
+                  onChange={(e) => setFormData({ ...formData, matchId: e.target.value })}
+                />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="issueType" className="text-sm font-medium">Issue Type</label>
-                <Select value={formData.issueType} onValueChange={(value) => setFormData({ ...formData, issueType: value })}>
+                <label htmlFor="issueType" className="text-sm font-medium">
+                  Issue Type
+                </label>
+                <Select
+                  value={formData.issueType}
+                  onValueChange={(value) => setFormData({ ...formData, issueType: value })}
+                >
                   <SelectTrigger id="issueType">
                     <SelectValue placeholder="Select issue type" />
                   </SelectTrigger>
@@ -55,7 +83,9 @@ export default function SupportPage() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="description" className="text-sm font-medium">Description</label>
+                <label htmlFor="description" className="text-sm font-medium">
+                  Description
+                </label>
                 <Textarea
                   id="description"
                   required
@@ -67,7 +97,9 @@ export default function SupportPage() {
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="screenshot" className="text-sm font-medium">Screenshot (Optional)</label>
+                <label htmlFor="screenshot" className="text-sm font-medium">
+                  Screenshot (Optional)
+                </label>
                 <Input
                   id="screenshot"
                   type="file"
@@ -79,7 +111,9 @@ export default function SupportPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full">Submit Support Request</Button>
+              <Button type="submit" className="w-full">
+                Submit Support Request
+              </Button>
             </form>
           </CardContent>
         </Card>

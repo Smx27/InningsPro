@@ -14,10 +14,10 @@ export function QueryProvider({ children }: Props) {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,
-            retry: 1
-          }
-        }
-      })
+            retry: 1,
+          },
+        },
+      }),
   );
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

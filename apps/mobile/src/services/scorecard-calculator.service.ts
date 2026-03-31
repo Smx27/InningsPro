@@ -54,14 +54,16 @@ export class ScorecardCalculatorService {
     }
 
     return Array.from(battingMap.values())
-      .map((score): BattingScore => ({
-        playerId: score.playerId,
-        runs: score.runs,
-        balls: score.balls,
-        fours: score.fours,
-        sixes: score.sixes,
-        strikeRate: score.balls === 0 ? 0 : Number(((score.runs / score.balls) * 100).toFixed(2)),
-      }))
+      .map(
+        (score): BattingScore => ({
+          playerId: score.playerId,
+          runs: score.runs,
+          balls: score.balls,
+          fours: score.fours,
+          sixes: score.sixes,
+          strikeRate: score.balls === 0 ? 0 : Number(((score.runs / score.balls) * 100).toFixed(2)),
+        }),
+      )
       .sort((a, b) => b.runs - a.runs || a.playerId.localeCompare(b.playerId));
   }
 
@@ -104,6 +106,9 @@ export class ScorecardCalculatorService {
           economy,
         };
       })
-      .sort((a, b) => b.wickets - a.wickets || a.economy - b.economy || a.playerId.localeCompare(b.playerId));
+      .sort(
+        (a, b) =>
+          b.wickets - a.wickets || a.economy - b.economy || a.playerId.localeCompare(b.playerId),
+      );
   }
 }

@@ -31,7 +31,9 @@ export function BattingScorecard({ scorecard, players }: Props) {
           <TableBody>
             {scorecard.map((score) => (
               <TableRow key={score.playerId}>
-                <TableCell className="px-6 py-4 font-medium">{getPlayerName(score.playerId)}</TableCell>
+                <TableCell className="px-6 py-4 font-medium">
+                  {getPlayerName(score.playerId)}
+                </TableCell>
                 <TableCell className="max-w-[150px] truncate px-6 py-4 text-xs italic text-muted-foreground">
                   {score.isOut ? score.dismissal || 'Out' : 'Not out'}
                 </TableCell>
@@ -39,7 +41,9 @@ export function BattingScorecard({ scorecard, players }: Props) {
                 <TableCell className="px-6 py-4 text-right">{score.balls}</TableCell>
                 <TableCell className="px-6 py-4 text-right">{score.fours}</TableCell>
                 <TableCell className="px-6 py-4 text-right">{score.sixes}</TableCell>
-                <TableCell className="px-6 py-4 text-right">{score.strikeRate.toFixed(1)}</TableCell>
+                <TableCell className="px-6 py-4 text-right">
+                  {score.strikeRate.toFixed(1)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

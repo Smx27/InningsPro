@@ -4,21 +4,11 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": [
-        "../../packages/shared-types/src/*"
-      ],
-      "@schema/*": [
-        "../../packages/export-schema/src/*"
-      ],
-      "@ui/*": [
-        "../../packages/ui-tokens/src/*"
-      ]
+      "@shared/*": ["../../packages/shared-types/src/*"],
+      "@schema/*": ["../../packages/export-schema/src/*"],
+      "@ui/*": ["../../packages/ui-tokens/src/*"]
     },
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "incremental": true,
     "isolatedModules": true,
@@ -30,13 +20,6 @@
     ],
     "noEmit": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

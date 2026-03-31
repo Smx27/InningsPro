@@ -70,7 +70,9 @@ export function buildWinProbabilityData(report: MatchReport): WinProbabilityPoin
           remainingBalls,
         });
 
-    const teamAProbability = battingSecondIsTeamA ? chasingWinProbability : 100 - chasingWinProbability;
+    const teamAProbability = battingSecondIsTeamA
+      ? chasingWinProbability
+      : 100 - chasingWinProbability;
 
     data.push({
       over: toOverBallProgress(ballEvent.over, ballEvent.ball),

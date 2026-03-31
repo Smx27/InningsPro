@@ -16,14 +16,12 @@ export const metadata: Metadata = {
   description: 'Generate beautiful cricket match reports from Innings Pro',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background text-foreground flex flex-col`}>
+      <body
+        className={`${inter.className} min-h-screen bg-background text-foreground flex flex-col`}
+      >
         <QueryProvider>
           <ThemeProvider>
             <div className="relative flex min-h-screen flex-col">
@@ -33,9 +31,7 @@ export default function RootLayout({
 
               <div className="relative z-10 flex min-h-screen flex-col">
                 <Header />
-                <main className="flex-1">
-                  {children}
-                </main>
+                <main className="flex-1">{children}</main>
                 <Footer />
               </div>
             </div>

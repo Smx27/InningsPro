@@ -9,13 +9,13 @@ module.exports = function (api) {
         {
           root: ['./src'],
           alias: {
-            '@': './src'
+            '@': './src',
           },
-          extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
-        }
+          extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+        },
       ],
       'nativewind/babel',
-      'react-native-reanimated/plugin'
-    ]
+      'react-native-reanimated/plugin',
+    ],
   };
 };

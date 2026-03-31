@@ -1,6 +1,15 @@
 'use client';
 
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 import type { WinProbabilityPoint } from '../../lib/charts/buildWinProbabilityData';
 
@@ -28,15 +37,41 @@ export function WinProbabilityChart({ data, teamAName, teamBName }: WinProbabili
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data}>
           <CartesianGrid stroke={gridColor} strokeDasharray="3 3" opacity={0.4} />
-          <XAxis dataKey="over" tick={{ fontSize: 12, fill: axisColor }} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
-          <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: axisColor }} axisLine={{ stroke: gridColor }} tickLine={{ stroke: gridColor }} />
+          <XAxis
+            dataKey="over"
+            tick={{ fontSize: 12, fill: axisColor }}
+            axisLine={{ stroke: gridColor }}
+            tickLine={{ stroke: gridColor }}
+          />
+          <YAxis
+            domain={[0, 100]}
+            tick={{ fontSize: 12, fill: axisColor }}
+            axisLine={{ stroke: gridColor }}
+            tickLine={{ stroke: gridColor }}
+          />
           <Tooltip
             contentStyle={tooltipStyle}
             formatter={(value) => [`${Number(value || 0).toFixed(1)}%`, 'Win Probability']}
           />
           <Legend />
-          <Area type="monotone" dataKey="teamA" name={teamAName} stroke={TEAM_A_COLOR} fill={TEAM_A_COLOR} fillOpacity={0.2} strokeWidth={2} />
-          <Area type="monotone" dataKey="teamB" name={teamBName} stroke={TEAM_B_COLOR} fill={TEAM_B_COLOR} fillOpacity={0.2} strokeWidth={2} />
+          <Area
+            type="monotone"
+            dataKey="teamA"
+            name={teamAName}
+            stroke={TEAM_A_COLOR}
+            fill={TEAM_A_COLOR}
+            fillOpacity={0.2}
+            strokeWidth={2}
+          />
+          <Area
+            type="monotone"
+            dataKey="teamB"
+            name={teamBName}
+            stroke={TEAM_B_COLOR}
+            fill={TEAM_B_COLOR}
+            fillOpacity={0.2}
+            strokeWidth={2}
+          />
         </AreaChart>
       </ResponsiveContainer>
     </div>

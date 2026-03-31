@@ -64,7 +64,10 @@ export class ReportBuilderService {
         const inningsEvents = eventsByInnings.get(inningsRow.inningsNumber) ?? [];
         const totalRuns = inningsEvents.reduce((sum, event) => sum + event.runs, 0);
         const wickets = inningsEvents.reduce((sum, event) => sum + (event.wicketType ? 1 : 0), 0);
-        const legalBalls = inningsEvents.reduce((sum, event) => sum + (event.isLegalBall ? 1 : 0), 0);
+        const legalBalls = inningsEvents.reduce(
+          (sum, event) => sum + (event.isLegalBall ? 1 : 0),
+          0,
+        );
         const overs = Number((legalBalls / rules.ballsPerOver).toFixed(2));
         const runRate = overs === 0 ? 0 : Number((totalRuns / overs).toFixed(2));
 

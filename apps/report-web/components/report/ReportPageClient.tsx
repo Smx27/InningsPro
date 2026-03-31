@@ -71,10 +71,14 @@ export function ReportPageClient() {
           animate="visible"
         >
           <motion.div variants={staggerItemVariants}>
-            <Card interactive className="rounded-2xl p-6 text-center shadow-xl backdrop-blur md:p-8">
+            <Card
+              interactive
+              className="rounded-2xl p-6 text-center shadow-xl backdrop-blur md:p-8"
+            >
               <h1 className="text-2xl font-bold">Match Report Builder</h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Upload a match report JSON to render a full breakdown, or start with the demo report.
+                Upload a match report JSON to render a full breakdown, or start with the demo
+                report.
               </p>
               <Button asChild className="mt-5" variant="outline">
                 <Link href="/reports?demo=true">Load Demo Report</Link>

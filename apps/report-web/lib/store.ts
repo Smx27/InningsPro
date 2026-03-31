@@ -24,5 +24,5 @@ export const useReportStore = create<ReportStore>((set) => ({
   clearReport: () => set({ report: null, rawJson: null }),
   setTournamentReport: (tournamentReport, rawTournamentJson) =>
     set({ tournamentReport, rawTournamentJson, report: null, rawJson: null }),
-  clearTournamentReport: () => set({ tournamentReport: null, rawTournamentJson: null })
+  clearTournamentReport: () => set({ tournamentReport: null, rawTournamentJson: null }),
 }));

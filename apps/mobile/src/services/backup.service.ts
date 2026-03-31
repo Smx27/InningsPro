@@ -61,7 +61,10 @@ class BackupService {
       throw new Error(`Tournament not found: ${tournamentId}`);
     }
 
-    const tournamentTeams = await db.select().from(teams).where(eq(teams.tournamentId, tournamentId));
+    const tournamentTeams = await db
+      .select()
+      .from(teams)
+      .where(eq(teams.tournamentId, tournamentId));
     const teamIds = tournamentTeams.map((team) => team.id);
 
     const tournamentPlayers =
@@ -69,7 +72,10 @@ class BackupService {
         ? await db.select().from(players).where(inArray(players.teamId, teamIds))
         : [];
 
-    const tournamentMatches = await db.select().from(matches).where(eq(matches.tournamentId, tournamentId));
+    const tournamentMatches = await db
+      .select()
+      .from(matches)
+      .where(eq(matches.tournamentId, tournamentId));
     const matchIds = tournamentMatches.map((match) => match.id);
 
     const tournamentInnings =
@@ -117,11 +123,18 @@ class BackupService {
     const matchTeams = await db
       .select()
       .from(teams)
-      .where(and(eq(teams.tournamentId, tournament.id), inArray(teams.id, [match.teamAId, match.teamBId])));
+      .where(
+        and(
+          eq(teams.tournamentId, tournament.id),
+          inArray(teams.id, [match.teamAId, match.teamBId]),
+        ),
+      );
 
     const teamIds = matchTeams.map((team) => team.id);
     const matchPlayers =
-      teamIds.length > 0 ? await db.select().from(players).where(inArray(players.teamId, teamIds)) : [];
+      teamIds.length > 0
+        ? await db.select().from(players).where(inArray(players.teamId, teamIds))
+        : [];
 
     const matchInningsRows = await db.select().from(innings).where(eq(innings.matchId, match.id));
     const matchEvents = await db.select().from(ballEvents).where(eq(ballEvents.matchId, match.id));

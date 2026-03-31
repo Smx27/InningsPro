@@ -41,7 +41,9 @@ export const LastBallsRow = memo(function LastBallsRow({ balls }: LastBallsRowPr
       </Text>
       <View className="flex-row gap-2">
         {latestBalls.length === 0 ? (
-          <Text className="text-sm text-zinc-500 dark:text-zinc-400">No deliveries recorded yet.</Text>
+          <Text className="text-sm text-zinc-500 dark:text-zinc-400">
+            No deliveries recorded yet.
+          </Text>
         ) : (
           latestBalls.map((ball) => {
             const isWicket = Boolean(ball.wicketType);
@@ -52,7 +54,9 @@ export const LastBallsRow = memo(function LastBallsRow({ balls }: LastBallsRowPr
                   isWicket ? 'bg-red-500' : 'bg-zinc-200 dark:bg-zinc-800'
                 }`}
               >
-                <Text className={`text-sm font-bold ${isWicket ? 'text-white' : 'text-zinc-900 dark:text-zinc-100'}`}>
+                <Text
+                  className={`text-sm font-bold ${isWicket ? 'text-white' : 'text-zinc-900 dark:text-zinc-100'}`}
+                >
                   {getBallLabel(ball)}
                 </Text>
               </View>

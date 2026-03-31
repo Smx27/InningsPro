@@ -100,12 +100,7 @@ export interface PenaltyBallEvent extends BallEventBase {
   kind: 'penalty';
   awardedTo: 'batting' | 'bowling';
   runs: 5;
-  reason:
-    | 'slow-over-rate'
-    | 'ball-tampering'
-    | 'unfair-play'
-    | 'time-wasting'
-    | 'disciplinary';
+  reason: 'slow-over-rate' | 'ball-tampering' | 'unfair-play' | 'time-wasting' | 'disciplinary';
 }
 
 export interface ReviewBallEvent extends BallEventBase {

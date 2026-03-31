@@ -44,7 +44,7 @@ const RunRateComparisonChart = dynamic(
   {
     ssr: false,
     loading: () => <ChartSkeleton />,
-  }
+  },
 );
 
 const WormChart = dynamic(() => import('./WormChart').then((module) => module.WormChart), {

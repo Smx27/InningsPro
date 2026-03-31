@@ -25,7 +25,11 @@ export const useMatchContextStore = create<MatchContextStore>((set, get) => ({
 
   loadMatchContext: async (matchId) => {
     const currentState = get();
-    if (currentState.matchId === matchId && currentState.teamAPlayers.length > 0 && currentState.teamBPlayers.length > 0) {
+    if (
+      currentState.matchId === matchId &&
+      currentState.teamAPlayers.length > 0 &&
+      currentState.teamBPlayers.length > 0
+    ) {
       return;
     }
 

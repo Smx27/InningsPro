@@ -20,7 +20,9 @@ export class TournamentReportParseError extends Error {
   }
 }
 
-export const isTournamentReportParseError = (error: unknown): error is TournamentReportParseError => {
+export const isTournamentReportParseError = (
+  error: unknown,
+): error is TournamentReportParseError => {
   return error instanceof TournamentReportParseError;
 };
 
@@ -31,28 +33,36 @@ const tournamentShapeSchema = z
     tournament: z
       .object({
         id: z.string().min(1),
-        name: z.string().min(1)
+        name: z.string().min(1),
       })
       .optional(),
-    matches: z.array(z.unknown()).min(1, 'At least one match is required')
+    matches: z.array(z.unknown()).min(1, 'At least one match is required'),
   })
   .superRefine((value, ctx) => {
     const id = value.tournamentId ?? value.tournament?.id;
     const name = value.tournamentName ?? value.tournament?.name;
 
     if (!id) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tournamentId'], message: 'Tournament id is required' });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['tournamentId'],
+        message: 'Tournament id is required',
+      });
     }
 
     if (!name) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['tournamentName'], message: 'Tournament name is required' });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['tournamentName'],
+        message: 'Tournament name is required',
+      });
     }
   });
 
 function mapZodIssues(error: z.ZodError): TournamentReportParseIssue[] {
   return error.issues.map((issue) => ({
     path: issue.path.join('.'),
-    message: issue.message
+    message: issue.message,
   }));
 }
 
@@ -78,7 +88,7 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
   if (!baseResult.success) {
     throw new TournamentReportParseError(
       'The uploaded tournament report is missing required fields or has invalid values.',
-      mapZodIssues(baseResult.error)
+      mapZodIssues(baseResult.error),
     );
   }
 
@@ -89,7 +99,10 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
       if (error instanceof MatchReportParseError) {
         throw new TournamentReportParseError(
           `Match ${index + 1} in the tournament payload is invalid.`,
-          error.issues.map((issue) => ({ path: `matches.${index}.${issue.path}`, message: issue.message }))
+          error.issues.map((issue) => ({
+            path: `matches.${index}.${issue.path}`,
+            message: issue.message,
+          })),
         );
       }
 
@@ -104,7 +117,10 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
   for (const match of parsedMatches) {
     for (const innings of match.innings) {
       const bowlingTeamId = innings.teamId === match.teamA.id ? match.teamB.id : match.teamA.id;
-      totalWicketsByTeam.set(bowlingTeamId, (totalWicketsByTeam.get(bowlingTeamId) ?? 0) + innings.totalWickets);
+      totalWicketsByTeam.set(
+        bowlingTeamId,
+        (totalWicketsByTeam.get(bowlingTeamId) ?? 0) + innings.totalWickets,
+      );
     }
   }
 
@@ -124,8 +140,8 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
       runs: team.runsScored,
       balls: team.ballsFaced,
       wickets: totalWicketsByTeam.get(team.teamId) ?? 0,
-      overs: ballsToOvers(team.ballsFaced)
-    }
+      overs: ballsToOvers(team.ballsFaced),
+    },
   }));
 
   const players = topRunScorers.map((player) => ({
@@ -139,7 +155,7 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
     wickets: player.wickets,
     overs: ballsToOvers(player.ballsBowled),
     strikeRate: player.ballsFaced > 0 ? (player.runs / player.ballsFaced) * 100 : 0,
-    economy: player.ballsBowled > 0 ? (player.runsConceded / player.ballsBowled) * 6 : 0
+    economy: player.ballsBowled > 0 ? (player.runsConceded / player.ballsBowled) * 6 : 0,
   }));
 
   return {
@@ -155,7 +171,7 @@ export function parseTournamentReportData(parsedJson: unknown): TournamentReport
       runs: teams.reduce((acc, team) => acc + team.runs, 0),
       balls: teams.reduce((acc, team) => acc + team.balls, 0),
       wickets: teams.reduce((acc, team) => acc + team.wickets, 0),
-      overs: teams.reduce((acc, team) => acc + team.overs, 0)
-    }
+      overs: teams.reduce((acc, team) => acc + team.overs, 0),
+    },
   };
 }

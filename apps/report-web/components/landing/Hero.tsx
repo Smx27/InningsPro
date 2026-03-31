@@ -53,10 +53,16 @@ export function Hero() {
         <motion.h1 className="text-hero" variants={itemVariants}>
           Innings Pro Analytics
         </motion.h1>
-        <motion.p className="max-w-[700px] text-lg text-muted-foreground md:text-xl" variants={itemVariants}>
+        <motion.p
+          className="max-w-[700px] text-lg text-muted-foreground md:text-xl"
+          variants={itemVariants}
+        >
           Turn cricket match data into beautiful insights
         </motion.p>
-        <motion.div className="flex flex-wrap items-center justify-center gap-3" variants={ctaVariants}>
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-3"
+          variants={ctaVariants}
+        >
           <GlowButton asChild size="lg">
             <a href="#upload">Upload Match Report</a>
           </GlowButton>

@@ -2,11 +2,10 @@ import {
   matchExportSchemaV1,
   tournamentExportSchemaV1,
   type MatchExportSchemaV1,
-  type TournamentExportSchemaV1
+  type TournamentExportSchemaV1,
 } from './schemas';
 
 import type { SafeParseReturnType, ZodType } from 'zod';
-
 
 export const parseWithSchema = <Output>(schema: ZodType<Output>, payload: unknown): Output => {
   return schema.parse(payload);
@@ -14,7 +13,7 @@ export const parseWithSchema = <Output>(schema: ZodType<Output>, payload: unknow
 
 export const safeParseWithSchema = <Output>(
   schema: ZodType<Output>,
-  payload: unknown
+  payload: unknown,
 ): SafeParseReturnType<unknown, Output> => {
   return schema.safeParse(payload);
 };
@@ -24,7 +23,7 @@ export const parseMatchExport = (payload: unknown): MatchExportSchemaV1 => {
 };
 
 export const safeParseMatchExport = (
-  payload: unknown
+  payload: unknown,
 ): SafeParseReturnType<unknown, MatchExportSchemaV1> => {
   return safeParseWithSchema(matchExportSchemaV1, payload);
 };
@@ -34,7 +33,7 @@ export const parseTournamentExport = (payload: unknown): TournamentExportSchemaV
 };
 
 export const safeParseTournamentExport = (
-  payload: unknown
+  payload: unknown,
 ): SafeParseReturnType<unknown, TournamentExportSchemaV1> => {
   return safeParseWithSchema(tournamentExportSchemaV1, payload);
 };

@@ -136,7 +136,7 @@ Innings 1:
 - [ ] Over progression
 - [ ] Strike rotation
 - [ ] Player statistics
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ---
 

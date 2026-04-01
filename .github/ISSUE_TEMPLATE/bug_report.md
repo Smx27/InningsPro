@@ -32,7 +32,7 @@ assignees: []
   - [ ] `packages/shared-types` — Domain types
   - [ ] `packages/ui-tokens` — Design tokens
   - [ ] `packages/export-schema` — Export schemas
-  - [ ] Other: ******\_\_\_******
+  - [ ] Other: **\*\***\_\_\_**\*\***
 
 - **App Version:** [If applicable]
 - **Device/Browser:** [For mobile/web bugs, e.g., iPhone 14 Pro, Chrome 120]

@@ -20,7 +20,7 @@ assignees: []
 - [ ] ❌ Broken links or references
 - [ ] 🎯 Needs better examples
 - [ ] 📍 Wrong location
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ---
 
@@ -40,7 +40,7 @@ assignees: []
 - [ ] docs/EXPORT_SCHEMA.md
 - [ ] docs/PRD.md
 - [ ] Inline code comments
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ### Specific Section
 
@@ -89,7 +89,7 @@ Link or reference: ...
 - [ ] Web app developers
 - [ ] Architects
 - [ ] Users
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ### What's the impact?
 

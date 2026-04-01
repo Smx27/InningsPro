@@ -15,6 +15,17 @@ const normalizeLabel = (value: string, fallback: string): string => {
 };
 
 export class QuickMatchService {
+  private async createDefaultPlayers(teamId: string, count: number): Promise<void> {
+    await databaseService.createPlayers(
+      Array.from({ length: count }, (_, index) => ({
+        id: `${teamId}-p-${index + 1}`,
+        teamId,
+        name: `Player ${index + 1}`,
+        role: 'allrounder',
+      })),
+    );
+  }
+
   async createQuickMatch(input: QuickMatchInput): Promise<string> {
     const teamAName = normalizeLabel(input.teamAName, 'Team A');
     const teamBName = normalizeLabel(input.teamBName, 'Team B');
@@ -50,22 +61,8 @@ export class QuickMatchService {
     ]);
 
     await Promise.all([
-      ...Array.from({ length: playersPerTeam }, (_, index) =>
-        databaseService.createPlayer({
-          id: `${teamA.id}-p-${index + 1}`,
-          teamId: teamA.id,
-          name: `Player ${index + 1}`,
-          role: 'allrounder',
-        }),
-      ),
-      ...Array.from({ length: playersPerTeam }, (_, index) =>
-        databaseService.createPlayer({
-          id: `${teamB.id}-p-${index + 1}`,
-          teamId: teamB.id,
-          name: `Player ${index + 1}`,
-          role: 'allrounder',
-        }),
-      ),
+      this.createDefaultPlayers(teamA.id, playersPerTeam),
+      this.createDefaultPlayers(teamB.id, playersPerTeam),
     ]);
 
     const match = await databaseService.createMatch({

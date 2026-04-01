@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { BowlingScore, PlayerReport } from '../../types/report.types';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -8,7 +10,15 @@ interface Props {
 }
 
 export function BowlingScorecard({ scorecard, players }: Props) {
-  const getPlayerName = (id: string) => players.find((player) => player.id === id)?.name || id;
+  const playerNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const player of players) {
+      map.set(player.id, player.name);
+    }
+    return map;
+  }, [players]);
+
+  const getPlayerName = (id: string) => playerNames.get(id) || id;
 
   return (
     <Card className="mb-8">

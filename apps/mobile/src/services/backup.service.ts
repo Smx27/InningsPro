@@ -47,6 +47,20 @@ const isBackupPayload = (value: unknown): value is BackupPayload => {
   );
 };
 
+
+/**
+ * Optimized ID extraction from an array of entities.
+ * Uses a pre-allocated array and a standard for loop to avoid the overhead of `.map()`.
+ */
+const extractIds = <T extends { id: string }>(items: T[]): string[] => {
+  const len = items.length;
+  const ids = new Array(len);
+  for (let i = 0; i < len; i++) {
+    ids[i] = items[i].id;
+  }
+  return ids;
+};
+
 class BackupService {
   async exportTournament(tournamentId: string): Promise<BackupPayload> {
     const db = getDatabase();
@@ -65,7 +79,7 @@ class BackupService {
       .select()
       .from(teams)
       .where(eq(teams.tournamentId, tournamentId));
-    const teamIds = tournamentTeams.map((team) => team.id);
+    const teamIds = extractIds(tournamentTeams);
 
     const tournamentPlayers =
       teamIds.length > 0
@@ -76,7 +90,7 @@ class BackupService {
       .select()
       .from(matches)
       .where(eq(matches.tournamentId, tournamentId));
-    const matchIds = tournamentMatches.map((match) => match.id);
+    const matchIds = extractIds(tournamentMatches);
 
     const tournamentInnings =
       matchIds.length > 0
@@ -130,7 +144,7 @@ class BackupService {
         ),
       );
 
-    const teamIds = matchTeams.map((team) => team.id);
+    const teamIds = extractIds(matchTeams);
     const matchPlayers =
       teamIds.length > 0
         ? await db.select().from(players).where(inArray(players.teamId, teamIds))

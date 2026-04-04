@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 import { test } from 'node:test';
 
-import type { InningsReport } from '../../types/report.types.ts';
-import { buildRunRateData } from './buildRunRateData.ts';
+import type { InningsReport } from '../../types/report.types';
+import { buildRunRateData } from './buildRunRateData';
 
 test('buildRunRateData - returns empty array for empty ball events', () => {
   const innings = {
@@ -28,8 +28,8 @@ test('buildRunRateData - correctly calculates run rate for a single over', () =>
 
   const result = buildRunRateData(innings);
   assert.strictEqual(result.length, 1);
-  assert.strictEqual(result[0].over, 1);
-  assert.strictEqual(result[0].runRate, 6); // (1 + 4 + 1) / 1 = 6
+  assert.strictEqual(result[0]?.over, 1);
+  assert.strictEqual(result[0]?.runRate, 6); // (1 + 4 + 1) / 1 = 6
 });
 
 test('buildRunRateData - correctly calculates run rate for multiple overs', () => {
@@ -42,10 +42,10 @@ test('buildRunRateData - correctly calculates run rate for multiple overs', () =
 
   const result = buildRunRateData(innings);
   assert.strictEqual(result.length, 2);
-  assert.strictEqual(result[0].over, 1);
-  assert.strictEqual(result[0].runRate, 6);
-  assert.strictEqual(result[1].over, 2);
-  assert.strictEqual(result[1].runRate, 5);
+  assert.strictEqual(result[0]?.over, 1);
+  assert.strictEqual(result[0]?.runRate, 6);
+  assert.strictEqual(result[1]?.over, 2);
+  assert.strictEqual(result[1]?.runRate, 5);
 });
 
 test('buildRunRateData - handles unsorted ball events', () => {
@@ -58,10 +58,10 @@ test('buildRunRateData - handles unsorted ball events', () => {
 
   const result = buildRunRateData(innings);
   assert.strictEqual(result.length, 2);
-  assert.strictEqual(result[0].over, 1);
-  assert.strictEqual(result[0].runRate, 6);
-  assert.strictEqual(result[1].over, 2);
-  assert.strictEqual(result[1].runRate, 5);
+  assert.strictEqual(result[0]?.over, 1);
+  assert.strictEqual(result[0]?.runRate, 6);
+  assert.strictEqual(result[1]?.over, 2);
+  assert.strictEqual(result[1]?.runRate, 5);
 });
 
 test('buildRunRateData - rounds run rate to 2 decimal places', () => {
@@ -75,6 +75,6 @@ test('buildRunRateData - rounds run rate to 2 decimal places', () => {
 
   const result = buildRunRateData(innings);
   assert.strictEqual(result.length, 3);
-  assert.strictEqual(result[2].over, 3);
-  assert.strictEqual(result[2].runRate, 0.33);
+  assert.strictEqual(result[2]?.over, 3);
+  assert.strictEqual(result[2]?.runRate, 0.33);
 });

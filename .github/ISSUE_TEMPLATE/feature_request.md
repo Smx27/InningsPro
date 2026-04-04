@@ -50,7 +50,7 @@ assignees: []
 - [ ] Captains/Coaches
 - [ ] Administrators
 - [ ] Team Members
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ### Use Cases
 
@@ -73,7 +73,7 @@ assignees: []
 - [ ] `packages/export-schema` — Export schemas
 - [ ] `docs/` — Documentation
 - [ ] Scoring Engine
-- [ ] Other: ******\_\_\_******
+- [ ] Other: **\*\***\_\_\_**\*\***
 
 ### Implementation Approach
 

@@ -1,8 +1,11 @@
 import { 
   type Id, 
   type Innings, 
-  type MatchRules
+  type MatchRules,
+  isLegalBall
 } from '@inningspro/shared-types';
+
+import type { MatchEngineState } from './types.ts';
 
 /**
  * Formats balls into "Overs.Balls" format.
@@ -158,5 +161,85 @@ export function getBowlerStats(innings: Innings, bowlerId: Id, rules: MatchRules
     runs: runsConceded,
     wickets,
     economy: Number(economy.toFixed(2)),
+  };
+}
+
+/**
+ * Provides suggestions for the next striker, non-striker, and bowler.
+ */
+export function getMatchHints(state: MatchEngineState) {
+  const innings = state.innings[state.innings.length - 1];
+  if (!innings || state.status === 'completed') return null;
+
+  const lastEvent = innings.events[innings.events.length - 1];
+
+  if (!lastEvent) {
+    return {
+      suggestedStrikerId: null,
+      suggestedNonStrikerId: null,
+      suggestedBowlerId: null,
+      overJustCompleted: false,
+      message: 'Match started. Please select opening batters and bowler.',
+    };
+  }
+
+  const legalBalls = innings.events.filter(isLegalBall).length;
+
+  const isOverComplete = legalBalls > 0 && legalBalls % state.rules.ballsPerOver === 0;
+  const lastBallWasLegal = isLegalBall(lastEvent);
+  
+  const overJustCompleted = isOverComplete && lastBallWasLegal;
+
+  // Determine current striker/non-striker after the last event
+  let currentStrikerId = lastEvent.batterId;
+  let currentNonStrikerId = lastEvent.nonStrikerId;
+
+  // Striker rotation logic: odd runs
+  let runsForRotation = 0;
+  if (lastEvent.kind === 'delivery') {
+    runsForRotation = lastEvent.runsOffBat;
+  } else if (lastEvent.kind === 'extra') {
+    const penalty = (lastEvent.extraType === 'wide' && state.rules.wideBallAddsRun) || (lastEvent.extraType === 'no-ball' && state.rules.noBallAddsRun) ? 1 : 0;
+    runsForRotation = lastEvent.runs - penalty;
+  } else if (lastEvent.kind === 'wicket') {
+    runsForRotation = lastEvent.runsCompleted;
+  }
+
+  if (runsForRotation % 2 !== 0) {
+    [currentStrikerId, currentNonStrikerId] = [currentNonStrikerId, currentStrikerId];
+  }
+
+  // Striker rotation logic: over completion
+  if (overJustCompleted) {
+    [currentStrikerId, currentNonStrikerId] = [currentNonStrikerId, currentStrikerId];
+  }
+
+  // Suggestions
+  let suggestedStrikerId: string | null = currentStrikerId;
+  let suggestedNonStrikerId: string | null = currentNonStrikerId;
+  let suggestedBowlerId: string | null = lastEvent.bowlerId;
+  let message = 'Next ball ready.';
+
+  if (lastEvent.kind === 'wicket') {
+    if (lastEvent.playerOutId === currentStrikerId) {
+      suggestedStrikerId = null;
+      message = 'Batter out! Please select a new striker.';
+    } else if (lastEvent.playerOutId === currentNonStrikerId) {
+      suggestedNonStrikerId = null;
+      message = 'Non-striker out! Please select a new non-striker.';
+    }
+  }
+
+  if (overJustCompleted) {
+    suggestedBowlerId = null;
+    message = 'Over complete! Please select a new bowler.';
+  }
+
+  return {
+    suggestedStrikerId,
+    suggestedNonStrikerId,
+    suggestedBowlerId,
+    overJustCompleted,
+    message,
   };
 }

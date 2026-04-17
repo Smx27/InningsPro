@@ -28,9 +28,9 @@ InningsPro is a production-grade cricket scoring system designed for reliable ba
   3. User can configure a 5-over match with standard extras (1 run + extra ball).
   4. All core scoring transitions are verified by automated tests.
 **Plans**: 3 plans
-- [ ] 01-01-PLAN.md — Initialize engine infrastructure and core types.
-- [ ] 01-02-PLAN.md — Implement functional scoring reducer (balls, extras, rotation).
-- [ ] 01-03-PLAN.md — Implement scorecard and stats selectors.
+- [x] 01-01-PLAN.md — Initialize engine infrastructure and core types.
+- [x] 01-02-PLAN.md — Implement functional scoring reducer (balls, extras, rotation).
+- [x] 01-03-PLAN.md — Implement scorecard and stats selectors.
 
 ### Phase 2: Match Engine (MCC Compliance & Audit)
 **Goal**: Ensure full 2022 MCC Law compliance and match auditability.

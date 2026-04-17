@@ -37,7 +37,7 @@ const MOCK_STATE: MatchEngineState = {
 test('matchReducer returns state for unknown actions', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result = matchReducer(MOCK_STATE, { type: 'UNKNOWN_ACTION' } as any);
-  assert.strictEqual(result, MOCK_STATE);
+  assert.deepStrictEqual(result, { ...MOCK_STATE, lastRejectionReason: undefined });
 });
 
 test('RECORD_DELIVERY adds a DeliveryBallEvent and increments ball count', () => {
@@ -228,8 +228,8 @@ test('matchReducer rejects same bowler for consecutive overs', () => {
     },
   });
 
-  // Should return same state (reject)
-  assert.strictEqual(result, state);
+  // Should return state with rejection reason
+  assert.strictEqual(result.lastRejectionReason, 'The same bowler cannot bowl consecutive overs.');
   const innings = result.innings[0]!;
   assert.ok(innings);
   assert.strictEqual(innings.events.length, 6);

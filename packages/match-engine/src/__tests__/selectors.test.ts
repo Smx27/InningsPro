@@ -45,25 +45,25 @@ describe('Match Engine Selectors', () => {
     // 1.1: 4 runs
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e1', timestamp: new Date().toISOString(), runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     
     // 1.2: Wide (1 run)
     state = matchReducer(state, {
       type: 'RECORD_EXTRA',
-      payload: { type: 'wide', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e2', timestamp: new Date().toISOString(), type: 'wide', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     
     // 1.2: 1 run
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 1, isBoundary: false, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e3', timestamp: new Date().toISOString(), runsOffBat: 1, isBoundary: false, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     
     // 1.3: Wicket
     state = matchReducer(state, {
       type: 'RECORD_WICKET',
-      payload: { type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e4', timestamp: new Date().toISOString(), type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
     const innings = state.innings[0]!;
@@ -80,15 +80,15 @@ describe('Match Engine Selectors', () => {
     // b1 faces 3 balls, scores 10 runs (4, 6, out)
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e1', timestamp: new Date().toISOString(), runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 6, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e2', timestamp: new Date().toISOString(), runsOffBat: 6, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     state = matchReducer(state, {
       type: 'RECORD_WICKET',
-      payload: { type: 'caught', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e3', timestamp: new Date().toISOString(), type: 'caught', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
     const stats = getBatterStats(state.innings[0]!, 'b1');
@@ -107,32 +107,32 @@ describe('Match Engine Selectors', () => {
     // 0.1: 4
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e1', timestamp: new Date().toISOString(), runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     // 0.2: 0
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 0, isBoundary: false, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e2', timestamp: new Date().toISOString(), runsOffBat: 0, isBoundary: false, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     // 0.2 (wide): 1 run (bowler gets +1)
     state = matchReducer(state, {
       type: 'RECORD_EXTRA',
-      payload: { type: 'wide', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e3', timestamp: new Date().toISOString(), type: 'wide', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     // 0.2 (no-ball): 1 run (bowler gets +1)
     state = matchReducer(state, {
       type: 'RECORD_EXTRA',
-      payload: { type: 'no-ball', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e4', timestamp: new Date().toISOString(), type: 'no-ball', runs: 0, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     // 0.3: 4
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
-      payload: { runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e5', timestamp: new Date().toISOString(), runsOffBat: 4, isBoundary: true, batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
     // 0.4: Wicket
     state = matchReducer(state, {
       type: 'RECORD_WICKET',
-      payload: { type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
+      payload: { id: 'e6', timestamp: new Date().toISOString(), type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
     const stats = getBowlerStats(state.innings[0]!, 'bw1', state.rules);
@@ -161,6 +161,8 @@ describe('Match Engine Selectors', () => {
       state = matchReducer(state, {
         type: 'RECORD_WICKET',
         payload: { 
+          id: `ew-${i}`,
+          timestamp: new Date().toISOString(),
           type: 'bowled', 
           playerOutId: `p${i}`, 
           batterId: `p${i}`, 
@@ -181,7 +183,15 @@ describe('Match Engine Selectors', () => {
         for (let b = 0; b < 6; b++) {
             state = matchReducer(state, {
                 type: 'RECORD_DELIVERY',
-                payload: { runsOffBat: 1, isBoundary: false, batterId: 'b1', nonStrikerId: 'b2', bowlerId }
+                payload: { 
+                  id: `ed-${o}-${b}`,
+                  timestamp: new Date().toISOString(),
+                  runsOffBat: 1, 
+                  isBoundary: false, 
+                  batterId: 'b1', 
+                  nonStrikerId: 'b2', 
+                  bowlerId 
+                }
             });
         }
     }

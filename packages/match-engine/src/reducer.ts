@@ -1,5 +1,12 @@
+import { 
+  type DeliveryBallEvent, 
+  type ExtraBallEvent, 
+  type Innings, 
+  type WicketBallEvent,
+  isLegalBall 
+} from '@inningspro/shared-types';
+
 import type { MatchEngineState, MatchEngineAction } from './types.ts';
-import type { BallEvent, DeliveryBallEvent, ExtraBallEvent, Innings, WicketBallEvent } from '@inningspro/shared-types';
 
 /**
  * Match Engine Reducer
@@ -8,37 +15,45 @@ import type { BallEvent, DeliveryBallEvent, ExtraBallEvent, Innings, WicketBallE
 export function matchReducer(state: MatchEngineState, action: MatchEngineAction): MatchEngineState {
   if (state.status === 'completed') return state;
 
+  // Clear previous rejection reason
+  const nextState = { ...state, lastRejectionReason: undefined };
+
   switch (action.type) {
     case 'START_MATCH':
       return {
-        ...state,
+        ...nextState,
         id: action.payload.matchId,
         rules: action.payload.rules,
         status: 'live',
       };
 
     case 'RECORD_DELIVERY': {
-      const innings = state.innings[state.innings.length - 1];
-      if (!innings) return state;
+      const innings = nextState.innings[nextState.innings.length - 1];
+      if (!innings) return nextState;
 
       const legalBalls = innings.events.filter(isLegalBall).length;
-      const overNumber = Math.floor(legalBalls / state.rules.ballsPerOver);
+      const overNumber = Math.floor(legalBalls / nextState.rules.ballsPerOver);
 
       // Bowler Rotation Check
       if (isFirstBallOfNewOver(innings, overNumber)) {
         const lastBowlerId = getLastOverBowlerId(innings, overNumber - 1);
-        if (lastBowlerId === action.payload.bowlerId) return state;
+        if (lastBowlerId === action.payload.bowlerId) {
+          return {
+            ...nextState,
+            lastRejectionReason: 'The same bowler cannot bowl consecutive overs.',
+          };
+        }
       }
 
       const ballsInCurrentOver = innings.events.filter((e) => e.overNumber === overNumber).length;
 
       const newEvent: DeliveryBallEvent = {
-        id: `event_${Date.now()}_${innings.events.length}`,
+        id: action.payload.id,
         inningsId: innings.id,
         kind: 'delivery',
         overNumber,
         ballInOver: ballsInCurrentOver + 1,
-        timestamp: new Date().toISOString(),
+        timestamp: action.payload.timestamp,
         batterId: action.payload.batterId,
         nonStrikerId: action.payload.nonStrikerId,
         bowlerId: action.payload.bowlerId,
@@ -47,7 +62,7 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
       };
 
       return checkMatchCompletion(
-        updateInnings(state, innings.id, (inn) => ({
+        updateInnings(nextState, innings.id, (inn) => ({
           ...inn,
           events: [...inn.events, newEvent],
         })),
@@ -55,42 +70,50 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
     }
 
     case 'RECORD_EXTRA': {
-      const innings = state.innings[state.innings.length - 1];
-      if (!innings) return state;
+      const innings = nextState.innings[nextState.innings.length - 1];
+      if (!innings) return nextState;
 
-      const { type, runs, batterId, nonStrikerId, bowlerId } = action.payload;
+      const { type, runs, batterId, nonStrikerId, bowlerId, id, timestamp, runsOffBat, isBoundary } = action.payload;
       const rebowled = type === 'wide' || type === 'no-ball';
 
       const legalBalls = innings.events.filter(isLegalBall).length;
-      const overNumber = Math.floor(legalBalls / state.rules.ballsPerOver);
+      const overNumber = Math.floor(legalBalls / nextState.rules.ballsPerOver);
 
       // Bowler Rotation Check
       if (isFirstBallOfNewOver(innings, overNumber)) {
         const lastBowlerId = getLastOverBowlerId(innings, overNumber - 1);
-        if (lastBowlerId === bowlerId) return state;
+        if (lastBowlerId === bowlerId) {
+          return {
+            ...nextState,
+            lastRejectionReason: 'The same bowler cannot bowl consecutive overs.',
+          };
+        }
       }
 
       const ballsInCurrentOver = innings.events.filter((e) => e.overNumber === overNumber).length;
 
-      const totalRuns = (rebowled ? runs + 1 : runs) as ExtraBallEvent['runs'];
+      const penalty = (type === 'wide' && nextState.rules.wideBallAddsRun) || (type === 'no-ball' && nextState.rules.noBallAddsRun) ? 1 : 0;
+      const totalRuns = (runs + penalty);
 
       const newEvent: ExtraBallEvent = {
-        id: `event_${Date.now()}_${innings.events.length}`,
+        id,
         inningsId: innings.id,
         kind: 'extra',
         extraType: type,
         runs: totalRuns,
+        runsOffBat,
+        isBoundary,
         rebowled,
         overNumber,
         ballInOver: ballsInCurrentOver + 1,
-        timestamp: new Date().toISOString(),
+        timestamp,
         batterId,
         nonStrikerId,
         bowlerId,
       };
 
       return checkMatchCompletion(
-        updateInnings(state, innings.id, (inn) => ({
+        updateInnings(nextState, innings.id, (inn) => ({
           ...inn,
           events: [...inn.events, newEvent],
         })),
@@ -98,18 +121,23 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
     }
 
     case 'RECORD_WICKET': {
-      const innings = state.innings[state.innings.length - 1];
-      if (!innings) return state;
+      const innings = nextState.innings[nextState.innings.length - 1];
+      if (!innings) return nextState;
 
-      const { type, playerOutId, batterId, nonStrikerId, bowlerId } = action.payload;
+      const { type, playerOutId, batterId, nonStrikerId, bowlerId, id, timestamp, runsCompleted } = action.payload;
 
       const legalBalls = innings.events.filter(isLegalBall).length;
-      const overNumber = Math.floor(legalBalls / state.rules.ballsPerOver);
+      const overNumber = Math.floor(legalBalls / nextState.rules.ballsPerOver);
 
       // Bowler Rotation Check
       if (isFirstBallOfNewOver(innings, overNumber)) {
         const lastBowlerId = getLastOverBowlerId(innings, overNumber - 1);
-        if (lastBowlerId === bowlerId) return state;
+        if (lastBowlerId === bowlerId) {
+          return {
+            ...nextState,
+            lastRejectionReason: 'The same bowler cannot bowl consecutive overs.',
+          };
+        }
       }
 
       const ballsInCurrentOver = innings.events.filter((e) => e.overNumber === overNumber).length;
@@ -117,23 +145,23 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
       const creditedToBowler = ['bowled', 'caught', 'lbw', 'stumped', 'hit-wicket'].includes(type);
 
       const newEvent: WicketBallEvent = {
-        id: `event_${Date.now()}_${innings.events.length}`,
+        id,
         inningsId: innings.id,
         kind: 'wicket',
         wicketType: type,
         playerOutId,
         creditedToBowler,
-        runsCompleted: 0,
+        runsCompleted: runsCompleted || 0,
         overNumber,
         ballInOver: ballsInCurrentOver + 1,
-        timestamp: new Date().toISOString(),
+        timestamp,
         batterId,
         nonStrikerId,
         bowlerId,
       };
 
       return checkMatchCompletion(
-        updateInnings(state, innings.id, (inn) => ({
+        updateInnings(nextState, innings.id, (inn) => ({
           ...inn,
           events: [...inn.events, newEvent],
         })),
@@ -141,15 +169,8 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
     }
 
     default:
-      return state;
+      return nextState;
   }
-}
-
-function isLegalBall(event: BallEvent): boolean {
-  if (event.kind === 'delivery') return true;
-  if (event.kind === 'extra') return !event.rebowled;
-  if (event.kind === 'wicket') return true;
-  return false;
 }
 
 function updateInnings(

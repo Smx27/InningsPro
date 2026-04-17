@@ -1,14 +1,8 @@
-import type { BallEvent, Id, Innings, MatchRules } from '@inningspro/shared-types';
-
-/**
- * Checks if a ball is legal (counts toward the over).
- */
-export function isLegalBall(event: BallEvent): boolean {
-  if (event.kind === 'delivery') return true;
-  if (event.kind === 'extra') return !event.rebowled;
-  if (event.kind === 'wicket') return true;
-  return false;
-}
+import { 
+  type Id, 
+  type Innings, 
+  type MatchRules
+} from '@inningspro/shared-types';
 
 /**
  * Formats balls into "Overs.Balls" format.
@@ -76,9 +70,12 @@ export function getBatterStats(innings: Innings, batterId: Id) {
       if (event.extraType !== 'wide') {
         balls++;
       }
-      // If there were runs credited to batter in extras (rare but possible in some formats), 
-      // they would be handled here. In our current reducer, extras are either wide, no-ball, bye, leg-bye.
-      // Currently, no runs from Extras are credited to the batter in our reducer logic.
+      
+      if (event.extraType === 'no-ball' && event.runsOffBat) {
+        runs += event.runsOffBat;
+        if (event.runsOffBat === 4 && event.isBoundary) fours++;
+        if (event.runsOffBat === 6 && event.isBoundary) sixes++;
+      }
     }
   }
 

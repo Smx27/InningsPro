@@ -92,8 +92,17 @@ export interface WicketBallEvent extends BallEventBase {
 export interface ExtraBallEvent extends BallEventBase {
   kind: 'extra';
   extraType: 'wide' | 'no-ball' | 'bye' | 'leg-bye';
-  runs: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  runs: number; // Penalty + runs scored by batters
+  runsOffBat?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | undefined; // Added for no-balls
+  isBoundary?: boolean | undefined; // Added for no-balls
   rebowled: boolean;
+}
+
+export function isLegalBall(event: BallEvent): boolean {
+  if (event.kind === 'delivery') return true;
+  if (event.kind === 'extra') return !event.rebowled;
+  if (event.kind === 'wicket') return true;
+  return false;
 }
 
 export interface PenaltyBallEvent extends BallEventBase {

@@ -65,20 +65,20 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | FORMAT-01 | Phase 1 | Pending |
-| FORMAT-02 | Phase 1 | Pending |
+| FORMAT-02 | Phase 2 | Pending |
 | FORMAT-03 | Phase 1 | Pending |
 | RULE-01   | Phase 1 | Pending |
 | RULE-02   | Phase 1 | Pending |
-| RULE-03   | Phase 1 | Pending |
-| RULE-04   | Phase 1 | Pending |
-| RULE-05   | Phase 1 | Pending |
-| RULE-06   | Phase 1 | Pending |
-| STORE-01  | Phase 2 | Pending |
-| STORE-02  | Phase 2 | Pending |
-| REPO-01   | Phase 3 | Pending |
-| REPO-02   | Phase 3 | Pending |
-| REPO-03   | Phase 3 | Pending |
-| REPO-04   | Phase 3 | Pending |
+| RULE-03   | Phase 2 | Pending |
+| RULE-04   | Phase 2 | Pending |
+| RULE-05   | Phase 2 | Pending |
+| RULE-06   | Phase 2 | Pending |
+| STORE-01  | Phase 3 | Pending |
+| STORE-02  | Phase 3 | Pending |
+| REPO-01   | Phase 4 | Pending |
+| REPO-02   | Phase 5 | Pending |
+| REPO-03   | Phase 5 | Pending |
+| REPO-04   | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 15 total
@@ -87,4 +87,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-17*
-*Last updated: 2026-04-17 after initial definition*
+*Last updated: 2026-04-18 after roadmapping*

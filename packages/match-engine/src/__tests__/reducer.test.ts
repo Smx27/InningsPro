@@ -1,6 +1,8 @@
-import { test } from 'node:test';
 import assert from 'node:assert';
+import { test } from 'node:test';
+
 import { matchReducer } from '../reducer.ts';
+
 import type { MatchEngineState } from '../types.ts';
 
 const MOCK_STATE: MatchEngineState = {
@@ -33,7 +35,8 @@ const MOCK_STATE: MatchEngineState = {
 };
 
 test('matchReducer returns state for unknown actions', () => {
-  const result = matchReducer(MOCK_STATE, { type: 'UNKNOWN_ACTION' as any });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = matchReducer(MOCK_STATE, { type: 'UNKNOWN_ACTION' } as any);
   assert.strictEqual(result, MOCK_STATE);
 });
 
@@ -50,13 +53,16 @@ test('RECORD_DELIVERY adds a DeliveryBallEvent and increments ball count', () =>
   };
 
   const result = matchReducer(MOCK_STATE, action);
-  const innings = result.innings[0];
+  const innings = result.innings[0]!;
+  assert.ok(innings);
   assert.strictEqual(innings.events.length, 1);
-  assert.strictEqual(innings.events[0].kind, 'delivery');
-  assert.strictEqual(innings.events[0].overNumber, 0);
-  assert.strictEqual(innings.events[0].ballInOver, 1);
-  if (innings.events[0].kind === 'delivery') {
-    assert.strictEqual(innings.events[0].runsOffBat, 1);
+  const event = innings.events[0]!;
+  assert.ok(event);
+  assert.strictEqual(event!.kind, 'delivery');
+  assert.strictEqual(event!.overNumber, 0);
+  assert.strictEqual(event!.ballInOver, 1);
+  if (event!.kind === 'delivery') {
+    assert.strictEqual(event!.runsOffBat, 1);
   }
 });
 
@@ -75,10 +81,13 @@ test('RECORD_DELIVERY increments ballInOver within an over', () => {
     });
   }
 
-  const innings = state.innings[0];
+  const innings = state.innings[0]!;
+  assert.ok(innings);
   assert.strictEqual(innings.events.length, 3);
-  assert.strictEqual(innings.events[2].overNumber, 0);
-  assert.strictEqual(innings.events[2].ballInOver, 3);
+  const lastEvent = innings.events[2]!;
+  assert.ok(lastEvent);
+  assert.strictEqual(lastEvent.overNumber, 0);
+  assert.strictEqual(lastEvent.ballInOver, 3);
 });
 
 test('RECORD_EXTRA (wide) adds 1 run and does not increment legal ball count', () => {
@@ -94,16 +103,18 @@ test('RECORD_EXTRA (wide) adds 1 run and does not increment legal ball count', (
   };
 
   const result = matchReducer(MOCK_STATE, action);
-  const innings = result.innings[0];
+  const innings = result.innings[0]!;
+  assert.ok(innings);
   assert.strictEqual(innings.events.length, 1);
-  const event = innings.events[0];
-  if (event.kind === 'extra') {
-    assert.strictEqual(event.extraType, 'wide');
-    assert.strictEqual(event.runs, 1);
-    assert.strictEqual(event.rebowled, true);
+  const event = innings.events[0]!;
+  assert.ok(event);
+  if (event!.kind === 'extra') {
+    assert.strictEqual(event!.extraType, 'wide');
+    assert.strictEqual(event!.runs, 1);
+    assert.strictEqual(event!.rebowled, true);
   }
-  assert.strictEqual(event.overNumber, 0);
-  assert.strictEqual(event.ballInOver, 1);
+  assert.strictEqual(event!.overNumber, 0);
+  assert.strictEqual(event!.ballInOver, 1);
 
   // Next ball should still be in over 0
   const nextResult = matchReducer(result, {
@@ -116,9 +127,12 @@ test('RECORD_EXTRA (wide) adds 1 run and does not increment legal ball count', (
       bowlerId: 'b1',
     },
   });
-  const nextEvent = nextResult.innings[0].events[1];
-  assert.strictEqual(nextEvent.overNumber, 0);
-  assert.strictEqual(nextEvent.ballInOver, 2);
+  const nextInnings = nextResult.innings[0];
+  assert.ok(nextInnings);
+  const nextEvent = nextInnings.events[1]!;
+  assert.ok(nextEvent);
+  assert.strictEqual(nextEvent!.overNumber, 0);
+  assert.strictEqual(nextEvent!.ballInOver, 2);
 });
 
 test('RECORD_EXTRA (no-ball) adds 1 run + runs and does not increment legal ball count', () => {
@@ -134,11 +148,14 @@ test('RECORD_EXTRA (no-ball) adds 1 run + runs and does not increment legal ball
   };
 
   const result = matchReducer(MOCK_STATE, action);
-  const event = result.innings[0].events[0];
-  if (event.kind === 'extra') {
-    assert.strictEqual(event.extraType, 'no-ball');
-    assert.strictEqual(event.runs, 3); // 2 + 1 penalty
-    assert.strictEqual(event.rebowled, true);
+  const innings = result.innings[0]!;
+  assert.ok(innings);
+  const event = innings.events[0]!;
+  assert.ok(event);
+  if (event!.kind === 'extra') {
+    assert.strictEqual(event!.extraType, 'no-ball');
+    assert.strictEqual(event!.runs, 3); // 2 + 1 penalty
+    assert.strictEqual(event!.rebowled, true);
   }
 });
 
@@ -155,12 +172,15 @@ test('RECORD_WICKET adds a WicketBallEvent and increments wicket count', () => {
   };
 
   const result = matchReducer(MOCK_STATE, action);
-  const event = result.innings[0].events[0];
-  assert.strictEqual(event.kind, 'wicket');
-  if (event.kind === 'wicket') {
-    assert.strictEqual(event.wicketType, 'bowled');
-    assert.strictEqual(event.playerOutId, 'p1');
-    assert.strictEqual(event.creditedToBowler, true);
+  const innings = result.innings[0]!;
+  assert.ok(innings);
+  const event = innings.events[0]!;
+  assert.ok(event);
+  assert.strictEqual(event!.kind, 'wicket');
+  if (event!.kind === 'wicket') {
+    assert.strictEqual(event!.wicketType, 'bowled');
+    assert.strictEqual(event!.playerOutId, 'p1');
+    assert.strictEqual(event!.creditedToBowler, true);
   }
 });
 
@@ -194,7 +214,9 @@ test('matchReducer rejects same bowler for consecutive overs', () => {
 
   // Should return same state (reject)
   assert.strictEqual(result, state);
-  assert.strictEqual(result.innings[0].events.length, 6);
+  const innings = result.innings[0]!;
+  assert.ok(innings);
+  assert.strictEqual(innings.events.length, 6);
 });
 
 test('RECORD_EXTRA (bye) adds runs and counts as a legal ball', () => {
@@ -210,14 +232,17 @@ test('RECORD_EXTRA (bye) adds runs and counts as a legal ball', () => {
   };
 
   const result = matchReducer(MOCK_STATE, action);
-  const event = result.innings[0].events[0];
-  if (event.kind === 'extra') {
-    assert.strictEqual(event.extraType, 'bye');
-    assert.strictEqual(event.runs, 1);
-    assert.strictEqual(event.rebowled, false);
+  const innings = result.innings[0]!;
+  assert.ok(innings);
+  const event = innings.events[0]!;
+  assert.ok(event);
+  if (event!.kind === 'extra') {
+    assert.strictEqual(event!.extraType, 'bye');
+    assert.strictEqual(event!.runs, 1);
+    assert.strictEqual(event!.rebowled, false);
   }
-  assert.strictEqual(event.overNumber, 0);
-  assert.strictEqual(event.ballInOver, 1);
+  assert.strictEqual(event!.overNumber, 0);
+  assert.strictEqual(event!.ballInOver, 1);
 });
 
 test('matchReducer completes match when all wickets are lost', () => {

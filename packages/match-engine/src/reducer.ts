@@ -72,7 +72,7 @@ export function matchReducer(state: MatchEngineState, action: MatchEngineAction)
 
       const ballsInCurrentOver = innings.events.filter((e) => e.overNumber === overNumber).length;
 
-      const totalRuns = (rebowled ? runs + 1 : runs) as any;
+      const totalRuns = (rebowled ? runs + 1 : runs) as ExtraBallEvent['runs'];
 
       const newEvent: ExtraBallEvent = {
         id: `event_${Date.now()}_${innings.events.length}`,
@@ -172,7 +172,7 @@ function getLastOverBowlerId(innings: Innings, lastOverNumber: number): string |
   if (lastOverNumber < 0) return null;
   const lastOverEvents = innings.events.filter((e) => e.overNumber === lastOverNumber);
   if (lastOverEvents.length === 0) return null;
-  return lastOverEvents[lastOverEvents.length - 1].bowlerId;
+  return lastOverEvents[lastOverEvents.length - 1]!.bowlerId;
 }
 
 function checkMatchCompletion(state: MatchEngineState): MatchEngineState {

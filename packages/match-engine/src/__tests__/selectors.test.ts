@@ -1,7 +1,9 @@
-import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { describe, it } from 'node:test';
+
 import { matchReducer } from '../reducer.ts';
 import { getInningsScore, getBatterStats, getBowlerStats } from '../selectors.ts';
+
 import type { MatchEngineState } from '../types.ts';
 import type { MatchRules } from '@inningspro/shared-types';
 
@@ -64,7 +66,7 @@ describe('Match Engine Selectors', () => {
       payload: { type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
-    const innings = state.innings[0];
+    const innings = state.innings[0]!;
     const score = getInningsScore(innings, state.rules);
 
     assert.strictEqual(score.totalRuns, 6); // 4 + 1 (wide) + 1 + 0 (wicket)
@@ -89,7 +91,7 @@ describe('Match Engine Selectors', () => {
       payload: { type: 'caught', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
-    const stats = getBatterStats(state.innings[0], 'b1');
+    const stats = getBatterStats(state.innings[0]!, 'b1');
     assert.strictEqual(stats.runs, 10);
     assert.strictEqual(stats.balls, 3);
     assert.strictEqual(stats.fours, 1);
@@ -133,7 +135,7 @@ describe('Match Engine Selectors', () => {
       payload: { type: 'bowled', playerOutId: 'b1', batterId: 'b1', nonStrikerId: 'b2', bowlerId: 'bw1' }
     });
 
-    const stats = getBowlerStats(state.innings[0], 'bw1', state.rules);
+    const stats = getBowlerStats(state.innings[0]!, 'bw1', state.rules);
     assert.strictEqual(stats.runs, 10);
     assert.strictEqual(stats.wickets, 1);
     assert.strictEqual(stats.overs, '0.4');
@@ -169,7 +171,7 @@ describe('Match Engine Selectors', () => {
     }
 
     assert.strictEqual(state.status, 'completed');
-    const score = getInningsScore(state.innings[0], state.rules);
+    const score = getInningsScore(state.innings[0]!, state.rules);
     assert.strictEqual(score.totalWickets, 5);
 
     // Reset and simulate 5 overs (30 balls)
@@ -185,7 +187,7 @@ describe('Match Engine Selectors', () => {
     }
 
     assert.strictEqual(state.status, 'completed');
-    const scoreFinal = getInningsScore(state.innings[0], state.rules);
+    const scoreFinal = getInningsScore(state.innings[0]!, state.rules);
     assert.strictEqual(scoreFinal.oversBowled, '5.0');
     assert.strictEqual(scoreFinal.totalRuns, 30);
   });

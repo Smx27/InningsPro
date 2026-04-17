@@ -1,4 +1,4 @@
-import type { Innings, BallEvent, ExtraBallEvent, MatchRules, Id } from '@inningspro/shared-types';
+import type { BallEvent, Id, Innings, MatchRules } from '@inningspro/shared-types';
 
 /**
  * Checks if a ball is legal (counts toward the over).
@@ -145,7 +145,7 @@ export function getBowlerStats(innings: Innings, bowlerId: Id, rules: MatchRules
   }
 
   let maidens = 0;
-  for (const [overNum, stats] of oversMap) {
+  for (const stats of oversMap.values()) {
     // An over is a maiden if it's completed and 0 runs were conceded.
     if (stats.balls === rules.ballsPerOver && stats.runs === 0) {
       maidens++;

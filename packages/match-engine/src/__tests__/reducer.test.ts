@@ -44,6 +44,8 @@ test('RECORD_DELIVERY adds a DeliveryBallEvent and increments ball count', () =>
   const action = {
     type: 'RECORD_DELIVERY' as const,
     payload: {
+      id: 'e1',
+      timestamp: new Date().toISOString(),
       runsOffBat: 1 as const,
       isBoundary: false,
       batterId: 'player-1',
@@ -72,6 +74,8 @@ test('RECORD_DELIVERY increments ballInOver within an over', () => {
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
       payload: {
+        id: `e-${i}`,
+        timestamp: new Date().toISOString(),
         runsOffBat: 0,
         isBoundary: false,
         batterId: 'p1',
@@ -94,6 +98,8 @@ test('RECORD_EXTRA (wide) adds 1 run and does not increment legal ball count', (
   const action = {
     type: 'RECORD_EXTRA' as const,
     payload: {
+      id: 'e-w',
+      timestamp: new Date().toISOString(),
       type: 'wide' as const,
       runs: 0,
       batterId: 'p1',
@@ -120,6 +126,8 @@ test('RECORD_EXTRA (wide) adds 1 run and does not increment legal ball count', (
   const nextResult = matchReducer(result, {
     type: 'RECORD_DELIVERY',
     payload: {
+      id: 'e-d',
+      timestamp: new Date().toISOString(),
       runsOffBat: 0,
       isBoundary: false,
       batterId: 'p1',
@@ -139,6 +147,8 @@ test('RECORD_EXTRA (no-ball) adds 1 run + runs and does not increment legal ball
   const action = {
     type: 'RECORD_EXTRA' as const,
     payload: {
+      id: 'e-nb',
+      timestamp: new Date().toISOString(),
       type: 'no-ball' as const,
       runs: 2,
       batterId: 'p1',
@@ -163,6 +173,8 @@ test('RECORD_WICKET adds a WicketBallEvent and increments wicket count', () => {
   const action = {
     type: 'RECORD_WICKET' as const,
     payload: {
+      id: 'e-wk',
+      timestamp: new Date().toISOString(),
       type: 'bowled' as const,
       playerOutId: 'p1',
       batterId: 'p1',
@@ -191,6 +203,8 @@ test('matchReducer rejects same bowler for consecutive overs', () => {
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
       payload: {
+        id: `e-o1-${i}`,
+        timestamp: new Date().toISOString(),
         runsOffBat: 0,
         isBoundary: false,
         batterId: 'p1',
@@ -204,6 +218,8 @@ test('matchReducer rejects same bowler for consecutive overs', () => {
   const result = matchReducer(state, {
     type: 'RECORD_DELIVERY',
     payload: {
+      id: 'e-o2-1',
+      timestamp: new Date().toISOString(),
       runsOffBat: 0,
       isBoundary: false,
       batterId: 'p1',
@@ -223,6 +239,8 @@ test('RECORD_EXTRA (bye) adds runs and counts as a legal ball', () => {
   const action = {
     type: 'RECORD_EXTRA' as const,
     payload: {
+      id: 'e-bye',
+      timestamp: new Date().toISOString(),
       type: 'bye' as const,
       runs: 1,
       batterId: 'p1',
@@ -256,6 +274,8 @@ test('matchReducer completes match when all wickets are lost', () => {
     state = matchReducer(state, {
       type: 'RECORD_WICKET',
       payload: {
+        id: `e-w-${i}`,
+        timestamp: new Date().toISOString(),
         type: 'bowled',
         playerOutId: `p${i + 1}`,
         batterId: 'p1',
@@ -279,6 +299,8 @@ test('matchReducer completes match when max overs are reached', () => {
     state = matchReducer(state, {
       type: 'RECORD_DELIVERY',
       payload: {
+        id: `e-o-${i}`,
+        timestamp: new Date().toISOString(),
         runsOffBat: 0,
         isBoundary: false,
         batterId: 'p1',

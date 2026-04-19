@@ -10,7 +10,7 @@ InningsPro is a production-grade cricket scoring system designed for reliable ba
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Match Engine (Core Rules)** - Basic scoring logic and configuration
+- [x] **Phase 1: Match Engine (Core Rules)** - Basic scoring logic and configuration
 - [ ] **Phase 2: Match Engine (MCC Compliance & Audit)** - Advanced rules and undo capability
 - [ ] **Phase 3: Mobile Scoring App & Persistence** - Offline capture and SQLite storage
 - [ ] **Phase 4: Web Reporting Portal** - Scorecard visualization from match schemas
@@ -41,7 +41,10 @@ InningsPro is a production-grade cricket scoring system designed for reliable ba
   2. Engine handles "Last Man Standing" logic where the last batter stays in.
   3. User can record 5-run penalties and various batter retirement states.
   4. User can undo any event in the match log to revert state exactly.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 02-01-PLAN.md — Implement the core infrastructure for match auditability and event replay.
+- [ ] 02-02-PLAN.md — Incorporate MCC 2022 Law 18.11 (Caught dismissal) and implement standalone penalty runs and batter retirements.
+- [ ] 02-03-PLAN.md — Implement 'Last Man Standing' (LMS) strike rotation logic and expand match hints.
 
 ### Phase 3: Mobile Scoring App & Persistence
 **Goal**: Deliver a reliable offline mobile app for real-time match capture.
@@ -81,8 +84,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Match Engine (Core) | 0/3 | Not started | - |
-| 2. Match Engine (MCC) | 0/TBD | Not started | - |
+| 1. Match Engine (Core) | 3/3 | Completed | 2026-04-17 |
+| 2. Match Engine (MCC) | 0/3 | Not started | - |
 | 3. Mobile Scoring App | 0/TBD | Not started | - |
 | 4. Web Reporting | 0/TBD | Not started | - |
 | 5. Prof. Exports | 0/TBD | Not started | - |

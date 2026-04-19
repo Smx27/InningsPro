@@ -2,9 +2,11 @@
   "name": "@inningspro/report-web",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "test": "node --test \"lib/**/*.test.ts\" \"components/**/*.test.ts\"",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",

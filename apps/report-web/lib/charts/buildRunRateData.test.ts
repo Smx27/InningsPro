@@ -2,7 +2,7 @@ import assert from 'node:assert';
 import { test } from 'node:test';
 
 import type { InningsReport } from '../../types/report.types';
-import { buildRunRateData } from './buildRunRateData';
+import { buildRunRateData } from './buildRunRateData.ts';
 
 test('buildRunRateData - returns empty array for empty ball events', () => {
   const innings = {

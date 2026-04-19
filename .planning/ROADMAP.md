@@ -93,5 +93,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Match Engine (Core) | 3/3 | Completed | 2026-04-17 |
 | 2. Match Engine (MCC) | 3/3 | Completed | 2026-04-19 |
 | 3. Mobile Scoring App | 0/3 | Not started | - |
-| 4. Web Reporting | 0/3 | Not started | - |
+| 4. Web Reporting | 1/5 | In Progress|  |
 | 5. Prof. Exports | 0/TBD | Not started | - |

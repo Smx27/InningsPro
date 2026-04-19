@@ -67,7 +67,10 @@ InningsPro is a production-grade cricket scoring system designed for reliable ba
 **Success Criteria** (what must be TRUE):
   1. User can upload a `.ipro` file to the web portal and view a full scorecard.
   2. User can download the raw match data in JSON format from the web UI.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — Integrate shared packages and implement schema parsing.
+- [ ] 04-02-PLAN.md — Implement stats-driven scorecard visualization.
+- [ ] 04-03-PLAN.md — Implement analytical charts and JSON data export.
 **UI hint**: yes
 
 ### Phase 5: Professional Exports
@@ -90,5 +93,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Match Engine (Core) | 3/3 | Completed | 2026-04-17 |
 | 2. Match Engine (MCC) | 3/3 | Completed | 2026-04-19 |
 | 3. Mobile Scoring App | 0/3 | Not started | - |
-| 4. Web Reporting | 0/TBD | Not started | - |
+| 4. Web Reporting | 0/3 | Not started | - |
 | 5. Prof. Exports | 0/TBD | Not started | - |

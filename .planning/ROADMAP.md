@@ -80,7 +80,10 @@ InningsPro is a production-grade cricket scoring system designed for reliable ba
 **Success Criteria** (what must be TRUE):
   1. User can generate and download a professional PDF summary of the match.
   2. User can generate a "Match Highlight" graphic for social media sharing.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 05-01-PLAN.md — Social Media Highlight Image (REPO-03)
+- [ ] 05-02-PLAN.md — Professional PDF Layout (REPO-02)
+- [ ] 05-03-PLAN.md — Unified Export UI (UX)
 **UI hint**: yes
 
 ## Progress
@@ -94,4 +97,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Match Engine (MCC) | 3/3 | Completed | 2026-04-19 |
 | 3. Mobile Scoring App | 0/3 | Not started | - |
 | 4. Web Reporting | 1/5 | In Progress|  |
-| 5. Prof. Exports | 0/TBD | Not started | - |
+| 5. Prof. Exports | 0/3 | Not started | - |

@@ -12,6 +12,7 @@ import {
   computeTopRunScorers,
 } from '../../lib/analytics/tournamentAnalytics';
 import { useReportStore } from '../../lib/store';
+import type { InningsReport } from '../../types/report.types';
 
 import type { MatchItem, PlayerStanding, TeamStanding, TournamentSummaryData } from './types';
 
@@ -59,8 +60,18 @@ export function TournamentAnalyticsPage() {
     }));
 
     const recentMatches: MatchItem[] = matches.slice(0, 6).map((match) => {
-      const inningsA = match.innings.find((innings) => innings.teamId === match.teamA.id);
-      const inningsB = match.innings.find((innings) => innings.teamId === match.teamB.id);
+      let inningsA: InningsReport | undefined;
+      let inningsB: InningsReport | undefined;
+
+      for (const innings of match.innings) {
+        if (innings.teamId === match.teamA.id) {
+          inningsA = innings;
+        } else if (innings.teamId === match.teamB.id) {
+          inningsB = innings;
+        }
+
+        if (inningsA && inningsB) break;
+      }
 
       return {
         id: match.id,

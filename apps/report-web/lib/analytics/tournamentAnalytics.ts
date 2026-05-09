@@ -1,4 +1,4 @@
-import type { MatchReport } from '../../types/report.types';
+import type { InningsReport, MatchReport } from '../../types/report.types';
 
 export interface PlayerAggregate {
   playerId: string;
@@ -257,8 +257,18 @@ export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] 
       bowlingTeam.ballsBowled += oversToBalls(innings.totalOvers);
     }
 
-    const inningsA = match.innings.find((innings) => innings.teamId === match.teamA.id);
-    const inningsB = match.innings.find((innings) => innings.teamId === match.teamB.id);
+    let inningsA: InningsReport | undefined;
+    let inningsB: InningsReport | undefined;
+
+    for (const innings of match.innings) {
+      if (innings.teamId === match.teamA.id) {
+        inningsA = innings;
+      } else if (innings.teamId === match.teamB.id) {
+        inningsB = innings;
+      }
+
+      if (inningsA && inningsB) break;
+    }
 
     if (inningsA && inningsB) {
       if (inningsA.totalRuns > inningsB.totalRuns) {

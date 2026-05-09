@@ -51,13 +51,27 @@ export default function HomeScreen() {
   }, [loadRecentMatches]);
 
   const handleQuickMatch = useCallback(async () => {
+    const overs = parseInt(form.overs, 10);
+    const players = parseInt(form.players, 10);
+
+    if (isNaN(overs) || overs < 1) {
+      Alert.alert('Invalid Input', 'Please enter a valid number of overs (minimum 1).');
+      return;
+    }
+
+    if (isNaN(players) || players < 2) {
+      Alert.alert('Invalid Input', 'Please enter a valid number of players (minimum 2).');
+      return;
+    }
+
     try {
       setIsLoading(true);
+
       const matchId = await quickMatchService.createQuickMatch({
         teamAName: form.teamAName,
         teamBName: form.teamBName,
-        oversPerInnings: Number(form.overs),
-        playersPerTeam: Number(form.players),
+        oversPerInnings: overs,
+        playersPerTeam: players,
       });
 
       setShowQuickForm(false);

@@ -119,7 +119,15 @@ function getOrCreateTeamAggregate(
   return created;
 }
 
-function aggregatePlayers(matches: MatchReport[]): PlayerAggregate[] {
+const playerAggregateCache = new WeakMap<MatchReport[], PlayerAggregate[]>();
+const teamAggregateCache = new WeakMap<MatchReport[], TeamAggregate[]>();
+
+export function aggregatePlayers(matches: MatchReport[]): PlayerAggregate[] {
+  const cached = playerAggregateCache.get(matches);
+  if (cached) {
+    return [...cached];
+  }
+
   const playerMap = new Map<string, PlayerAggregate>();
 
   for (const match of matches) {
@@ -179,7 +187,9 @@ function aggregatePlayers(matches: MatchReport[]): PlayerAggregate[] {
     }
   }
 
-  return [...playerMap.values()];
+  const result = [...playerMap.values()];
+  playerAggregateCache.set(matches, result);
+  return [...result];
 }
 
 export function computeTopRunScorers(matches: MatchReport[]): PlayerAggregate[] {
@@ -208,6 +218,11 @@ export function computeEconomyLeaders(matches: MatchReport[]): PlayerAggregate[]
 }
 
 export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] {
+  const cached = teamAggregateCache.get(matches);
+  if (cached) {
+    return [...cached];
+  }
+
   const teamMap = new Map<string, TeamAggregate>();
 
   for (const match of matches) {
@@ -256,7 +271,7 @@ export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] 
     }
   }
 
-  return [...teamMap.values()]
+  const result = [...teamMap.values()]
     .map((team) => ({
       ...team,
       points: team.wins * 2,
@@ -265,4 +280,7 @@ export function computeTeamLeaderboard(matches: MatchReport[]): TeamAggregate[] 
         safeRate(team.runsConceded, team.ballsBowled, 6),
     }))
     .sort((a, b) => b.points - a.points || b.netRunRate - a.netRunRate);
+
+  teamAggregateCache.set(matches, result);
+  return [...result];
 }

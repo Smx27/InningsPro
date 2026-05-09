@@ -73,6 +73,17 @@ npm install -g expo-cli
 ```bash
 # Start all dev servers and watch processes
 pnpm dev
+```
+
+#### Android Signing Configuration
+
+By default, the Android debug build uses standard credentials. You can override these by adding the following to `apps/mobile/android/local.properties` (which is ignored by Git) or by setting environment variables (prefixed with `ORG_GRADLE_PROJECT_`):
+
+```properties
+DEBUG_STORE_PASSWORD=your_password
+DEBUG_KEY_ALIAS=your_alias
+DEBUG_KEY_PASSWORD=your_password
+```
 
 # Run type checking across all packages
 pnpm typecheck

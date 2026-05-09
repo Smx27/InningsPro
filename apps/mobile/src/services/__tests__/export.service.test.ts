@@ -8,6 +8,8 @@ vi.mock('../db.service', () => ({
     getMatchById: vi.fn(),
     getTournamentById: vi.fn(),
     getTeamById: vi.fn(),
+    getTeamsByTournament: vi.fn(),
+    getPlayersByTeam: vi.fn(),
     getInningsByMatch: vi.fn(),
     getBallEventsByMatch: vi.fn(),
   },
@@ -29,15 +31,29 @@ describe('ExportService', () => {
     const mockMatch = {
       id: matchId,
       tournamentId: 't1',
-      homeTeamId: 'team1',
-      awayTeamId: 'team2',
-      venue: 'Test Stadium',
+      teamAId: 'team1',
+      teamBId: 'team2',
+      rulesJson: JSON.stringify({
+        oversPerInnings: 20,
+        ballsPerOver: 6,
+        maxWickets: 10,
+      }),
       createdAt: new Date('2025-01-01T00:00:00Z'),
       status: 'completed',
     };
-    const mockTournament = { id: 't1', name: 'Test Tournament' };
-    const mockTeam1 = { id: 'team1', name: 'Team One' };
-    const mockTeam2 = { id: 'team2', name: 'Team Two' };
+    const mockTournament = {
+      id: 't1',
+      name: 'Test Tournament',
+      createdAt: new Date('2025-01-01T00:00:00Z'),
+      rulesJson: JSON.stringify({
+        oversPerInnings: 20,
+        ballsPerOver: 6,
+        maxWickets: 10,
+      }),
+    };
+    const mockTeam1 = { id: 'team1', tournamentId: 't1', name: 'Team One' };
+    const mockTeam2 = { id: 'team2', tournamentId: 't1', name: 'Team Two' };
+    const mockTeams = [mockTeam1, mockTeam2];
     const mockInnings = [
       {
         id: 'inn1',
@@ -51,25 +67,25 @@ describe('ExportService', () => {
     const mockEvents = [
       {
         id: 'e1',
-        kind: 'delivery',
+        matchId: matchId,
+        inningsNumber: 1,
         overNumber: 0,
-        ballInOver: 1,
-        timestamp: '2025-01-01T00:05:10Z',
-        batterId: 'p1',
-        bowlerId: 'p2',
+        ballNumber: 1,
+        runs: 4,
+        isLegalBall: true,
+        strikerId: 'p1',
         nonStrikerId: 'p3',
-        runsOffBat: 4,
-        isBoundary: true,
+        bowlerId: 'p2',
+        createdAt: new Date('2025-01-01T00:05:10Z'),
       },
     ];
 
     (databaseService.getMatchById as any).mockResolvedValue(mockMatch);
     (databaseService.getTournamentById as any).mockResolvedValue(mockTournament);
-    (databaseService.getTeamById as any).mockImplementation((id: string) => {
-      if (id === 'team1') return Promise.resolve(mockTeam1);
-      if (id === 'team2') return Promise.resolve(mockTeam2);
-      return Promise.resolve(null);
-    });
+    (databaseService.getTeamsByTournament as any).mockResolvedValue(mockTeams);
+    (databaseService.getPlayersByTeam as any).mockResolvedValue([
+      { id: 'p1', teamId: 'team1', name: 'Player 1', role: 'batter' },
+    ]);
     (databaseService.getInningsByMatch as any).mockResolvedValue(mockInnings);
     (databaseService.getBallEventsByMatch as any).mockResolvedValue(mockEvents);
 
@@ -77,8 +93,10 @@ describe('ExportService', () => {
     const parsed = JSON.parse(result);
 
     expect(parsed.schemaVersion).toBe('1.0.0');
-    expect(parsed.matches[0].id).toBe(matchId);
-    expect(parsed.matches[0].innings[0].events).toHaveLength(1);
+    expect(parsed.match.id).toBe(matchId);
+    expect(parsed.match.innings[0].events).toHaveLength(1);
+    expect(parsed.match.innings[0].events[0].kind).toBe('delivery');
+    expect(parsed.match.innings[0].events[0].runsOffBat).toBe(4);
     expect(v1.parseMatchExport).toHaveBeenCalled();
   });
 

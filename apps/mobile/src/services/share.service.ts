@@ -16,7 +16,9 @@ export class ShareService {
       throw new Error('Unable to access cache directory.');
     }
 
-    const fileUri = `${directory}match-report-${matchId}.json`;
+    // Sanitize matchId to prevent path traversal
+    const safeMatchId = matchId.replace(/[^a-zA-Z0-9-_]/g, '');
+    const fileUri = `${directory}match-report-${safeMatchId}.json`;
     await FileSystem.writeAsStringAsync(fileUri, report, {
       encoding: FileSystem.EncodingType.UTF8,
     });

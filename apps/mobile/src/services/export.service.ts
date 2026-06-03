@@ -1,6 +1,7 @@
 import { databaseService } from './db.service';
 import type { ExportSchemaV1, Match, Team, Tournament } from '@inningspro/shared-types';
 import { v1 } from '@inningspro/export-schema';
+import { reportBuilderService } from './report-builder.service';
 
 /**
  * ExportService
@@ -9,6 +10,14 @@ import { v1 } from '@inningspro/export-schema';
  * These files follow ExportSchemaV1 and are consumed by the Web Reporting Portal.
  */
 export class ExportService {
+  /**
+   * Generates a JSON string of the match report for sharing.
+   */
+  async exportMatchReport(matchId: string): Promise<string> {
+    const report = await reportBuilderService.buildMatchReport(matchId);
+    return JSON.stringify(report, null, 2);
+  }
+
   /**
    * Generates a validated JSON string of the match data.
    */

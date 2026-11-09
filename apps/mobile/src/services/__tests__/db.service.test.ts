@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { databaseService } from '../db.service';
 import { getDatabase } from '@core/database';
+import type { NewBallEvent } from '@core/database/schema';
 
 vi.mock('@core/database', () => ({
   getDatabase: vi.fn(),
@@ -40,61 +41,63 @@ describe('DatabaseService', () => {
   });
 
   it('should add ball event to SQLite', async () => {
-    const mockEvent = {
+    const mockPayload: NewBallEvent = {
       id: 'e1',
-      kind: 'delivery',
-      inningsId: 'i1',
+      matchId: 'm1',
+      inningsNumber: 1,
       overNumber: 0,
-      ballInOver: 1,
-      timestamp: '2025-01-01T00:00:00Z',
-      batterId: 'p1',
-      bowlerId: 'p2',
+      ballNumber: 1,
+      runs: 1,
+      isLegalBall: true,
+      strikerId: 'p1',
       nonStrikerId: 'p3',
-      runsOffBat: 1,
-      isBoundary: false,
+      bowlerId: 'p2',
     };
 
-    mockDb.returning.mockResolvedValue([
-      {
-        id: 'e1',
-        inningsId: 'i1',
-        matchId: 'm1',
-        inningsNumber: 1,
-        overNumber: 0,
-        ballNumber: 1,
-        timestamp: '2025-01-01T00:00:00Z',
-        strikerId: 'p1',
-        bowlerId: 'p2',
-        nonStrikerId: 'p3',
-        kind: 'delivery',
-        runsOffBat: 1,
-        isBoundary: 0,
-      },
-    ]);
+    const returnedEvent = {
+      id: 'e1',
+      matchId: 'm1',
+      inningsNumber: 1,
+      overNumber: 0,
+      ballNumber: 1,
+      runs: 1,
+      isLegalBall: true,
+      extrasType: null,
+      wicketType: null,
+      strikerId: 'p1',
+      nonStrikerId: 'p3',
+      bowlerId: 'p2',
+      commentary: null,
+      createdAt: new Date('2025-01-01T00:00:00Z'),
+    };
 
-    const result = await databaseService.addBallEvent(mockEvent as any, 'm1', 1);
+    mockDb.returning.mockResolvedValue([returnedEvent]);
+
+    const result = await databaseService.addBallEvent(mockPayload);
 
     expect(mockDb.insert).toHaveBeenCalled();
     expect(result.id).toBe('e1');
-    expect(result.kind).toBe('delivery');
+    expect(result.runs).toBe(1);
+    expect(result.isLegalBall).toBe(true);
   });
 
   it('should retrieve ball events by match ID', async () => {
     mockDb.orderBy.mockResolvedValue([
       {
         id: 'e1',
-        inningsId: 'i1',
         matchId: 'm1',
         inningsNumber: 1,
         overNumber: 0,
         ballNumber: 1,
-        timestamp: '2025-01-01T00:00:00Z',
+        runs: 1,
+        isLegalBall: true,
+        extrasType: null,
+        wicketType: null,
         strikerId: 'p1',
-        bowlerId: 'p2',
         nonStrikerId: 'p3',
-        kind: 'delivery',
-        runsOffBat: 1,
-        isBoundary: 0,
+        bowlerId: 'p2',
+        commentary: null,
+        createdAt: new Date('2025-01-01T00:00:00Z'),
       },
     ]);
 
@@ -120,18 +123,19 @@ describe('DatabaseService', () => {
       tx.returning.mockResolvedValue([
         {
           id: 'e1',
-          inningsId: 'i1',
           matchId: 'm1',
           inningsNumber: 1,
           overNumber: 0,
           ballNumber: 1,
-          timestamp: '2025-01-01T00:00:00Z',
+          runs: 1,
+          isLegalBall: true,
+          extrasType: null,
+          wicketType: null,
           strikerId: 'p1',
-          bowlerId: 'p2',
           nonStrikerId: 'p3',
-          kind: 'delivery',
-          runsOffBat: 1,
-          isBoundary: 0,
+          bowlerId: 'p2',
+          commentary: null,
+          createdAt: new Date('2025-01-01T00:00:00Z'),
         },
       ]);
       return cb(tx);

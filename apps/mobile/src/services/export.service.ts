@@ -1,12 +1,10 @@
 import { databaseService } from './db.service';
+import { reportBuilderService } from './report-builder.service';
 import type {
-  BallEvent as SharedBallEvent,
-  Match as SharedMatch,
   Team as SharedTeam,
   Tournament as SharedTournament,
   MatchStatus as SharedMatchStatus,
   MatchRules as SharedMatchRules,
-  Innings as SharedInnings,
   Player as SharedPlayer,
 } from '@inningspro/shared-types';
 import { v1 } from '@inningspro/export-schema';
@@ -26,6 +24,14 @@ import type {
  * These files follow ExportSchemaV1 and are consumed by the Web Reporting Portal.
  */
 export class ExportService {
+  /**
+   * Builds and exports a match report JSON string.
+   */
+  async exportMatchReport(matchId: string): Promise<string> {
+    const report = await reportBuilderService.buildMatchReport(matchId);
+    return JSON.stringify(report, null, 2);
+  }
+
   /**
    * Generates a validated JSON string of the match data.
    */
@@ -51,9 +57,10 @@ export class ExportService {
     const innings = await databaseService.getInningsByMatch(matchId);
 
     // Enrich innings with events
-    const enrichedInnings: SharedInnings[] = await Promise.all(
+    const enrichedInnings = await Promise.all(
       innings.map(async (inn) => {
         const events = await databaseService.getBallEventsByMatch(matchId, inn.inningsNumber);
+        const mappedEvents: v1.MatchExportSchemaV1['match']['innings'][number]['events'] = events.map((e) => this.mapBallEvent(e, inn.id));
         return {
           id: inn.id,
           matchId: inn.matchId,
@@ -62,12 +69,12 @@ export class ExportService {
           sequence: this.mapInningsSequence(inn.inningsNumber),
           startsAt: inn.createdAt.toISOString(),
           declared: false,
-          events: events.map((e) => this.mapBallEvent(e, inn.id)),
+          events: mappedEvents,
         };
       }),
     );
 
-    const matchData: SharedMatch = {
+    const matchData: v1.MatchExportSchemaV1['match'] = {
       id: match.id,
       tournamentId: match.tournamentId,
       homeTeamId: match.teamAId,
@@ -188,7 +195,10 @@ export class ExportService {
     };
   }
 
-  private mapBallEvent(event: DBBallEvent, inningsId: string): SharedBallEvent {
+  private mapBallEvent(
+    event: DBBallEvent,
+    inningsId: string,
+  ): v1.MatchExportSchemaV1['match']['innings'][number]['events'][number] {
     const base = {
       id: event.id,
       inningsId,
@@ -203,7 +213,7 @@ export class ExportService {
     if (event.extrasType) {
       return {
         ...base,
-        kind: 'extra',
+        kind: 'extra' as const,
         extraType: this.mapExtraType(event.extrasType),
         runs: this.mapExtraRuns(event.runs),
         rebowled: event.extrasType === 'wide' || event.extrasType === 'noball',
@@ -213,7 +223,7 @@ export class ExportService {
     if (event.wicketType) {
       return {
         ...base,
-        kind: 'wicket',
+        kind: 'wicket' as const,
         wicketType: this.mapWicketType(event.wicketType),
         playerOutId: event.strikerId || 'unknown',
         creditedToBowler: event.wicketType !== 'runout',
@@ -223,7 +233,7 @@ export class ExportService {
 
     return {
       ...base,
-      kind: 'delivery',
+      kind: 'delivery' as const,
       runsOffBat: this.mapRunsOffBat(event.runs),
       isBoundary: event.runs === 4 || event.runs === 6,
     };

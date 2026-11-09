@@ -2,111 +2,191 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useScoringStore } from '../useScoringStore';
 import { databaseService } from '@services/db.service';
 import { matchEngineService } from '@services/match-engine.service';
-import * as Haptics from 'expo-haptics';
 
 vi.mock('@services/db.service', () => ({
   databaseService: {
     getMatchById: vi.fn(),
+    getPlayersByTeam: vi.fn(),
     getBallEventsByMatch: vi.fn(),
     addBallEvent: vi.fn(),
     undoLastBall: vi.fn(),
   },
 }));
 
-vi.mock('@services/match-engine.service', () => ({
-  matchEngineService: {
-    hydrateMatch: vi.fn(),
-    processAction: vi.fn(),
-  },
-}));
+vi.mock('@services/match-engine.service', () => {
+  const initial = {
+    matchId: '',
+    inningsNumber: 1,
+    totalRuns: 0,
+    totalWickets: 0,
+    overs: 0,
+    legalBalls: 0,
+    runRate: 0,
+    currentStriker: null,
+    currentNonStriker: null,
+    last6Balls: [],
+    runs: 0,
+    wickets: 0,
+    balls: 0,
+  };
+  return {
+    matchEngineService: {
+      initialState: vi.fn(() => initial),
+      startMatch: vi.fn(),
+      recordBall: vi.fn(),
+      undoLastBall: vi.fn(),
+    },
+  };
+});
 
 vi.mock('@services/logger', () => ({
   logError: vi.fn(),
   logMatchEvent: vi.fn(),
 }));
 
-vi.mock('expo-haptics', () => ({
-  notificationAsync: vi.fn(),
-  impactAsync: vi.fn(),
-  NotificationFeedbackType: {
-    Success: 'success',
-    Error: 'error',
-    Warning: 'warning',
-  },
-  ImpactFeedbackStyle: {
-    Medium: 'medium',
-  },
-}));
-
 describe('useScoringStore', () => {
+  const defaultInitialState = {
+    matchId: '',
+    inningsNumber: 1,
+    totalRuns: 0,
+    totalWickets: 0,
+    overs: 0,
+    legalBalls: 0,
+    runRate: 0,
+    currentStriker: null,
+    currentNonStriker: null,
+    last6Balls: [],
+    runs: 0,
+    wickets: 0,
+    balls: 0,
+  };
+
   beforeEach(() => {
     vi.resetAllMocks();
     useScoringStore.setState({
-      matchState: null,
+      matchState: { ...defaultInitialState },
       isLoading: false,
-      isProcessing: false,
+      isMatchCompleted: false,
       currentBowlerId: null,
+      lastOverBowlerId: null,
+      isBowlerModalOpen: false,
+      isWicketSheetOpen: false,
+      isBatsmanModalOpen: false,
+      pendingWicketType: null,
     });
   });
 
-  it('should load match state from database', async () => {
+  it('should load match state and seed players', async () => {
     const matchId = 'm1';
-    const mockMatch = { id: matchId, rules: {} };
-    const mockEvents = [{ id: 'e1', bowlerId: 'p1' }];
-    const mockState = { id: matchId, innings: [] };
+    const mockMatch = { id: matchId, teamAId: 'teamA', status: 'live' };
+    const mockState = {
+      ...defaultInitialState,
+      matchId,
+      currentStriker: null,
+      currentNonStriker: null,
+    };
+    const mockPlayers = [{ id: 'p1' }, { id: 'p2' }];
 
     (databaseService.getMatchById as any).mockResolvedValue(mockMatch);
-    (databaseService.getBallEventsByMatch as any).mockResolvedValue(mockEvents);
-    (matchEngineService.hydrateMatch as any).mockReturnValue(mockState);
+    (databaseService.getPlayersByTeam as any).mockResolvedValue(mockPlayers);
+    (matchEngineService.startMatch as any).mockResolvedValue(mockState);
 
     await useScoringStore.getState().loadMatch(matchId);
 
     expect(databaseService.getMatchById).toHaveBeenCalledWith(matchId);
-    expect(databaseService.getBallEventsByMatch).toHaveBeenCalledWith(matchId);
-    expect(matchEngineService.hydrateMatch).toHaveBeenCalled();
-    expect(useScoringStore.getState().matchState).toBe(mockState);
-    expect(useScoringStore.getState().currentBowlerId).toBe('p1');
+    expect(matchEngineService.startMatch).toHaveBeenCalledWith(matchId);
+    expect(useScoringStore.getState().matchState.matchId).toBe(matchId);
+    expect(useScoringStore.getState().matchState.currentStriker).toBe('p1');
+    expect(useScoringStore.getState().matchState.currentNonStriker).toBe('p2');
+    expect(useScoringStore.getState().isBowlerModalOpen).toBe(true);
   });
 
-  it('should record event via match engine', async () => {
+  it('should record run and update state', async () => {
     const matchId = 'm1';
-    const mockState = { id: matchId, innings: [{ sequence: 1, events: [] }] };
-    const nextState = { 
-      id: matchId, 
-      innings: [{ 
-        sequence: 1, 
-        events: [{ kind: 'delivery', overNumber: 0, ballInOver: 1, id: 'e1' }] 
-      }] 
+    const loadedState = {
+      ...defaultInitialState,
+      matchId,
+      currentStriker: 'p1',
+      currentNonStriker: 'p2',
     };
-    const action = { type: 'RECORD_DELIVERY', payload: {} };
+    const nextState = {
+      ...loadedState,
+      runs: 4,
+      totalRuns: 4,
+      legalBalls: 1,
+      balls: 1,
+      overs: 0.1,
+    };
 
-    useScoringStore.setState({ matchState: mockState as any });
-    (matchEngineService.processAction as any).mockReturnValue(nextState);
-    (databaseService.addBallEvent as any).mockResolvedValue({});
+    useScoringStore.setState({
+      matchState: loadedState,
+      currentBowlerId: 'b1',
+    });
 
-    await useScoringStore.getState().recordEvent(action as any);
+    (databaseService.getMatchById as any).mockResolvedValue({ id: matchId, status: 'live' });
+    (matchEngineService.recordBall as any).mockResolvedValue(nextState);
 
-    expect(matchEngineService.processAction).toHaveBeenCalledWith(mockState, action);
-    expect(databaseService.addBallEvent).toHaveBeenCalled();
-    expect(Haptics.impactAsync).toHaveBeenCalled();
-    expect(useScoringStore.getState().matchState).toBe(nextState);
+    await useScoringStore.getState().recordRun(4);
+
+    expect(matchEngineService.recordBall).toHaveBeenCalledWith({
+      matchId,
+      runs: 4,
+      strikerId: 'p1',
+      nonStrikerId: 'p2',
+      bowlerId: 'b1',
+    });
+    expect(useScoringStore.getState().matchState.totalRuns).toBe(4);
   });
 
-  it('should undo last action', async () => {
+  it('should record extra and update state', async () => {
     const matchId = 'm1';
-    const mockState = { id: matchId, rules: {}, innings: [{ sequence: 1 }] };
-    const nextState = { id: matchId, innings: [] };
+    const loadedState = {
+      ...defaultInitialState,
+      matchId,
+      currentStriker: 'p1',
+      currentNonStriker: 'p2',
+    };
+    const nextState = {
+      ...loadedState,
+      runs: 1,
+      totalRuns: 1,
+    };
 
-    useScoringStore.setState({ matchState: mockState as any });
-    (databaseService.undoLastBall as any).mockResolvedValue({ id: 'e1' });
-    (databaseService.getBallEventsByMatch as any).mockResolvedValue([]);
-    (matchEngineService.hydrateMatch as any).mockReturnValue(nextState);
+    useScoringStore.setState({
+      matchState: loadedState,
+      currentBowlerId: 'b1',
+    });
 
-    await useScoringStore.getState().undo();
+    (databaseService.getMatchById as any).mockResolvedValue({ id: matchId, status: 'live' });
+    (matchEngineService.recordBall as any).mockResolvedValue(nextState);
 
-    expect(databaseService.undoLastBall).toHaveBeenCalledWith(matchId, 1);
-    expect(databaseService.getBallEventsByMatch).toHaveBeenCalledWith(matchId);
-    expect(Haptics.notificationAsync).toHaveBeenCalled();
-    expect(useScoringStore.getState().matchState).toBe(nextState);
+    await useScoringStore.getState().recordExtra('wide');
+
+    expect(matchEngineService.recordBall).toHaveBeenCalledWith({
+      matchId,
+      runs: 1,
+      extrasType: 'wide',
+      strikerId: 'p1',
+      nonStrikerId: 'p2',
+      bowlerId: 'b1',
+    });
+    expect(useScoringStore.getState().matchState.totalRuns).toBe(1);
+  });
+
+  it('should undo last ball', async () => {
+    const matchId = 'm1';
+    const nextState = { ...defaultInitialState, matchId };
+
+    useScoringStore.setState({
+      matchState: { ...defaultInitialState, matchId, totalRuns: 4 },
+    });
+
+    (databaseService.getMatchById as any).mockResolvedValue({ id: matchId, status: 'live' });
+    (matchEngineService.undoLastBall as any).mockResolvedValue(nextState);
+
+    await useScoringStore.getState().undoLastBall();
+
+    expect(matchEngineService.undoLastBall).toHaveBeenCalledWith(matchId);
+    expect(useScoringStore.getState().matchState.totalRuns).toBe(0);
   });
 });
